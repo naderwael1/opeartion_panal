@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'custom_dropdown.dart';
 
 class UpdateEmployeeScreen extends StatefulWidget {
   const UpdateEmployeeScreen({Key? key}) : super(key: key);
@@ -13,37 +14,10 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
   String? email;
   String? password;
   String? confirmPassword;
-  String? position;
+  String? position = 'Branch Manager'; // Ensure initial value matches one of the items
   String? imageUrl;
   bool isLoading = false;
   String? employeeState = 'Resignation'; // Set an initial value
-
-  Widget buildDropdownMenu(String label, List<String> items) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.event_available),
-      ),
-      value: label == 'Position' ? position : employeeState,
-      items: items
-          .map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-      onChanged: (String? value) {
-        setState(() {
-          if (label == 'Position') {
-            position = value;
-          } else {
-            employeeState = value;
-          }
-        });
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,10 +88,17 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                 },
               ),
               SizedBox(height: 20),
-              buildDropdownMenu('Position', ['head bar', 'barista']),
+              buildDropdownMenu('Position', position, ['head bar', 'Branch Manager', 'Head Barista'], (value) {
+                setState(() {
+                  position = value;
+                });
+              }),
               const SizedBox(height: 20),
-              buildDropdownMenu(
-                  'State', ['Resignation', 'Leave without pay']),
+              buildDropdownMenu('State', employeeState, ['Resignation', 'Leave without pay'], (value) {
+                setState(() {
+                  employeeState = value;
+                });
+              }),
               SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(
