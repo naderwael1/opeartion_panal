@@ -5,6 +5,7 @@ import '../../../Drawer/customDrawer.dart';
 import '../../../Drawer/drawerArt.dart';
 import '../Data/get_all_branchs.dart';
 
+import 'add_branch_screen.dart';
 import 'custom_branch_card.dart';
 
 class AllBranchScreen extends StatelessWidget {
@@ -20,10 +21,14 @@ class AllBranchScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              // Handle onPressed action here
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddBranchScreen()),
+              );
             },
             icon: Icon(Icons.add),
           ),
+
         ],
       ),
       body: FutureBuilder<List<BranchModel>>(
