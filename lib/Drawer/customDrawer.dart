@@ -9,22 +9,22 @@ class CustomDrawer extends StatelessWidget {
     DrawerItemModel(
       title: 'D A S H  B O A R D',
       icon: Icons.home,
-      destination: AllBranchScreen(), // Specify destination screen for each item
+      destination: AllBranchScreen(),
     ),
     DrawerItemModel(
       title: 'E M P L W E E S T A T E',
       icon: Icons.man,
-      destination: AllBranchScreen(), // Specify destination screen for each item
+      destination: AllBranchScreen(),
     ),
     DrawerItemModel(
       title: 'S E T T I N G S',
       icon: Icons.settings,
-      destination: AllBranchScreen(), // Specify destination screen for each item
+      destination: AllBranchScreen(),
     ),
     DrawerItemModel(
       title: 'L O G   O U T',
       icon: Icons.logout,
-      destination: AllBranchScreen(), // Specify destination screen for each item
+      destination: AllBranchScreen(),
     ),
   ];
 

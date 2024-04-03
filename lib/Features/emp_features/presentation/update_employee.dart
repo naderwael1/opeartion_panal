@@ -1,8 +1,5 @@
-import 'package:bloc_v2/Features/emp_features/Data/udage_employee.dart';
-import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class UpdateEmployeeScreen extends StatefulWidget {
@@ -13,21 +10,44 @@ class UpdateEmployeeScreen extends StatefulWidget {
 }
 
 class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
-
-
-
   String? email;
   String? password;
   String? confirmPassword;
   String? position;
-  String? state;
   String? imageUrl;
   bool isLoading = false;
+  String? employeeState = 'Resignation'; // Set an initial value
+
+  Widget buildDropdownMenu(String label, List<String> items) {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.event_available),
+      ),
+      value: label == 'Position' ? position : employeeState,
+      items: items
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        setState(() {
+          if (label == 'Position') {
+            position = value;
+          } else {
+            employeeState = value;
+          }
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final employee = Get.arguments;
-
 
     if (employee != null) {
       print('ID: ${employee.id}');
@@ -40,10 +60,8 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
       print('No employee data received.');
     }
 
-
     return ModalProgressHUD(
-      // Corrected the widget name
-      inAsyncCall: isLoading, // Set the loading state
+      inAsyncCall: isLoading,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Update Employees'),
@@ -96,31 +114,10 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                 },
               ),
               SizedBox(height: 20),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Position',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.work),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    position = value;
-                  });
-                },
-              ),
+              buildDropdownMenu('Position', ['head bar', 'barista']),
               const SizedBox(height: 20),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'State',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.event_available),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    state = value;
-                  });
-                },
-              ),
+              buildDropdownMenu(
+                  'State', ['Resignation', 'Leave without pay']),
               SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(
@@ -143,21 +140,10 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                   print('Password: $password');
                   print('Confirm Password: $confirmPassword');
                   print('Position: $position');
-                  print('State: $state');
+                  print('State: $employeeState');
                   print('Image URL: $imageUrl');
                   try {
-                    UpdateEmployee().updateEmployee(
-                      id: employee.id,
-                        title: email == null ? employee.title:email!,
-                        description: position== null ? employee.title:position!,
-                        category: state== null ? employee.title:state!,
-                        image: imageUrl== null ? employee.title:imageUrl!);
-                    print('NEmail: $email');
-                    print('NPassword: $password');
-                    print('NConfirm Password: $confirmPassword');
-                    print('NPosition: $position');
-                    print('NState: $state');
-                    print('NImage URL: $imageUrl');
+                    // Call your function to update employee here
                   } on Exception catch (e) {
                     print(e.toString());
                   }
