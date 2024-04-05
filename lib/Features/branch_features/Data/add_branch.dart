@@ -22,7 +22,7 @@ class AddBranch {
       url: 'http://192.168.175.1:4000/admin/branch/add-new',
       body: body,
     );
-
+//
     return BranchModel.fromJson(data);
   }
 }
