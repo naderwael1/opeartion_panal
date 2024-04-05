@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Drawer/customDrawer.dart';
 import '../../../Drawer/drawerArt.dart';
+import '../../../core/utils/theme.dart';
 import '../Data/get_all_emp_list.dart';
+import 'add_emp.dart';
 import 'custom_card.dart';
 
 class AllEmployeeScreen extends StatelessWidget {
@@ -14,17 +16,9 @@ class AllEmployeeScreen extends StatelessWidget {
     return Scaffold(
       drawer: const CustomDrawer(),
       appBar: AppBar(
-        title: Text('All Employees'),
-
-        centerTitle: true,
+        title: const Text('Your Screen Title'),
         actions: [
-          IconButton(
-            onPressed: () {
-
-
-            },
-            icon: Icon(Icons.add),
-          ),
+          const ThemeToggleWidget(), //
         ],
       ),
       body: FutureBuilder<List<EmployeeModel>>(
@@ -50,6 +44,15 @@ class AllEmployeeScreen extends StatelessWidget {
             return Center(child: Text('No data available'));
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddEmp()),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'Features/Splash/presentation/views/splash_view.dart';
@@ -19,8 +17,9 @@ class EmpApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: kPrimaryColor,
-        textTheme:GoogleFonts.montserratTextTheme(ThemeData.dark().textTheme),
-        ),
+        textTheme: GoogleFonts.montserratTextTheme(ThemeData.dark().textTheme),
+      ),
+      themeMode: ThemeMode.system, // Initialize with system theme mode
       home: const SplashView(),
     );
   }
