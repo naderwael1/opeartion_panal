@@ -13,13 +13,14 @@ class EmpApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Current Theme Mode: ${Get.theme.brightness}');
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: kPrimaryColor,
         textTheme: GoogleFonts.montserratTextTheme(ThemeData.dark().textTheme),
       ),
-      themeMode: ThemeMode.system, // Initialize with system theme mode
+      themeMode: ThemeMode.light, // Initialize with system theme mode
       home: const SplashView(),
     );
   }

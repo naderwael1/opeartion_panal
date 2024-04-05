@@ -7,10 +7,13 @@ class ThemeToggleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.shield_moon_outlined),
+      icon: Icon(Icons.lightbulb),
       onPressed: () {
+        print('Theme Toggle Button Pressed');
         Get.changeThemeMode(
-          Get.isDarkMode ? ThemeMode.light : ThemeMode.dark,
+          Get.theme.brightness == Brightness.dark
+              ? ThemeMode.light
+              : ThemeMode.dark,
         );
       },
     );
