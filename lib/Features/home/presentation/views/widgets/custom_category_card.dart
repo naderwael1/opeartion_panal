@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 class CustomCard extends StatelessWidget {
   final String text;
   final String photoUrl;
+  //final Widget destination;
+
 
   const CustomCard({
     Key? key,
     required this.text,
     required this.photoUrl,
+   // required this.destination
   }) : super(key: key);
 
   @override
