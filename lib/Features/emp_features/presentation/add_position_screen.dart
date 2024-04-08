@@ -65,11 +65,18 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
                 decoration: InputDecoration(labelText: 'Job Description'),
               ),
               SizedBox(height: 16.0),
-              buildDropdownMenu('Select Branch', selectedBranch, branches.map((branch) => branch.branchName).toList(), (value) {
-                setState(() {
-                  selectedBranch = value;
-                });
-              }),
+              buildDropdownMenu(
+                  'Select Branch',
+                  selectedBranch,
+                  branches.map((branch) => branch.branchName).toList(),
+                  Icons.webhook_rounded, // Pass the desired icon
+                      (value) {
+                    setState(() {
+                      selectedBranch = value;
+                    });
+                  }
+              ),
+
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {

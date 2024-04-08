@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-Widget buildDropdownMenu(String label, String? value, List<String> items, void Function(String?) onChanged) {
+Widget buildDropdownMenu(String label, String? value, List<String> items, IconData icon, void Function(String?) onChanged) {
   return DropdownButtonFormField<String>(
     decoration: InputDecoration(
       labelText: label,
       border: OutlineInputBorder(),
-      prefixIcon: Icon(Icons.event_available),
+      prefixIcon: Icon(icon), // Use the provided icon
     ),
     value: value,
     items: items

@@ -88,17 +88,39 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                 },
               ),
               SizedBox(height: 20),
-              buildDropdownMenu('Position', position, ['head bar', 'Branch Manager', 'Head Barista'], (value) {
-                setState(() {
-                  position = value;
-                });
-              }),
+              buildDropdownMenu(
+                  'Position',
+                  position,
+                  [
+                    'Head Bar',
+                    'Branch Manager',
+                    'Head Barista'
+                  ],
+                  Icons.work,
+                      (value) {
+                    setState(() {
+                      position = value;
+                    });
+                  }
+              ),
               const SizedBox(height: 20),
-              buildDropdownMenu('State', employeeState, ['Resignation', 'Leave without pay'], (value) {
-                setState(() {
-                  employeeState = value;
-                });
-              }),
+              buildDropdownMenu(
+                  'State',
+                  employeeState,
+                  [
+                    'Resignation',
+                    'Leave without pay'
+                  ],
+                  Icons.person,
+                      (value) {
+                    setState(() {
+                      employeeState = value;
+                    });
+                  }
+              ),
+
+
+
               SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(

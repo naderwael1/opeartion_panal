@@ -18,7 +18,7 @@ class AllEmployeeScreen extends StatelessWidget {
       drawer: const CustomDrawer(),
       bottomNavigationBar: const MyBottomNavigationBar(),
       appBar: AppBar(
-        title: const Text('Your Screen Title'),
+        title: const Text('All Employee '),
         actions: [
           const ThemeToggleWidget(), //
         ],
