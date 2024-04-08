@@ -30,7 +30,9 @@ class _AddTableScreenState extends State<AddTableScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: const Text('Add Table & Sections')),
+        title: const Text('Add Table & Sections'),
+        centerTitle: true,
+
       ),
       body: SingleChildScrollView(
         child: Padding(

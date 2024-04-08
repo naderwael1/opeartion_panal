@@ -17,6 +17,7 @@ Future<String> addPosition({
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
       final positionId = response.body; // Assuming the positionId is returned in the response body
+      print('Response Body: $positionId'); // Print response body
       return positionId;
     } else {
       // Failure

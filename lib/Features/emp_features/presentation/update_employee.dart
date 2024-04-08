@@ -48,7 +48,7 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
             children: [
               SizedBox(height: 20),
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Employee Email',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.email),
@@ -59,9 +59,9 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
@@ -73,7 +73,7 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: 'Confirm Password',
