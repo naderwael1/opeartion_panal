@@ -8,55 +8,77 @@ import '../../../custom_nav_bar.dart';
 import '../Data/get_all_emp_list.dart';
 import 'add_emp.dart';
 import 'custom_card.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 
 class AllEmployeeScreen extends StatelessWidget {
   const AllEmployeeScreen({Key? key});
 
+  Widget NoInternetWidget() {
+    return Scaffold(
+      body: Container(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            const Text(
+              'Can\'t connect to the internet. Please check your connection',
+              style: TextStyle(fontSize: 22),
+            ),
+            Image.asset('assets/images/undraw_bug_fixing_oc7a.png'),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const CustomDrawer(),
-      bottomNavigationBar: const MyBottomNavigationBar(),
-      appBar: AppBar(
-        title: const Text('All Employee '),
-        actions: [
-          const ThemeToggleWidget(), //
-        ],
-      ),
-
-      body: FutureBuilder<List<EmployeeModel>>(
-        future: GetAllEmployee().getAllProduct(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            List<EmployeeModel> employees = snapshot.data!;
-            return GridView.builder(
-              itemCount: employees.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 60,
-              ),
-              itemBuilder: (context, index) {
-                return CustomCard(employee: employees[index]);
+    return OfflineBuilder(
+      connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+          ) {
+        final bool connected = connectivity != ConnectivityResult.none;
+        if (connected) {
+          return Scaffold(
+            drawer: const CustomDrawer(),
+            bottomNavigationBar: const MyBottomNavigationBar(),
+            appBar: AppBar(
+              title: const Text('All Employee'),
+              actions: const [
+                ThemeToggleWidget(),
+              ],
+            ),
+            body: FutureBuilder<List<EmployeeModel>>(
+              future: GetAllEmployee().getAllProduct(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (snapshot.hasData) {
+                  List<EmployeeModel> employees = snapshot.data!;
+                  return GridView.builder(
+                    itemCount: employees.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 60,
+                    ),
+                    itemBuilder: (context, index) {
+                      return CustomCard(employee: employees[index]);
+                    },
+                  );
+                } else {
+                  return Center(child: Text('No data available'));
+                }
               },
-            );
-          } else {
-            return Center(child: Text('No data available'));
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddEmp()),
+            ),
           );
-        },
-        child: Icon(Icons.add),
-      ),
+        } else {
+          return NoInternetWidget();
+        }
+      },
+      child: Text('No internet connection'),
     );
   }
 }
