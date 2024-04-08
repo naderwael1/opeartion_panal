@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bloc_v2/core/utils/helper/api_helper.dart';
+import '../../table_features/presentation/add_table_screen.dart';
 import '../Data/add_branch.dart';
 import '../models/branch_model.dart';
 
@@ -7,17 +7,17 @@ class AddBranchScreen extends StatefulWidget {
   const AddBranchScreen({Key? key}) : super(key: key);
 
   @override
-  _AddEmployeeState createState() => _AddEmployeeState();
+  _AddBranchScreenState createState() => _AddBranchScreenState();
 }
 
-class _AddEmployeeState extends State<AddBranchScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class _AddBranchScreenState extends State<AddBranchScreen> {
+  TextEditingController branchNameController = TextEditingController();
+  TextEditingController branchAddressController = TextEditingController();
+  TextEditingController branchLocationController = TextEditingController();
+  TextEditingController coverageController = TextEditingController();
+  TextEditingController branchPhoneController = TextEditingController();
 
-  String branchName = '';
-  String branchAddress = '';
-  String branchLocation = '';
-  String coverage = '';
-  String branchPhone = '';
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
 
@@ -27,124 +27,65 @@ class _AddEmployeeState extends State<AddBranchScreen> {
       appBar: AppBar(
         title: Text('Add Branch'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Branch Name'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter branch name';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      branchName = value;
-                    });
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Branch Address'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter branch address';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      branchAddress = value;
-                    });
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Branch Location'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter branch location';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      branchLocation = value;
-                    });
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Coverage'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter coverage';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      coverage = value;
-                    });
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Branch Phone'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter branch phone';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      branchPhone = value;
-                    });
-                  },
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _addBranch();
-                    }
-                  },
-                  child: Text('Add Branch'),
-                ),
-              ],
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: branchNameController,
+              decoration: InputDecoration(labelText: 'Branch Name'),
             ),
-          ),
+            TextField(
+              controller: branchAddressController,
+              decoration: InputDecoration(labelText: 'Branch Address'),
+            ),
+            TextField(
+              controller: branchLocationController,
+              decoration: InputDecoration(labelText: 'Branch Location'),
+            ),
+            TextField(
+              controller: coverageController,
+              decoration: InputDecoration(labelText: 'Coverage'),
+            ),
+            TextField(
+              controller: branchPhoneController,
+              decoration: InputDecoration(labelText: 'Branch Phone'),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  // Call the addBranch function with the required parameters
+                  final branchId = await addBranch(
+                    branchName: branchNameController.text,
+                    branchAddress: branchAddressController.text,
+                    branchLocation: branchLocationController.text,
+                    coverage: coverageController.text,
+                    branchPhone: branchPhoneController.text,
+                  );
+
+                  // Navigate to AddTableScreen after adding branch
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddTableScreen(
+                        branchId: branchId,
+                        branchName: branchNameController.text,
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  print('Error adding branch: $e');
+                  // Handle error
+                }
+              },
+
+              child: Text('Add Branch'),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  Future<void> _addBranch() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final BranchModel branch = await AddBranch().addBranch(
-        branchName: branchName,
-        branchAddress: branchAddress,
-        branchLocation: branchLocation,
-        coverage: coverage,
-        branchPhone: branchPhone,
-      );
-
-      // Handle successful branch addition
-      print('Branch added: $branch');
-    } catch (e) {
-      // Handle error
-      print('Error adding branch: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
   }
 }

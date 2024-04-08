@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../Drawer/customDrawer.dart';
 import '../../../Drawer/drawerArt.dart';
 import '../../../core/utils/theme.dart';
+import '../../../custom_nav_bar.dart';
 import '../Data/get_all_emp_list.dart';
 import 'add_emp.dart';
 import 'custom_card.dart';
@@ -15,12 +16,14 @@ class AllEmployeeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const CustomDrawer(),
+      bottomNavigationBar: const MyBottomNavigationBar(),
       appBar: AppBar(
         title: const Text('Your Screen Title'),
         actions: [
           const ThemeToggleWidget(), //
         ],
       ),
+
       body: FutureBuilder<List<EmployeeModel>>(
         future: GetAllEmployee().getAllProduct(),
         builder: (context, snapshot) {

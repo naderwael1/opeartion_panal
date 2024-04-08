@@ -30,7 +30,7 @@ class HomeBody extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => destinationScreen), // Navigate to the appropriate destination screen
+          MaterialPageRoute(builder: (context) => destinationScreen),
         );
       },
       child: CustomCard(
