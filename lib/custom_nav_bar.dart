@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
+import 'Features/emp_features/presentation/add_emp.dart';
+
 class MyBottomNavigationBar extends StatelessWidget {
   const MyBottomNavigationBar({Key? key}) : super(key: key);
 
@@ -9,8 +11,8 @@ class MyBottomNavigationBar extends StatelessWidget {
     return NavigationBar(
       destinations: const [
         NavigationDestination(icon: Icon(Iconsax.home), label: 'Employee'),
-        NavigationDestination(icon: Icon(Iconsax.add_circle), label: 'Add Employee'),
-        NavigationDestination(icon: Icon(Icons.home), label: 'Add Position'),
+        NavigationDestination(icon: Icon(Icons.person_add_alt), label: 'Add Employee'),
+        NavigationDestination(icon: Icon(Icons.work), label: 'Add Position'),
       ],
       height: 60,
       backgroundColor: Color(0xff100B20),
@@ -22,7 +24,10 @@ class MyBottomNavigationBar extends StatelessWidget {
           // Navigate to Employee screen
             break;
           case 1:
-          // Navigate to Add Employee screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddEmp()),
+            );
             break;
           case 2:
           // Navigate to Add Position screen
