@@ -30,7 +30,6 @@ class EmployeeModel {
   }
 
 
-// You can add other factory constructors or methods as needed
 }
 
 class RatingModel {

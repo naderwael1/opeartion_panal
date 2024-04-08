@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 import 'Features/emp_features/presentation/add_emp.dart';
+import 'Features/emp_features/presentation/add_position_screen.dart';
+import 'Features/emp_features/presentation/all_emp_screen.dart';
 
 class MyBottomNavigationBar extends StatelessWidget {
   const MyBottomNavigationBar({Key? key}) : super(key: key);
@@ -21,7 +23,10 @@ class MyBottomNavigationBar extends StatelessWidget {
         // You can use Navigator to navigate to different screens
         switch (index) {
           case 0:
-          // Navigate to Employee screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AllEmployeeScreen()),
+            );
             break;
           case 1:
             Navigator.push(
@@ -30,7 +35,10 @@ class MyBottomNavigationBar extends StatelessWidget {
             );
             break;
           case 2:
-          // Navigate to Add Position screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) =>  AddPositionScreen()),
+            );
             break;
         }
       },

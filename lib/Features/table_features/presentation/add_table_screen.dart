@@ -1,7 +1,6 @@
-import 'package:bloc_v2/Features/branch_features/Data/add_branch.dart';
 import 'package:flutter/material.dart';
 import '../data/add_table.dart';
-import '../models/table_model.dart'; // Import the TableModel
+import '../models/table_model.dart';
 
 class AddTableScreen extends StatefulWidget {
   final String branchId;
@@ -16,21 +15,22 @@ class AddTableScreen extends StatefulWidget {
 class _AddTableScreenState extends State<AddTableScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  late String branchId; // Store the branchId passed from the previous screen
-  late String capacity;
+  late String branchId;
   late String status;
+  int numberOfTables = 1; // Default number of tables to add
+  String capacity = ''; // Store capacity entered by the user
 
   @override
   void initState() {
     super.initState();
-    branchId = widget.branchId; // Initialize branchId with the value passed from the previous screen
+    branchId = widget.branchId;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Table'),
+        title: Center(child: const Text('Add Table & Sections')),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -41,34 +41,44 @@ class _AddTableScreenState extends State<AddTableScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Branch ID'),
-                  initialValue: widget.branchId,
-                  readOnly: true,
-                ),
-                SizedBox(height: 10),
-                // Non-editable text field for branch name
-                TextFormField(
                   decoration: InputDecoration(labelText: 'Branch Name'),
                   initialValue: widget.branchName,
                   readOnly: true,
                 ),
                 SizedBox(height: 10),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Capacity'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter capacity';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      capacity = value;
-                    });
-                  },
+                Row( // Row for Number of Tables and Capacity
+                  children: [
+                    Expanded( // Flexible widget to take available space
+                      child: TextFormField(
+                        decoration: InputDecoration(labelText: 'Number of Tables'),
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            numberOfTables = int.tryParse(value) ?? 1;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 10), // Spacer between the fields
+                    Expanded( // Flexible widget to take available space
+                      child: TextFormField(
+                        decoration: InputDecoration(labelText: 'Capacity'),
+                        keyboardType: TextInputType.number,
+
+                        onChanged: (value) {
+                          setState(() {
+                            capacity = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
+                SizedBox(height: 10),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Status'),
+                  readOnly: true,
+
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter status';
@@ -77,7 +87,7 @@ class _AddTableScreenState extends State<AddTableScreen> {
                   },
                   onChanged: (value) {
                     setState(() {
-                      status = value;
+                      status = 'available';
                     });
                   },
                 ),
@@ -85,10 +95,10 @@ class _AddTableScreenState extends State<AddTableScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      _AddTable();
+                      _addTables();
                     }
                   },
-                  child: Text('Add Table To Branch ${widget.branchName}'),
+                  child: Text('Add Tables'),
                 ),
               ],
             ),
@@ -98,20 +108,14 @@ class _AddTableScreenState extends State<AddTableScreen> {
     );
   }
 
-  Future<void> _AddTable() async {
-    setState(() {
-
-    });
-   final TableModel newTableModel = await AddTable().addTable(
-     branchId: branchId,
-     capacity: capacity,
-     status: status,
-   );
-    // Perform any necessary actions with the new table model, such as saving to a database
-    // For now, just print the new table model
-    print('New Table: $newTableModel');
-
-    // Optionally, you can navigate back to the previous screen after saving the table
-    // Navigator.pop(context);
+  Future<void> _addTables() async {
+    for (int i = 0; i < numberOfTables; i++) {
+      final TableModel newTableModel = await AddTable().addTable(
+        branchId: branchId,
+        capacity: capacity,
+        status: status,
+      );
+      print('New Table ${i + 1}: $newTableModel');
+    }
   }
 }
