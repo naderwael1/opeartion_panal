@@ -79,7 +79,7 @@ class _AddTableScreenState extends State<AddTableScreen> {
                 SizedBox(height: 10),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Status'),
-                  readOnly: true,
+                  //readOnly: true,
 
                   validator: (value) {
                     if (value == null || value.isEmpty) {

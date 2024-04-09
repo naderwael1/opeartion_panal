@@ -34,25 +34,25 @@ class _AddBranchScreenState extends State<AddBranchScreen> {
           children: [
             TextField(
               controller: branchNameController,
-              decoration: InputDecoration(labelText: 'Branch Name'),
+              decoration: const InputDecoration(labelText: 'Branch Name'),
             ),
             TextField(
               controller: branchAddressController,
-              decoration: InputDecoration(labelText: 'Branch Address'),
+              decoration: const InputDecoration(labelText: 'Branch Address'),
             ),
             TextField(
               controller: branchLocationController,
-              decoration: InputDecoration(labelText: 'Branch Location'),
+              decoration: const InputDecoration(labelText: 'Branch Location'),
             ),
             TextField(
               controller: coverageController,
-              decoration: InputDecoration(labelText: 'Coverage'),
+              decoration: const InputDecoration(labelText: 'Coverage'),
             ),
             TextField(
               controller: branchPhoneController,
-              decoration: InputDecoration(labelText: 'Branch Phone'),
+              decoration: const InputDecoration(labelText: 'Branch Phone'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () async {
                 try {

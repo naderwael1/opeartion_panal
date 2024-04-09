@@ -69,7 +69,7 @@ class AllEmployeeScreen extends StatelessWidget {
                     },
                   );
                 } else {
-                  return Center(child: Text('No data available'));
+                  return const Center(child: Text('No data available'));
                 }
               },
             ),
@@ -78,7 +78,7 @@ class AllEmployeeScreen extends StatelessWidget {
           return NoInternetWidget();
         }
       },
-      child: Text('No internet connection'),
+      child:const Text('No internet connection'),
     );
   }
 }
