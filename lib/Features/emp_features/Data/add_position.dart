@@ -4,7 +4,7 @@ Future<String> addPosition({
   required String positionName,
   required String jobDescription,
 }) async {
-  final url = 'http://192.168.175.1:4000/admin/employees/add-position';
+  final url = 'http://192.168.56.1:4000/admin/employees/add-position';
   try {
     final response = await http.post(
       Uri.parse(url),

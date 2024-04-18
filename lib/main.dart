@@ -1,8 +1,9 @@
+import 'package:bloc_v2/consts/theme_data.dart';
+import 'package:bloc_v2/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'Features/Splash/presentation/views/splash_view.dart';
-import 'constants.dart';
 
 void main() {
   runApp(const EmpApp());
@@ -13,15 +14,20 @@ class EmpApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Current Theme Mode: ${Get.theme.brightness}');
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: kPrimaryColor,
-        textTheme: GoogleFonts.montserratTextTheme(ThemeData.dark().textTheme),
-      ),
-      themeMode: ThemeMode.light, // Initialize with system theme mode
-      home: const SplashView(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) {
+          return ThemeProvider();
+        })
+      ],
+      child: Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: Styles.themeData(
+              isDarkTheme: themeProvider.getIsDarkTheme, context: context),
+          home: const SplashView(),
+        );
+      }),
     );
   }
 }
