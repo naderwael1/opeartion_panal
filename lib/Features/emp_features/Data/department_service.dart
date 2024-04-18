@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
 import 'package:bloc_v2/core/utils/helper/api_helper.dart';
-import 'package:http/http.dart'as http;
-import '../../../core/utils/helper/api_helper.dart';
+
 
 class DepartmentService
 {

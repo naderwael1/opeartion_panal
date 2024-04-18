@@ -1,10 +1,8 @@
   import 'package:flutter/material.dart';
-  import 'package:get/get.dart';
   import '../../../core/utils/theme.dart';
 
   import 'package:bloc_v2/Features/branch_features/models/branch_model.dart';
   import '../../../Drawer/customDrawer.dart';
-  import '../../../Drawer/drawerArt.dart';
   import '../Data/get_all_branchs.dart';
 
   import 'add_branch_screen.dart';

@@ -1,9 +1,7 @@
 import 'package:bloc_v2/Features/home/presentation/views/home_view.dart';
-import 'package:bloc_v2/core/utils/assets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'sliding_text.dart';
 
 class SplashViewbody extends StatefulWidget {
   const SplashViewbody({super.key});

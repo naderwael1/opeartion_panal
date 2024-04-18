@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../table_features/presentation/add_table_screen.dart';
 import '../Data/add_branch.dart';
-import '../models/branch_model.dart';
 
 class AddBranchScreen extends StatefulWidget {
   const AddBranchScreen({Key? key}) : super(key: key);
