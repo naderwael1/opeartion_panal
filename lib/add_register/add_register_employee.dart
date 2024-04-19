@@ -91,16 +91,31 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      controller: genderController,
-                      key: const ValueKey('Gender'),
-                      decoration: const InputDecoration(
-                        hintText: 'GENDER',
+                    DropdownButtonFormField<String>(
+                      value: genderController.text.isEmpty
+                          ? null
+                          : genderController.text,
+                      onChanged: (newValue) {
+                        setState(() {
+                          genderController.text = newValue!;
+                        });
+                      },
+                      items: [
+                        DropdownMenuItem(
+                          value: 'm',
+                          child: Text('Male'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'f',
+                          child: Text('Female'),
+                        ),
+                      ],
+                      decoration: InputDecoration(
+                        hintText: 'Gender',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter GENDER';
+                          return 'Please select a gender';
                         }
                         return null;
                       },
@@ -122,16 +137,35 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      controller: statusController,
-                      key: const ValueKey('STATUS'),
-                      decoration: const InputDecoration(
-                        hintText: 'STATUS',
+                      DropdownButtonFormField<String>(
+                      value: statusController.text.isEmpty
+                          ? null
+                          : statusController.text,
+                      onChanged: (newValue) {
+                        setState(() {
+                          statusController.text = newValue!;
+                        });
+                      },
+                      items: [
+                        DropdownMenuItem(
+                          value: 'pending',
+                          child: Text('pending'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'active',
+                          child: Text('active'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'inactive',
+                          child: Text('inactive'),
+                        ),
+                      ],
+                      decoration: InputDecoration(
+                        hintText: 'Status',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter STATUS';
+                          return 'Please select a gender';
                         }
                         return null;
                       },
@@ -171,7 +205,8 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               try {
-                                final add_register_emp = await addregisteremployee(
+                                final add_register_emp =
+                                    await addregisteremployee(
                                   ssnNumber: ssnNumberController.text,
                                   firstName: firstNameController.text,
                                   lastName: lastNameController.text,

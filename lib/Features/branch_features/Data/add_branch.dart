@@ -7,7 +7,7 @@ Future<String> addBranch({
   required String coverage,
   required String branchPhone,
 }) async {
-  final url = 'http://192.168.175.1:4000/admin/branch/add-new';
+  final url = 'http://192.168.56.1:4000/admin/branch/add-new';
   try {
     final response = await http.post(
       Uri.parse(url),

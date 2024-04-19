@@ -26,9 +26,9 @@ Future<String> addregisteremployee({
       return add_menu_item;
     } else {
       // Failure
-      throw Exception('Failed to add employee: ${response.statusCode}');
+      throw Exception('Failed to add employee Registration: ${response.statusCode}');
     }
   } catch (e) {
-    throw Exception('Error add employee: $e');
+    throw Exception('Error add employee Registration: $e');
   }
 }

@@ -37,7 +37,7 @@ class HomeBody extends StatelessWidget {
           _buildCard(context, 'Operation Manager', operationImage, const AllBranchScreen()),
           _buildCard(context, 'Branch Manager', mangerImage, const AllBranchScreen()),
           _buildCard(context, 'Storage', storgeImage, const AllBranchScreen()),
-          _buildCard(context, 'Upload', cloud, const EditOrUploadProductScreen()),
+          _buildCard(context, 'Upload', cloud, const AddRegisterEmp()),
         ],
       ),
     );
