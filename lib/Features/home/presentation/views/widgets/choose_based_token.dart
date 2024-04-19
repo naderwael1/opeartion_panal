@@ -1,5 +1,6 @@
 import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:bloc_v2/Features/home/presentation/views/widgets/edit_upload_product_form.dart';
+import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:bloc_v2/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,7 @@ import '../../../../branch_features/presentation/all_braches_screen.dart';
 import 'custom_category_card.dart';
 
 class HomeBody extends StatelessWidget {
-  @override
+  @override 
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
@@ -35,7 +36,7 @@ class HomeBody extends StatelessWidget {
           _buildCard(context, 'Operation Manager', operationImage, const AllBranchScreen()),
           _buildCard(context, 'Branch Manager', mangerImage, const AllBranchScreen()),
           _buildCard(context, 'Storage', storgeImage, const AllBranchScreen()),
-          _buildCard(context, 'Upload', cloud, const EditOrUploadProductScreen()),
+          _buildCard(context, 'Upload', cloud, const AddRegisterEmp()),
         ],
       ),
     );
