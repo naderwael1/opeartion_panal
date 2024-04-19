@@ -9,4 +9,6 @@ const mangerImage='https://hiring-assets.careerbuilder.com/media/attachments/car
 const storgeImage='https://thumbs.dreamstime.com/b/storage-warehouse-manager-standing-factor-amidst-many-boxes-i-love-being-employee-depot-storage-warehouse-241431477.jpg';
 const cloud = 'https://icon-library.com/images/upload-image-icon-png/upload-image-icon-png-1.jpg';
 const test='https://via.placeholder.com/200?text=Storage' ;
+const table = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6WXtpfu5s4rMwuqEQhUbzNSt3vUWttZPObkulp-idKQ&s';
+
 

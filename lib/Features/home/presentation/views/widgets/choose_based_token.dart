@@ -4,6 +4,7 @@ import 'package:bloc_v2/add_general_Section/add_general_section.dart';
 import 'package:bloc_v2/add_ingredient/add_ingredient_screen.dart';
 import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:bloc_v2/add_storage/add_storage_screen.dart';
+import 'package:bloc_v2/add_table/add_table_screen.dart';
 import 'package:bloc_v2/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,8 @@ class HomeBody extends StatelessWidget {
           _buildCard(context, 'Branch Manager', mangerImage, const AllBranchScreen()),
           _buildCard(context, 'Storage', storgeImage, const AddStorage()),
           _buildCard(context, 'Upload', cloud, const AddIngredient()), // add menu item
+          _buildCard(context, 'table', table, const addTable()),
+
         ],
       ),
     );
