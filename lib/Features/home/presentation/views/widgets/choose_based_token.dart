@@ -38,7 +38,7 @@ class HomeBody extends StatelessWidget {
         children: [
           _buildCard(context, 'HR Dept', hrImage, const AllEmployeeScreen()),
           _buildCard(context, 'Operation Manager', operationImage, const AllBranchScreen()),
-          _buildCard(context, 'Branch Manager', mangerImage, const AllBranchScreen()),
+          _buildCard(context, 'Branch Manager', mangerImage, const AddRegisterEmp()),
           _buildCard(context, 'Storage', storgeImage, const AddStorage()),
           _buildCard(context, 'Upload', cloud, const AddIngredient()), // add menu item
           _buildCard(context, 'table', table, const addTable()),

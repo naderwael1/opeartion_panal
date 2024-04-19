@@ -57,35 +57,85 @@ class _AddIngredient extends State<AddIngredient> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    TextFormField(
-                      maxLength: 80,
-                      minLines: 1,
-                      maxLines: 2,
-                      keyboardType: TextInputType.multiline,
-                      controller: recipeUnitController,
-                      decoration: const InputDecoration(
+                    DropdownButtonFormField<String>(
+                      value: recipeUnitController.text.isEmpty
+                          ? null
+                          : recipeUnitController.text,
+                      onChanged: (newValue) {
+                        setState(() {
+                          recipeUnitController.text = newValue!;
+                        });
+                      },
+                      items: [
+                        DropdownMenuItem(
+                          value: 'gram',
+                          child: Text('gram'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'kilogram',
+                          child: Text('kilogram'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'liter',
+                          child: Text('liter'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'milliliter',
+                          child: Text('milliliter'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'piece',
+                          child: Text('piece'),
+                        ),
+                      ],
+                      decoration: InputDecoration(
                         hintText: 'Recipe Unit',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter Recipe Unit';
+                          return 'Please select a Recipe Unit';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 20),
-                    TextFormField(
-                      maxLength: 80,
-                      minLines: 1,
-                      maxLines: 2,
-                      keyboardType: TextInputType.multiline,
-                      controller: shipmentUnitController,
-                      decoration: const InputDecoration(
-                        hintText: 'shipment Unit',
+                                        DropdownButtonFormField<String>(
+                      value: recipeUnitController.text.isEmpty
+                          ? null
+                          : recipeUnitController.text,
+                      onChanged: (newValue) {
+                        setState(() {
+                          shipmentUnitController.text = newValue!;
+                        });
+                      },
+                      items: [
+                        DropdownMenuItem(
+                          value: 'gram',
+                          child: Text('gram'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'kilogram',
+                          child: Text('kilogram'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'liter',
+                          child: Text('liter'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'milliliter',
+                          child: Text('milliliter'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'piece',
+                          child: Text('piece'),
+                        ),
+                      ],
+                      decoration: InputDecoration(
+                        hintText: 'Recipe Unit',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter shipment Unit';
+                          return 'Please select a Recipe Unit';
                         }
                         return null;
                       },
