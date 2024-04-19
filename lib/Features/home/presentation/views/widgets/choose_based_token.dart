@@ -1,6 +1,7 @@
 import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:bloc_v2/Features/home/presentation/views/widgets/edit_upload_product_form.dart';
 import 'package:bloc_v2/add_general_Section/add_general_section.dart';
+import 'package:bloc_v2/add_ingredient/add_ingredient_screen.dart';
 import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:bloc_v2/add_storage/add_storage_screen.dart';
 import 'package:bloc_v2/providers/theme_provider.dart';
@@ -38,7 +39,7 @@ class HomeBody extends StatelessWidget {
           _buildCard(context, 'Operation Manager', operationImage, const AllBranchScreen()),
           _buildCard(context, 'Branch Manager', mangerImage, const AllBranchScreen()),
           _buildCard(context, 'Storage', storgeImage, const AddStorage()),
-          _buildCard(context, 'Upload', cloud, const AddRegisterEmp()),
+          _buildCard(context, 'Upload', cloud, const AddIngredient()), // add menu item
         ],
       ),
     );
