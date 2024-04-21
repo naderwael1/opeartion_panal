@@ -1,103 +1,136 @@
+import 'package:bloc_v2/Features/emp_features/Data/add_position.dart';
+import 'package:bloc_v2/add_general_Section/add_general_model.dart';
 import 'package:flutter/material.dart';
-import '../../branch_features/Data/get_all_branchs.dart';
-import '../../branch_features/models/branch_model.dart';
-import '../Data/add_position.dart'; // Import the function for adding a position
-import 'custom_dropdown.dart';
+import 'package:flutter/services.dart';
 
 class AddPositionScreen extends StatefulWidget {
-  const AddPositionScreen({Key? key}) : super(key: key);
+  const AddPositionScreen({Key? key});
 
   @override
-  _AddPositionScreenState createState() => _AddPositionScreenState();
+  State<AddPositionScreen> createState() => _AddPositionScreen();
 }
 
-class _AddPositionScreenState extends State<AddPositionScreen> {
+class _AddPositionScreen extends State<AddPositionScreen> {
   TextEditingController positionNameController = TextEditingController();
   TextEditingController jobDescriptionController = TextEditingController();
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool isLoading = false;
-  String? selectedBranch;
-  List<BranchModel> branches = []; // List to hold the fetched branches
+  bool isEditing = false;
+  final _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-    fetchBranches(); // Fetch branches when the screen initializes
-  }
-
-  // Method to fetch all branches
-  void fetchBranches() async {
-    try {
-      final getAllBranches = GetAllBranches();
-      List<BranchModel> fetchedBranches = await getAllBranches.getAllBranches();
-      setState(() {
-        branches = fetchedBranches;
-        if (branches.isNotEmpty) {
-          selectedBranch = branches[0].branchName; // Select the first branch by default
-        }
-      });
-    } catch (e) {
-      print('Error fetching branches: $e');
-    }
+  void clearForm() {
+    positionNameController.clear();
+    jobDescriptionController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Position'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                controller: positionNameController,
-                decoration: InputDecoration(labelText: 'Position Name'),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Add Add Position'),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    TextFormField(
+                          controller: positionNameController,
+                          maxLength: 80,
+                          minLines: 1,
+                          maxLines: 2,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                      key: const ValueKey('position name'),
+                      decoration: const InputDecoration(
+                        hintText: 'Position Name',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an Enter section name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: jobDescriptionController,
+                      key: const ValueKey('Job Description'),
+                          minLines: 5,
+                          maxLines: 8,
+                          maxLength: 1000,
+                          textCapitalization: TextCapitalization.sentences,
+                      decoration: const InputDecoration(
+                        hintText: 'Job Description',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an Enter Section Description';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            backgroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          icon: const Icon(Icons.clear),
+                          label: const Text(
+                            "Clear",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          onPressed: () {
+                            clearForm();
+                          },
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          icon: const Icon(Icons.upload),
+                          label: const Text(
+                            "ADD General Section",
+                          ),
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                final addPositionNameAndDescription = await addPosition(
+                                  positionName: positionNameController.text,
+                                  jopdescription: jobDescriptionController.text,
+                                );
+                                print('Adding employee: $addPositionNameAndDescription');
+                                clearForm();
+                              } catch (e) {
+                                print('Error adding employee: $e');
+                              }
+                            } else {
+                              print('Form is not valid');
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              TextFormField(
-                controller: jobDescriptionController,
-                decoration: InputDecoration(labelText: 'Job Description'),
-              ),
-              SizedBox(height: 16.0),
-              buildDropdownMenu(
-                  'Select Branch',
-                  selectedBranch,
-                  branches.map((branch) => branch.branchName).toList(),
-                  Icons.webhook_rounded, // Pass the desired icon
-                      (value) {
-                    setState(() {
-                      selectedBranch = value;
-                    });
-                  }
-              ),
-
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    // Call the addPosition function with the required parameters
-                    final positionId = await addPosition(
-                      positionName: positionNameController.text,
-                      jobDescription: jobDescriptionController.text,
-                    );
-
-                    // Optionally, you can handle the response here if needed
-
-                    // Navigate to another screen or perform other actions after adding the position
-                  } catch (e) {
-                    print('Error adding position: $e');
-                    // Handle error
-                  }
-                },
-                child: Text('Add Position'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
