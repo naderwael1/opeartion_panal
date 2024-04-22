@@ -12,9 +12,11 @@ import '../../../../../Drawer/customDrawer.dart';
 import '../../../../../constants.dart';
 import '../../../../branch_features/presentation/all_braches_screen.dart';
 import 'custom_category_card.dart';
+import 'package:bloc_v2/spincircle.dart';
+import 'package:bloc_v2/spincircle2.dart';
 
 class HomeBody extends StatelessWidget {
-  @override 
+  @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
@@ -35,19 +37,24 @@ class HomeBody extends StatelessWidget {
       ),
       body: GridView.count(
         crossAxisCount: 2,
-        children: [ 
-          _buildCard(context, 'HR Dept', hrImage, const AllEmployeeScreen()),
-          _buildCard(context, 'Operation Manager', operationImage, const AllBranchScreen()),
-          _buildCard(context, 'Branch Manager', mangerImage, const AddRegisterEmp()),
+        children: [
+          _buildCard(context, 'HR Dept', hrImage, SpincircleAll()),
+          _buildCard(context, 'Operation Manager', operationImage,
+              const AllBranchScreen()),
+          _buildCard(
+              context, 'Branch Manager', mangerImage, const AddRegisterEmp()),
           _buildCard(context, 'Storage', storgeImage, const AddStorage()),
-          _buildCard(context, 'Upload', cloud, const AddIngredient()), // add menu item (EditOrUploadProductScreen)
-          _buildCard(context, 'table', table, const AddGeneralSection()), // (AddGeneralSection)
+          _buildCard(context, 'Upload', cloud,
+              const AddIngredient()), // add menu item (EditOrUploadProductScreen)
+          _buildCard(context, 'table', table,
+              const AddGeneralSection()), // (AddGeneralSection)
         ],
       ),
     );
   }
 
-  Widget _buildCard(BuildContext context, String text, String photoUrl, Widget destinationScreen) {
+  Widget _buildCard(BuildContext context, String text, String photoUrl,
+      Widget destinationScreen) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
