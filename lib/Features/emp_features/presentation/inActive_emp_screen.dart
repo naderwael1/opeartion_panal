@@ -1,17 +1,13 @@
-import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import '../Data/get_active_emp.dart';
+import '../models/active_emp_model.dart';
 import '../../../Drawer/customDrawer.dart';
-import '../../../Drawer/drawerArt.dart';
-import '../../../core/utils/theme.dart';
-import '../../../custom_nav_bar.dart';
-import '../Data/get_all_emp_list.dart';
-import 'add_emp.dart';
-import 'custom_card.dart';
+import 'package:flutter/material.dart';
+import 'custom_active_card.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import '../../../custom_nav_bar.dart';
 
-class AllEmployeeScreen extends StatelessWidget {
-  const AllEmployeeScreen({Key? key});
+class InActiveEmployeeScreen extends StatelessWidget {
+  const InActiveEmployeeScreen({Key? key});
 
   Widget NoInternetWidget() {
     return Scaffold(
@@ -29,7 +25,7 @@ class AllEmployeeScreen extends StatelessWidget {
       ),
     );
   }
-//
+
   @override
   Widget build(BuildContext context) {
     return OfflineBuilder(
@@ -44,19 +40,17 @@ class AllEmployeeScreen extends StatelessWidget {
             drawer: const CustomDrawer(),
             appBar: AppBar(
               title: const Text('All Employee'),
-              actions: const [
-                ThemeToggleWidget(),
-              ],
+              actions: const [],
             ),
-            body: FutureBuilder<List<EmployeeModel>>(
-              future: GetAllEmployee().getAllProduct(),
+            body: FutureBuilder<List<ActiveEmployeesModel>>(
+              future: GeIntActiveEmployee().geIntActiveEmployee(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (snapshot.hasData) {
-                  List<EmployeeModel> employees = snapshot.data!;
+                  List<ActiveEmployeesModel> employees = snapshot.data!;
                   return GridView.builder(
                     itemCount: employees.length,
                     gridDelegate:
@@ -65,7 +59,7 @@ class AllEmployeeScreen extends StatelessWidget {
                       mainAxisSpacing: 60,
                     ),
                     itemBuilder: (context, index) {
-                      return CustomCard(employee: employees[index]);
+                      return CustomActiveCard(activeEmployee: employees[index]);
                     },
                   );
                 } else {
