@@ -14,7 +14,7 @@ class CustomDrawer extends StatelessWidget {
     DrawerItemModel(
       title: 'E M P L W E E S T A T E',
       icon: Icons.man,
-      destination:AllEmployeeScreen(),
+      destination: AllBranchScreen(),
     ),
     DrawerItemModel(
       title: 'S E T T I N G S',

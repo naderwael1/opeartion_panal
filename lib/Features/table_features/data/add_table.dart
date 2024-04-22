@@ -14,7 +14,8 @@ class AddTable {
       'status': status
     };
     Map<String, dynamic> data = await ApiHelper().post(
-      url: 'http://192.168.175.1:4000/admin/table/add-newTable',
+      url:
+          'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/table/add-newTable',
       body: body,
     );
     print(data);

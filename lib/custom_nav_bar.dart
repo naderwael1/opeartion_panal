@@ -13,7 +13,8 @@ class MyBottomNavigationBar extends StatelessWidget {
     return NavigationBar(
       destinations: const [
         NavigationDestination(icon: Icon(Iconsax.home), label: 'Employee'),
-        NavigationDestination(icon: Icon(Icons.person_add_alt), label: 'Add Employee'),
+        NavigationDestination(
+            icon: Icon(Icons.person_add_alt), label: 'Add Employee'),
         NavigationDestination(icon: Icon(Icons.work), label: 'Add Position'),
       ],
       height: 60,
@@ -25,7 +26,7 @@ class MyBottomNavigationBar extends StatelessWidget {
           case 0:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AllEmployeeScreen()),
+              MaterialPageRoute(builder: (context) => const AddEmp()),
             );
             break;
           case 1:
@@ -37,7 +38,7 @@ class MyBottomNavigationBar extends StatelessWidget {
           case 2:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>  AddPositionScreen()),
+              MaterialPageRoute(builder: (context) => AddPositionScreen()),
             );
             break;
         }

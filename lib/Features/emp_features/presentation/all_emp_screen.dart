@@ -2,7 +2,8 @@ import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Drawer/customDrawer.dart';
-import '../../../Drawer/drawerArt.dart';
+import '../../../Drawer/sidebarx.dart';
+
 import '../../../core/utils/theme.dart';
 import '../../../custom_nav_bar.dart';
 import '../Data/get_all_emp_list.dart';
@@ -29,6 +30,7 @@ class AllEmployeeScreen extends StatelessWidget {
       ),
     );
   }
+
 //
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class AllEmployeeScreen extends StatelessWidget {
         final bool connected = connectivity != ConnectivityResult.none;
         if (connected) {
           return Scaffold(
-            drawer: const CustomDrawer(),
+            drawer: const sideBarHR(),
             appBar: AppBar(
               title: const Text('All Employee'),
               actions: const [

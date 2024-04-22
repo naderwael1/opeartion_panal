@@ -1,6 +1,9 @@
 import 'package:bloc_v2/add_storage/add_storage_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
 
 class AddStorage extends StatefulWidget {
   const AddStorage({Key? key});
@@ -47,7 +50,7 @@ class _AddStorage extends State<AddStorage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an storage Name';
+                          return 'Please an storage Name';
                         }
                         return null;
                       },
@@ -62,7 +65,7 @@ class _AddStorage extends State<AddStorage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter storage Address';
+                          return 'Please an Enter storage Address';
                         }
                         return null;
                       },
@@ -77,7 +80,7 @@ class _AddStorage extends State<AddStorage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter manager Id';
+                          return 'Please an Enter manager Id';
                         }
                         return null;
                       },
@@ -117,19 +120,43 @@ class _AddStorage extends State<AddStorage> {
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               try {
-                                final addStorage_Model =
-                                    await addStorageModel(
+                                final addStorage_Model = await addStorageModel(
                                   storageName: storageNameController.text,
                                   storageAddress: storageAddressController.text,
                                   managerId: managerIdController.text,
                                 );
-                                print('Adding employee: $addStorage_Model');
+                                print('Adding Storage: $addStorage_Model');
+                                //  Fluttertoast.showToast(msg: "add sorage");
+                                CherryToast.success(
+                                  animationType: AnimationType.fromRight,
+                                  toastPosition: Position.bottom,
+                                  description: const Text(
+                                    "CherryToast Displayed sucessfully",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ).show(context);
                                 clearForm();
                               } catch (e) {
                                 print('Error adding employee: $e');
+                                CherryToast.error(
+                                  toastPosition: Position.bottom,
+                                  animationType: AnimationType.fromRight,
+                                  description: const Text(
+                                    "Something went wrong!",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ).show(context);
                               }
                             } else {
                               print('Form is not valid');
+                              CherryToast.warning(
+                                toastPosition: Position.bottom,
+                                animationType: AnimationType.fromLeft,
+                                description: const Text(
+                                  "Data is Not Valid or not complete ",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ).show(context);
                             }
                           },
                         ),
