@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Drawer/customDrawer.dart';
 import '../../../Drawer/sidebarx.dart';
-
 import '../../../core/utils/theme.dart';
 import '../../../custom_nav_bar.dart';
 import '../Data/get_all_emp_list.dart';
 import 'add_emp.dart';
 import 'custom_card.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'custom_tool_bar.dart';
 
 class AllEmployeeScreen extends StatelessWidget {
-  const AllEmployeeScreen({Key? key});
+  const AllEmployeeScreen({Key? key}) : super(key: key);
 
   Widget NoInternetWidget() {
     return Scaffold(
@@ -31,7 +31,6 @@ class AllEmployeeScreen extends StatelessWidget {
     );
   }
 
-//
   @override
   Widget build(BuildContext context) {
     return OfflineBuilder(
@@ -75,6 +74,8 @@ class AllEmployeeScreen extends StatelessWidget {
                 }
               },
             ),
+            bottomNavigationBar:
+                CustomToolBar(), // Add your custom toolbar here
           );
         } else {
           return NoInternetWidget();

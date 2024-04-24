@@ -53,12 +53,14 @@ dependencies:
   iconsax: ^0.0.8
   image_picker: ^0.8.7+5
   ionicons: ^0.2.2
+  lottie: ^3.1.0
   modal_progress_hud_nsn: ^0.5.1
   persistent_bottom_nav_bar: ^5.0.2
   provider: ^6.0.5
   shared_preferences: ^2.1.0
   shimmer: ^2.0.0
   sidebarx: ^0.17.1
+  sliding_clipped_nav_bar: ^3.1.1
   spincircle_bottom_bar: ^2.0.0
   uuid: ^3.0.7
 

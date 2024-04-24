@@ -1,3 +1,4 @@
+import 'package:bloc_v2/Drawer/sidebarx.dart';
 import 'package:bloc_v2/add_storage/add_storage_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +31,7 @@ class _AddStorage extends State<AddStorage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        drawer: const sideBarHR(),
         appBar: AppBar(
           title: Text('Add Storage'),
         ),
