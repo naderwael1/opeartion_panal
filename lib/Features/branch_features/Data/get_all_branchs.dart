@@ -1,17 +1,28 @@
 import '../models/branch_model.dart';
 import '../../../core/utils/helper/api_helper.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class GetAllBranches {
   Future<List<BranchModel>> getAllBranches() async {
-    List<dynamic> data = await ApiHelper().get(url: "http://192.168.175.1:4000/admin/branch/list");
+    final response = await http.get(Uri.parse(
+        'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/branches-list'));
 
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
 
-    List<BranchModel>BranchesList = [];
-    for (int i=0;i<data.length;i++)
-    {
-      BranchesList.add(BranchModel.fromJson(data[i]));
+      if (jsonResponse['status'] == 'success') {
+        List<dynamic> employeesData = jsonResponse['data'];
+        return employeesData.map((data) => BranchModel.fromJson(data)).toList();
+      } else {
+        throw Exception('Failed to load active employees data');
+      }
+    } else {
+      throw Exception('Failed to retrieve data');
     }
-    return BranchesList;
-
   }
 }
+
+
+//http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/branches-list
+//getAllBranches

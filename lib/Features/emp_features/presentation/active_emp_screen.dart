@@ -44,7 +44,7 @@ class ActiveEmployeeScreen extends StatelessWidget {
               actions: const [],
             ),
             body: FutureBuilder<List<ActiveEmployeesModel>>(
-              future: GetActiveEmployee().getActiveEmployee(),
+              future: GetActiveEmployee().fetchActiveEmployees(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
