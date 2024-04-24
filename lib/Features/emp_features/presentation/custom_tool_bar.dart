@@ -16,14 +16,14 @@ class _CustomToolBarState extends State<CustomToolBar> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      const AllEmployeeScreen(),
-      const AddPositionScreen(),
-      const AddPositionScreen(),
-      const AddPositionScreen(),
-      const AddPositionScreen(),
-      const AddPositionScreen(),
-      const AddPositionScreen(),
-      const AddPositionScreen(),
+    const  AllEmployeeScreen(),
+    const  AddPositionScreen(),
+    const  AddPositionScreen(),
+    const  AddPositionScreen(),
+   const   AddPositionScreen(),
+    const  AddPositionScreen(),
+    const  AddPositionScreen(),
+   const   AddPositionScreen(),
     ];
 
     return SizedBox(

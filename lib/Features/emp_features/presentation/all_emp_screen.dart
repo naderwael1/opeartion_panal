@@ -9,7 +9,7 @@ import '../Data/get_all_emp_list.dart';
 import 'add_emp.dart';
 import 'custom_card.dart';
 import 'package:flutter_offline/flutter_offline.dart';
-import 'custom_tool_bar.dart';
+import 'custom_tool_bar.dart'; // Make sure this import is correct.
 
 class AllEmployeeScreen extends StatelessWidget {
   const AllEmployeeScreen({Key? key}) : super(key: key);
@@ -49,33 +49,38 @@ class AllEmployeeScreen extends StatelessWidget {
                 ThemeToggleWidget(),
               ],
             ),
-            body: FutureBuilder<List<EmployeeModel>>(
-              future: GetAllEmployee().getAllProduct(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (snapshot.hasData) {
-                  List<EmployeeModel> employees = snapshot.data!;
-                  return GridView.builder(
-                    itemCount: employees.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 60,
-                    ),
-                    itemBuilder: (context, index) {
-                      return CustomCard(employee: employees[index]);
+            body: Column(
+              children: [
+                CustomToolBar(), // Positioned directly under the AppBar
+                Expanded(
+                  child: FutureBuilder<List<EmployeeModel>>(
+                    future: GetAllEmployee().getAllProduct(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (snapshot.hasData) {
+                        List<EmployeeModel> employees = snapshot.data!;
+                        return GridView.builder(
+                          itemCount: employees.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 60,
+                          ),
+                          itemBuilder: (context, index) {
+                            return CustomCard(employee: employees[index]);
+                          },
+                        );
+                      } else {
+                        return const Center(child: Text('No data available'));
+                      }
                     },
-                  );
-                } else {
-                  return const Center(child: Text('No data available'));
-                }
-              },
+                  ),
+                ),
+              ],
             ),
-            bottomNavigationBar:
-                CustomToolBar(), // Add your custom toolbar here
           );
         } else {
           return NoInternetWidget();
