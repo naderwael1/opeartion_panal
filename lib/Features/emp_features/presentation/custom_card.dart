@@ -6,63 +6,51 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
+import 'package:flutter/material.dart';
+
 class CustomCard extends StatelessWidget {
-  CustomCard({
+  final EmployeeModel employee; // Assume EmployeeModel is defined elsewhere
+
+  const CustomCard({
     required this.employee,
-    super.key,
-  });
-  EmployeeModel employee;
+    Key? key,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(height: 45),
-                  Center(
-                    child: Text(
-                      employee.category,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Text(employee.title.substring(0,5)),
-                      Text('${employee.price.toStringAsFixed(2)}'),//ؤقمين يس
-                      //Text(employee.price.toString()),
-                      IconButton(
-                        onPressed: () {
-                          Get.to(() => UpdateEmployeeScreen(),arguments: employee); // Corrected the builder
-                        },
-                        icon: Icon(Icons.account_box_outlined),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage:
+              NetworkImage(employee.image), // Your employee's image URL
+          backgroundColor: Colors.transparent,
+        ),
+        title: Text(employee.category), // Your employee's name
+        subtitle: Text(employee.title), // Your employee's position
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () {
+                // Action for this button
+              },
+              icon: Icon(Icons.remove_red_eye),
             ),
-          ),
+            IconButton(
+              onPressed: () {
+                // Action for this button
+              },
+              icon: Icon(Icons.edit),
+            ),
+            IconButton(
+              onPressed: () {
+                // Action for this button
+              },
+              icon: Icon(Icons.delete),
+            ),
+          ],
         ),
-        Positioned(
-          right: 45,
-          top: -50,
-          height: 100,
-          width: 120,
-          child: Image.network(employee.image),
-        ),
-      ],
+      ),
     );
   }
 }

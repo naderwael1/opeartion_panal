@@ -1,3 +1,4 @@
+import 'package:bloc_v2/Features/home/presentation/views/widgets/choose_based_token.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreenNew extends StatelessWidget {
@@ -78,7 +79,10 @@ class LoginScreenNew extends StatelessWidget {
                   SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () {
-                      // Handle Login Tap
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeBody()),
+                      );
                     },
                     child: Text('Login'),
                     style: ElevatedButton.styleFrom(

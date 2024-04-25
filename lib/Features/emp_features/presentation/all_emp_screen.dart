@@ -62,13 +62,8 @@ class AllEmployeeScreen extends StatelessWidget {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       } else if (snapshot.hasData) {
                         List<EmployeeModel> employees = snapshot.data!;
-                        return GridView.builder(
+                        return ListView.builder(
                           itemCount: employees.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 60,
-                          ),
                           itemBuilder: (context, index) {
                             return CustomCard(employee: employees[index]);
                           },
