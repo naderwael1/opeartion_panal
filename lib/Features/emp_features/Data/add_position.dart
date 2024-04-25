@@ -4,7 +4,7 @@ Future<String> addPosition({
   required String jopdescription,
 
 }) async {
-  final url = 'http://192.168.56.1:4000/admin/employees/add-position';
+  final url = 'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/employees/add-position';
   try {
     final response = await http.post(
       Uri.parse(url),

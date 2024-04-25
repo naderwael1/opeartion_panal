@@ -100,9 +100,9 @@ class _AddIngredient extends State<AddIngredient> {
                     ),
                     const SizedBox(height: 20),
                                         DropdownButtonFormField<String>(
-                      value: recipeUnitController.text.isEmpty
+                      value: shipmentUnitController.text.isEmpty
                           ? null
-                          : recipeUnitController.text,
+                          : shipmentUnitController.text,
                       onChanged: (newValue) {
                         setState(() {
                           shipmentUnitController.text = newValue!;

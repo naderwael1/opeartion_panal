@@ -4,7 +4,7 @@ Future<String> addIngredient_model({
   required String recipeUnit,
   required String shipmentUnit,
 }) async {
-  final url = 'http://192.168.56.1:4000/admin/branch/add-ingredient';
+  final url = 'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/add-ingredient';
   try {
     final response = await http.post(
       Uri.parse(url),

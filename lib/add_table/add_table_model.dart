@@ -4,7 +4,7 @@ Future<String> addTableModel({
   required String capacity,
   required String status,
 }) async {
-  final url = 'http://192.168.56.1:4000/admin/table/add-newTable';
+  final url = 'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/table/add-newTable';
   try {
     final response = await http.post(
       Uri.parse(url),
