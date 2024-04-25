@@ -11,8 +11,19 @@ import 'custom_card.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'custom_tool_bar.dart'; // Make sure this import is correct.
 
-class AllEmployeeScreen extends StatelessWidget {
-  const AllEmployeeScreen({Key? key}) : super(key: key);
+class AllEmployeeScreen extends StatefulWidget {
+  @override
+  _AllEmployeeScreenState createState() => _AllEmployeeScreenState();
+}
+
+class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
+  bool _showSearch = false;
+
+  void toggleSearch() {
+    setState(() {
+      _showSearch = !_showSearch;
+    });
+  }
 
   Widget NoInternetWidget() {
     return Scaffold(
@@ -51,7 +62,42 @@ class AllEmployeeScreen extends StatelessWidget {
             ),
             body: Column(
               children: [
-                CustomToolBar(), // Positioned directly under the AppBar
+                // CustomToolBar(), // Positioned directly under the AppBar
+                CustomToolBar(onExploreTap: toggleSearch),
+                Visibility(
+                  visible: _showSearch,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.search),
+                              hintText: 'Search',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            // Implement filter logic
+                          },
+                          icon: const Icon(Icons.filter_list),
+                          label: const Text('Filter'),
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: FutureBuilder<List<EmployeeModel>>(
                     future: GetAllEmployee().getAllProduct(),

@@ -1,10 +1,10 @@
-import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomToolBar extends StatefulWidget {
-  CustomToolBar({Key? key}) : super(key: key);
+  final VoidCallback onExploreTap;
+
+  CustomToolBar({Key? key, required this.onExploreTap}) : super(key: key);
 
   @override
   _CustomToolBarState createState() => _CustomToolBarState();
@@ -15,34 +15,43 @@ class _CustomToolBarState extends State<CustomToolBar> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-    const  AllEmployeeScreen(),
-    const  AddPositionScreen(),
-    const  AddPositionScreen(),
-    const  AddPositionScreen(),
-   const   AddPositionScreen(),
-    const  AddPositionScreen(),
-    const  AddPositionScreen(),
-   const   AddPositionScreen(),
+    final List<String> titles = [
+      "Home",
+      "Explore",
+      "Search",
+      "Feed",
+      "Posts",
+      "Activity",
+      "Setting",
+      "Profile",
     ];
 
-    return SizedBox(
-      width: double.infinity,
+    final List<IconData> icons = [
+      Icons.home,
+      Icons.explore,
+      Icons.search,
+      Icons.feed,
+      Icons.post_add,
+      Icons.local_activity,
+      Icons.settings,
+      Icons.person,
+    ];
+
+    return Container(
       height: 80,
       child: ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        itemCount: screens.length, // Adjusted to directly use screens.length
         scrollDirection: Axis.horizontal,
-        itemBuilder: (ctx, index) {
+        itemCount: titles.length,
+        itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
               setState(() {
                 current = index;
               });
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => screens[index]),
-              );
+              if (index == 1) {
+                // Assuming "Explore" is at index 1
+                widget.onExploreTap();
+              }
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
@@ -63,32 +72,14 @@ class _CustomToolBarState extends State<CustomToolBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      [
-                        Icons.home,
-                        Icons.explore,
-                        Icons.search,
-                        Icons.feed,
-                        Icons.post_add,
-                        Icons.local_activity,
-                        Icons.settings,
-                        Icons.person
-                      ][index],
+                      icons[index],
                       size: current == index ? 23 : 20,
                       color: current == index
                           ? Colors.black
                           : Colors.grey.shade400,
                     ),
                     Text(
-                      [
-                        "Home",
-                        "Explore",
-                        "Search",
-                        "Feed",
-                        "Posts",
-                        "Activity",
-                        "Setting",
-                        "Profile"
-                      ][index],
+                      titles[index],
                       style: GoogleFonts.ubuntu(
                         fontWeight: FontWeight.w500,
                         color: current == index
