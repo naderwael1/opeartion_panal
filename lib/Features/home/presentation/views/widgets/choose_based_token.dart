@@ -38,7 +38,7 @@ class HomeBody extends StatelessWidget {
       body: GridView.count(
         crossAxisCount: 2,
         children: [
-          _buildCard(context, 'HR Dept', hrImage, SpincircleAll()),
+          _buildCard(context, 'HR Dept', hrImage, AllEmployeeScreen()),
           _buildCard(context, 'Operation Manager', operationImage,
               const AllBranchScreen()),
           _buildCard(
