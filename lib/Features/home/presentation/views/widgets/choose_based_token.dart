@@ -1,3 +1,4 @@
+import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:bloc_v2/Features/home/presentation/views/widgets/edit_upload_product_form.dart';
 import 'package:bloc_v2/add_general_Section/add_general_section.dart';
@@ -43,7 +44,8 @@ class HomeBody extends StatelessWidget {
               const AllBranchScreen()),
           _buildCard(
               context, 'Branch Manager', mangerImage, const AddRegisterEmp()),
-          _buildCard(context, 'Storage', storgeImage, const AddStorage()),
+          _buildCard(
+              context, 'Storage', storgeImage, const EmpAttendanceScreen()),
           _buildCard(context, 'Upload', cloud,
               const AddIngredient()), // add menu item (EditOrUploadProductScreen)
           _buildCard(

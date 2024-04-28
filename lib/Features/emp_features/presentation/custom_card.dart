@@ -26,7 +26,7 @@ class CustomCard extends StatelessWidget {
           backgroundColor: Colors.transparent,
         ),
         title: Text(employee.category), // Your employee's name
-        subtitle: Text(employee.title), // Your employee's position
+        subtitle: Text(employee.title),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
