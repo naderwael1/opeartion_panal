@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class CustomToolBar extends StatefulWidget {
   final VoidCallback onExploreTap;
   final VoidCallback onProfileTap;
+
   CustomToolBar(
       {Key? key, required this.onExploreTap, required this.onProfileTap})
       : super(key: key);
@@ -53,6 +54,9 @@ class _CustomToolBarState extends State<CustomToolBar> {
               if (index == 1) {
                 // Assuming "Explore" is at index 1
                 widget.onExploreTap();
+              } else if (index == 7) {
+                // Assuming "Profile" is at index 7
+                widget.onProfileTap();
               }
             },
             child: AnimatedContainer(
