@@ -32,7 +32,10 @@ class CustomAattendanceCard extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.blue, Colors.red],
+              colors: [
+                const Color.fromARGB(255, 192, 215, 233),
+                const Color.fromARGB(255, 255, 198, 194)
+              ],
             ),
           ),
           child: Column(
