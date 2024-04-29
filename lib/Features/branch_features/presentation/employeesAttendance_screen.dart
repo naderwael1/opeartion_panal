@@ -1,9 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
-import '../Data/get_emp_atns.dart'; // Ensure correct path
-import '../models/employeesAttendance_model.dart'; // Ensure correct path
-import '../presentation/custom_attendance_card.dart'; // Ensure correct path
-import '../../../core/utils/theme.dart'; // Ensure correct path
+import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import '../models/branch_model.dart'; // Update the path as needed
+import '../Data/get_emp_atns.dart'; // Update the path as needed
+import '../models/employeesAttendance_model.dart'; // Update the path as needed
+import '../presentation/custom_attendance_card.dart'; // Update the path as needed
+
+// Define BranchModel correctly as per your JSON response structure
+
+class GetAllBranches {
+  Future<List<BranchModel>> getAllBranches() async {
+    final response = await http.get(Uri.parse(
+        'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/branches-list'));
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse['status'] == 'success') {
+        List<dynamic> branchData = jsonResponse['data'];
+        return branchData.map((data) => BranchModel.fromJson(data)).toList();
+      } else {
+        throw Exception('Failed to load branches data');
+      }
+    } else {
+      throw Exception('Failed to retrieve data');
+    }
+  }
+}
 
 class EmpAttendanceScreen extends StatefulWidget {
   const EmpAttendanceScreen({Key? key}) : super(key: key);
@@ -13,12 +38,31 @@ class EmpAttendanceScreen extends StatefulWidget {
 }
 
 class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
-  int? branchId = 2; // Default branchId to 2
+  int? branchId = 2;
   DateTime? fromDate;
   DateTime? toDate;
-  final DateFormat formatter = DateFormat('yyyy-MM-dd'); // For formatting dates
+  List<BranchModel>? branches;
+  BranchModel? selectedBranch;
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
-  // Function to show DatePicker and set fromDate
+  @override
+  void initState() {
+    super.initState();
+    fetchBranches();
+  }
+
+  Future<void> fetchBranches() async {
+    try {
+      branches = await GetAllBranches().getAllBranches();
+      setState(() {
+        selectedBranch = branches?.firstWhere((b) => b.branchID == branchId,
+            orElse: () => branches!.first);
+      });
+    } catch (e) {
+      print('Failed to fetch branches: $e');
+    }
+  }
+
   Future<void> _selectFromDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -33,7 +77,6 @@ class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
     }
   }
 
-  // Function to show DatePicker and set toDate
   Future<void> _selectToDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -60,6 +103,26 @@ class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
+              title: const Text('Select Branch'),
+              subtitle: DropdownButton<BranchModel>(
+                value: selectedBranch,
+                icon: const Icon(Icons.arrow_downward),
+                elevation: 16,
+                onChanged: (BranchModel? newValue) {
+                  setState(() {
+                    selectedBranch = newValue;
+                    branchId = newValue?.branchID;
+                  });
+                },
+                items: branches?.map((BranchModel branch) {
+                  return DropdownMenuItem<BranchModel>(
+                    value: branch,
+                    child: Text(branch.branchName),
+                  );
+                }).toList(),
+              ),
+            ),
+            ListTile(
               title: const Text('Select From Date'),
               subtitle: Text(
                   fromDate == null ? 'Not set' : formatter.format(fromDate!)),
@@ -72,18 +135,19 @@ class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
               onTap: () => _selectToDate(context),
             ),
             ElevatedButton(
-              onPressed: fromDate != null && toDate != null
-                  ? () {
-                      // Update your application state or perform actions when both dates are selected
-                    }
-                  : null, // Button is disabled until both dates are selected
-              child: Text('Load Attendance Data'),
+              onPressed:
+                  fromDate != null && toDate != null && selectedBranch != null
+                      ? () {
+                          // Implement what happens when the button is pressed
+                          // Possibly updating the state or fetching data
+                        }
+                      : null, // Disable button until all selections are made
+              child: const Text('Load Attendance Data'),
             ),
-            if (fromDate != null &&
-                toDate != null) // Only build FutureBuilder if dates are set
+            if (fromDate != null && toDate != null && selectedBranch != null)
               FutureBuilder<List<EmployeesAttendanceModel>>(
                 future: GetEmpAtndance().getEmpAtndance(
-                  branch_id: branchId.toString(),
+                  branch_id: selectedBranch!.branchID.toString(),
                   fromDate: fromDate!,
                   toDate: toDate!,
                 ),
