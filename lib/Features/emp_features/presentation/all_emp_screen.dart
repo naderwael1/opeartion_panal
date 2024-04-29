@@ -38,16 +38,57 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
 
   Widget NoInternetWidget() {
     return Scaffold(
-      body: Container(
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            const Text(
-              'Can\'t connect to the internet. Please check your connection',
-              style: TextStyle(fontSize: 22),
-            ),
-            Image.asset('assets/images/undraw_bug_fixing_oc7a.png'),
-          ],
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Image.asset('assets/images/undraw_bug_fixing_oc7a.png',
+                  height: 200), // Ensure you have an appealing image
+              const SizedBox(height: 40),
+              const Text(
+                'Oops! No Internet Connection.',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Please check your network settings and try again.',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () {
+                  // Implement retry logic
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  backgroundColor:
+                      Colors.white, // This sets the text color on the button
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                ),
+                child: const Text(
+                  'Retry',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
