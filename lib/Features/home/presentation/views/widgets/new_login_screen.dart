@@ -8,17 +8,22 @@ class LoginScreenNew extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double topPadding = MediaQuery.of(context).padding.top;
-    double screenSize = screenHeight - topPadding;
+
+    // Define color constants for better theme management
+    const Color primaryColor =
+        Color.fromARGB(255, 66, 84, 147); // A soothing purple
+    const Color secondaryColor =
+        Color(0xFFf4f4f4); // Light grey for backgrounds
+    const Color accentColor = Color(0xFF4caf50); // A fresh green for accents
 
     return SafeArea(
       child: Scaffold(
+        backgroundColor: secondaryColor, // Use secondary color for background
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
-              // Use the screen size to set minimum height constraints
-              constraints: BoxConstraints(
-                  minHeight: screenHeight - MediaQuery.of(context).padding.top),
+              constraints: BoxConstraints(minHeight: screenHeight - topPadding),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -26,57 +31,86 @@ class LoginScreenNew extends StatelessWidget {
                   Text(
                     'Welcome 👋',
                     style: TextStyle(
-                      fontSize: 40.0,
+                      fontSize: 32.0,
                       fontWeight: FontWeight.bold,
+                      color: primaryColor, // Use primary color for headings
                     ),
                     textAlign: TextAlign.left,
                   ),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   Text(
-                    'please put your Account give by Hr',
+                    'Please enter your account details provided by HR',
                     style: TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0x51a2335448)),
+                      fontSize: 16.0,
+                      color: Colors.grey[600], // Use a dark grey for subtitles
+                    ),
                     textAlign: TextAlign.left,
                   ),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   TextFormField(
                     decoration: InputDecoration(
                       labelText: 'Email Address',
+                      fillColor: Colors.white,
+                      filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9.0),
+                        borderRadius:
+                            BorderRadius.circular(25.0), // More rounded borders
+                        borderSide: BorderSide(color: primaryColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        borderSide: BorderSide(color: primaryColor, width: 2.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        borderSide: BorderSide(color: primaryColor, width: 2.5),
                       ),
                     ),
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   TextFormField(
                     decoration: InputDecoration(
                       labelText: 'Password',
+                      fillColor: Colors.white,
+                      filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9.0),
+                        borderRadius:
+                            BorderRadius.circular(25.0), // More rounded borders
+                        borderSide: BorderSide(color: primaryColor),
                       ),
-                      suffixIcon: Icon(Icons.visibility_off),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        borderSide: BorderSide(color: primaryColor, width: 2.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        borderSide: BorderSide(color: primaryColor, width: 2.5),
+                      ),
+                      suffixIcon: const Icon(Icons.visibility_off),
                     ),
                     obscureText: true,
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   Row(
                     children: [
                       Checkbox(
                         value: false,
                         onChanged: (bool? newValue) {},
+                        activeColor: accentColor,
                       ),
-                      Text('Remember Me'),
-                      Spacer(),
+                      const Text('Remember Me'),
+                      const Spacer(),
                       TextButton(
                         onPressed: () {},
-                        child: Text('Forgot Password ?'),
+                        child: const Text('Forgot Password?'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: primaryColor,
+                        ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -84,14 +118,16 @@ class LoginScreenNew extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => HomeBody()),
                       );
                     },
-                    child: Text('Login'),
+                    child: const Text('Login'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: (Color.fromARGB(255, 160, 183, 241)),
+                      backgroundColor: primaryColor,
+                      foregroundColor:
+                          Colors.white, // Use white color for button text
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       minimumSize:
-                          Size(double.infinity, 50), // full width button
+                          const Size(double.infinity, 50), // Full width button
                     ),
                   ),
                 ],

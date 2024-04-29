@@ -1,4 +1,5 @@
 import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Drawer/customDrawer.dart';
@@ -24,6 +25,15 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
     setState(() {
       _showSearch = !_showSearch;
     });
+  }
+
+  void goScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddPositionScreen(),
+      ),
+    );
   }
 
   Widget NoInternetWidget() {
@@ -64,7 +74,10 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
             body: Column(
               children: [
                 // CustomToolBar(), // Positioned directly under the AppBar
-                CustomToolBar(onExploreTap: toggleSearch),
+                CustomToolBar(
+                  onExploreTap: toggleSearch,
+                  onProfileTap: goScreen,
+                ),
                 Visibility(
                   visible: _showSearch,
                   child: Padding(

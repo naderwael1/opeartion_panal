@@ -3,8 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 class CustomToolBar extends StatefulWidget {
   final VoidCallback onExploreTap;
-
-  CustomToolBar({Key? key, required this.onExploreTap}) : super(key: key);
+  final VoidCallback onProfileTap;
+  CustomToolBar(
+      {Key? key, required this.onExploreTap, required this.onProfileTap})
+      : super(key: key);
 
   @override
   _CustomToolBarState createState() => _CustomToolBarState();
