@@ -14,7 +14,7 @@ class CategoryScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Category in working '),
         centerTitle: true,
-        actions: [],
+        actions: const [],
       ),
       body: FutureBuilder<List<CategoryModel>>(
         future: GetCategories().getCategories(),
@@ -32,7 +32,7 @@ class CategoryScreen extends StatelessWidget {
               },
             );
           } else {
-            return Center(child: Text('No data available'));
+            return const Center(child: Text('No data available'));
           }
         },
       ),

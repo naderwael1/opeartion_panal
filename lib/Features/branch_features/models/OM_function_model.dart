@@ -43,7 +43,8 @@ class RecipesModel {
     return RecipesModel(
       iD: jsonData['id'],
       sectionName: jsonData['name'],
-      sectionManager: jsonData['manager'],
+      sectionManager:
+          jsonData['manager'] ?? "", // Use an empty string if manager is null
       sectionDecription: jsonData['section_description'],
     );
   }

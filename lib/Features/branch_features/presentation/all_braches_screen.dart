@@ -1,4 +1,5 @@
 import 'package:bloc_v2/Features/branch_features/presentation/category_screen.dart';
+import 'package:bloc_v2/Features/branch_features/presentation/recipes_screeen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/custom_tool_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
@@ -105,9 +106,11 @@ class AllBranchScreen extends StatelessWidget {
           CustomToolBar(titles: const [
             "All Branches",
             "Kitchen Category",
+            "recipe Item"
           ], icons: const [
             Icons.home,
             Icons.category,
+            Icons.food_bank,
           ], callbacks: [
             () {
               Navigator.push(
@@ -120,6 +123,10 @@ class AllBranchScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => const CategoryScreen()));
+            },
+            () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => RecipesList(2)));
             },
           ]),
           Expanded(

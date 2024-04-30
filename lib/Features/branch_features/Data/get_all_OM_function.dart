@@ -25,3 +25,33 @@ class GetCategories {
     }
   }
 }
+
+class GetRecipes {
+  Future<List<RecipesModel>> getRecipes({required int branchID}) async {
+    final response = await http.get(Uri.parse(
+        'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/sections/$branchID'));
+
+    print('Server response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      try {
+        var jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['status'] == 'success' &&
+            jsonResponse['data'] is Map &&
+            jsonResponse['data']['sections'] is List) {
+          List<dynamic> data = jsonResponse['data']['sections'];
+          return data.map((item) => RecipesModel.fromJson(item)).toList();
+        } else {
+          throw Exception('Data is not in the expected format');
+        }
+      } catch (e) {
+        print('Parsing error: $e');
+        throw Exception('Failed to parse data');
+      }
+    } else {
+      throw Exception(
+          'Failed to retrieve data with status code: ${response.statusCode}');
+    }
+  }
+}
