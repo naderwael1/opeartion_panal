@@ -25,3 +25,36 @@ class CategoryModel {
     return data;
   }
 }
+
+class RecipesModel {
+  final int iD;
+  final String sectionName;
+  final String sectionManager;
+  final String sectionDecription;
+
+  RecipesModel({
+    required this.iD,
+    required this.sectionName,
+    required this.sectionManager,
+    required this.sectionDecription,
+  });
+
+  factory RecipesModel.fromJson(Map<String, dynamic> jsonData) {
+    return RecipesModel(
+      iD: jsonData['id'],
+      sectionName: jsonData['name'],
+      sectionManager: jsonData['manager'],
+      sectionDecription: jsonData['section_description'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = this.iD;
+
+    data['name'] = this.sectionName;
+    data['manager'] = this.sectionManager;
+    data['section_description'] = this.sectionDecription;
+    return data;
+  }
+}

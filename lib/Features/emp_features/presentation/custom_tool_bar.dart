@@ -41,7 +41,8 @@ class _CustomToolBarState extends State<CustomToolBar> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               margin: const EdgeInsets.all(5),
-              width: 100,
+              // Calculate width dynamically based on text length
+              width: _calculateWidth(index),
               height: 55,
               decoration: BoxDecoration(
                 color: current == index ? Colors.white70 : Colors.white54,
@@ -80,5 +81,19 @@ class _CustomToolBarState extends State<CustomToolBar> {
         },
       ),
     );
+  }
+
+  double _calculateWidth(int index) {
+    final text = widget.titles[index];
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(fontSize: 16.0), // Adjust font size if needed
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    // Add some padding to the calculated width
+    return textPainter.width + 20; // Adjust padding as needed
   }
 }
