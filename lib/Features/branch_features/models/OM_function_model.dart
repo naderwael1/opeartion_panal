@@ -26,21 +26,21 @@ class CategoryModel {
   }
 }
 
-class RecipesModel {
+class SectionModel {
   final int iD;
   final String sectionName;
   final String sectionManager;
   final String sectionDecription;
 
-  RecipesModel({
+  SectionModel({
     required this.iD,
     required this.sectionName,
     required this.sectionManager,
     required this.sectionDecription,
   });
 
-  factory RecipesModel.fromJson(Map<String, dynamic> jsonData) {
-    return RecipesModel(
+  factory SectionModel.fromJson(Map<String, dynamic> jsonData) {
+    return SectionModel(
       iD: jsonData['id'],
       sectionName: jsonData['name'],
       sectionManager:

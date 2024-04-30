@@ -26,8 +26,8 @@ class GetCategories {
   }
 }
 
-class GetRecipes {
-  Future<List<RecipesModel>> getRecipes({required int branchID}) async {
+class GetSection {
+  Future<List<SectionModel>> getSection({required int branchID}) async {
     final response = await http.get(Uri.parse(
         'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/sections/$branchID'));
 
@@ -41,7 +41,7 @@ class GetRecipes {
             jsonResponse['data'] is Map &&
             jsonResponse['data']['sections'] is List) {
           List<dynamic> data = jsonResponse['data']['sections'];
-          return data.map((item) => RecipesModel.fromJson(item)).toList();
+          return data.map((item) => SectionModel.fromJson(item)).toList();
         } else {
           throw Exception('Data is not in the expected format');
         }
