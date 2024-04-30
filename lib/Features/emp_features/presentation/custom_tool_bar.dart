@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomToolBar extends StatefulWidget {
-  final VoidCallback onExploreTap;
-  final VoidCallback onProfileTap;
+  final List<String> titles;
+  final List<IconData> icons;
+  final List<VoidCallback> callbacks;
 
-  CustomToolBar(
-      {Key? key, required this.onExploreTap, required this.onProfileTap})
-      : super(key: key);
+  CustomToolBar({
+    Key? key,
+    required this.titles,
+    required this.icons,
+    required this.callbacks,
+  })  : assert(
+            titles.length == icons.length && icons.length == callbacks.length,
+            "Titles, icons, and callbacks must have the same length"),
+        super(key: key);
 
   @override
   _CustomToolBarState createState() => _CustomToolBarState();
@@ -18,46 +25,18 @@ class _CustomToolBarState extends State<CustomToolBar> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> titles = [
-      "Home",
-      "Explore",
-      "Search",
-      "Feed",
-      "Posts",
-      "Activity",
-      "Setting",
-      "Profile",
-    ];
-
-    final List<IconData> icons = [
-      Icons.home,
-      Icons.explore,
-      Icons.search,
-      Icons.feed,
-      Icons.post_add,
-      Icons.local_activity,
-      Icons.settings,
-      Icons.person,
-    ];
-
     return Container(
       height: 80,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: titles.length,
+        itemCount: widget.titles.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
               setState(() {
                 current = index;
               });
-              if (index == 1) {
-                // Assuming "Explore" is at index 1
-                widget.onExploreTap();
-              } else if (index == 7) {
-                // Assuming "Profile" is at index 7
-                widget.onProfileTap();
-              }
+              widget.callbacks[index]();
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
@@ -78,14 +57,14 @@ class _CustomToolBarState extends State<CustomToolBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      icons[index],
+                      widget.icons[index],
                       size: current == index ? 23 : 20,
                       color: current == index
                           ? Colors.black
                           : Colors.grey.shade400,
                     ),
                     Text(
-                      titles[index],
+                      widget.titles[index],
                       style: GoogleFonts.ubuntu(
                         fontWeight: FontWeight.w500,
                         color: current == index

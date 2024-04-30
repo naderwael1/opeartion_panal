@@ -1,3 +1,4 @@
+import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
 import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:flutter/material.dart';
@@ -28,12 +29,13 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   }
 
   void goScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddPositionScreen(),
-      ),
-    );
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const AddPositionScreen()));
+  }
+
+  void goAttendanceScreen() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const EmpAttendanceScreen()));
   }
 
   Widget NoInternetWidget() {
@@ -70,12 +72,12 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
-                  // Implement retry logic
+                  //todo
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.black,
-                  backgroundColor:
-                      Colors.white, // This sets the text color on the button
+                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context)
+                      .primaryColor, // This sets the text color on the button
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
@@ -114,11 +116,27 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
             ),
             body: Column(
               children: [
-                // CustomToolBar(), // Positioned directly under the AppBar
-                CustomToolBar(
-                  onExploreTap: toggleSearch,
-                  onProfileTap: goScreen,
-                ),
+                CustomToolBar(titles: const [
+                  "Explore",
+                  "Add",
+                  "Attendance",
+                  "Profile"
+                ], icons: const [
+                  Icons.explore,
+                  Icons.add,
+                  Icons.feed,
+                  Icons.person,
+                ], callbacks: [
+                  toggleSearch,
+                  () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AddEmp()));
+                  },
+                  goAttendanceScreen,
+                  goScreen
+                ]),
                 Visibility(
                   visible: _showSearch,
                   child: Padding(
@@ -128,7 +146,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                         Expanded(
                           child: TextField(
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.search),
+                              prefixIcon: const Icon(Icons.search),
                               hintText: 'Search',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
