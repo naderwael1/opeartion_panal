@@ -1,34 +1,10 @@
+import 'package:bloc_v2/Features/branch_features/Data/get_all_branchs.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
+import 'package:google_fonts/google_fonts.dart';
 import '../models/branch_model.dart'; // Update the path as needed
 import '../Data/get_emp_atns.dart'; // Update the path as needed
 import '../models/employeesAttendance_model.dart'; // Update the path as needed
-import '../presentation/custom_attendance_card.dart'; // Update the path as needed
-
-// Define BranchModel correctly as per your JSON response structure
-
-class GetAllBranches {
-  Future<List<BranchModel>> getAllBranches() async {
-    final response = await http.get(Uri.parse(
-        'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/branches-list'));
-
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-
-      if (jsonResponse['status'] == 'success') {
-        List<dynamic> branchData = jsonResponse['data'];
-        return branchData.map((data) => BranchModel.fromJson(data)).toList();
-      } else {
-        throw Exception('Failed to load branches data');
-      }
-    } else {
-      throw Exception('Failed to retrieve data');
-    }
-  }
-}
 
 class EmpAttendanceScreen extends StatefulWidget {
   const EmpAttendanceScreen({Key? key}) : super(key: key);
@@ -43,7 +19,8 @@ class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
   DateTime? toDate;
   List<BranchModel>? branches;
   BranchModel? selectedBranch;
-  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  List<EmployeesAttendanceModel>?
+      attendanceData; // State variable to hold attendance data
 
   @override
   void initState() {
@@ -91,88 +68,125 @@ class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
     }
   }
 
+  void loadData() async {
+    if (selectedBranch != null && fromDate != null && toDate != null) {
+      try {
+        var fetchedData = await GetEmpAtndance().getEmpAtndance(
+          branch_id: selectedBranch!.branchID.toString(),
+          fromDate: fromDate!,
+          toDate: toDate!,
+        );
+        setState(() {
+          attendanceData = fetchedData;
+        });
+        print('Data loaded: $attendanceData');
+      } catch (e) {
+        print('Failed to load data: $e');
+      }
+    }
+  }
+
+  Widget buildDropDownButton() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<BranchModel>(
+        value: selectedBranch,
+        icon: const Icon(Icons.arrow_downward, color: Colors.deepPurple),
+        style: GoogleFonts.lato(color: Colors.deepPurple, fontSize: 16),
+        onChanged: (BranchModel? newValue) {
+          setState(() {
+            selectedBranch = newValue;
+            branchId = newValue?.branchID;
+          });
+        },
+        items:
+            branches?.map<DropdownMenuItem<BranchModel>>((BranchModel branch) {
+          return DropdownMenuItem<BranchModel>(
+            value: branch,
+            child: Text(branch.branchName),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Employee Attendance'),
+        title: Text('Employee Attendance', style: GoogleFonts.openSans()),
         centerTitle: true,
+        backgroundColor: Colors.deepPurple,
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: const Text('Select Branch'),
-              subtitle: DropdownButton<BranchModel>(
-                value: selectedBranch,
-                icon: const Icon(Icons.arrow_downward),
-                elevation: 16,
-                onChanged: (BranchModel? newValue) {
-                  setState(() {
-                    selectedBranch = newValue;
-                    branchId = newValue?.branchID;
-                  });
-                },
-                items: branches?.map((BranchModel branch) {
-                  return DropdownMenuItem<BranchModel>(
-                    value: branch,
-                    child: Text(branch.branchName),
-                  );
-                }).toList(),
+              title: const Text('Select Branch',
+                  style: TextStyle(color: Colors.deepPurple)),
+              subtitle: buildDropDownButton(),
+            ),
+            DatePickerTile(
+                label: 'Select From Date',
+                date: fromDate,
+                onSelectDate: _selectFromDate),
+            DatePickerTile(
+                label: 'Select To Date',
+                date: toDate,
+                onSelectDate: _selectToDate),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed:
+                    fromDate != null && toDate != null && selectedBranch != null
+                        ? loadData
+                        : null,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple),
+                child: const Text('Load Attendance Data'),
               ),
             ),
-            ListTile(
-              title: const Text('Select From Date'),
-              subtitle: Text(
-                  fromDate == null ? 'Not set' : formatter.format(fromDate!)),
-              onTap: () => _selectFromDate(context),
-            ),
-            ListTile(
-              title: const Text('Select To Date'),
-              subtitle:
-                  Text(toDate == null ? 'Not set' : formatter.format(toDate!)),
-              onTap: () => _selectToDate(context),
-            ),
-            ElevatedButton(
-              onPressed:
-                  fromDate != null && toDate != null && selectedBranch != null
-                      ? () {
-                          // Implement what happens when the button is pressed
-                          // Possibly updating the state or fetching data
-                        }
-                      : null, // Disable button until all selections are made
-              child: const Text('Load Attendance Data'),
-            ),
-            if (fromDate != null && toDate != null && selectedBranch != null)
-              FutureBuilder<List<EmployeesAttendanceModel>>(
-                future: GetEmpAtndance().getEmpAtndance(
-                  branch_id: selectedBranch!.branchID.toString(),
-                  fromDate: fromDate!,
-                  toDate: toDate!,
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (snapshot.hasData) {
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return CustomAattendanceCard(
-                            employeeA: snapshot.data![index]);
-                      },
-                    );
-                  } else {
-                    return const Center(child: Text('No data available'));
-                  }
+            if (attendanceData != null)
+              ListView.builder(
+                shrinkWrap:
+                    true, // Important to prevent scrolling within scrolling
+                itemCount: attendanceData!.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(attendanceData![index]
+                        .employee), // Assuming 'employeeName' is a field in your model
+                    subtitle: Text(
+                        'Attendance details here...'), // Add more details as necessary
+                  );
                 },
               ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class DatePickerTile extends StatelessWidget {
+  final String label;
+  final DateTime? date;
+  final Future<void> Function(BuildContext) onSelectDate;
+
+  const DatePickerTile({
+    required this.label,
+    this.date,
+    required this.onSelectDate,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(label, style: TextStyle(color: Colors.deepPurple)),
+      subtitle: Text(
+        date == null ? 'Not set' : DateFormat('yyyy-MM-dd').format(date!),
+        style: GoogleFonts.lato(color: Colors.black54, fontSize: 16),
+      ),
+      onTap: () => onSelectDate(context),
     );
   }
 }

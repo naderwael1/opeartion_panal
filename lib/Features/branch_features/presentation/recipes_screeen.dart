@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 class RecipesList extends StatefulWidget {
   final int branchID;
 
-  RecipesList(this.branchID);
+  RecipesList(this.branchID, {required int iD});
 
   @override
   _RecipesListState createState() => _RecipesListState();

@@ -1,5 +1,6 @@
 import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
 import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -36,6 +37,11 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   void goAttendanceScreen() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const EmpAttendanceScreen()));
+  }
+
+  void goStateScreen() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const ActiveEmployeeScreen()));
   }
 
   Widget NoInternetWidget() {
@@ -120,11 +126,13 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                   "Explore",
                   "Add",
                   "Attendance",
-                  "Profile"
+                  "List of Sate",
+                  "profile "
                 ], icons: const [
                   Icons.explore,
                   Icons.add,
                   Icons.feed,
+                  Icons.quiz_sharp,
                   Icons.person,
                 ], callbacks: [
                   toggleSearch,
@@ -135,6 +143,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                             builder: (context) => const AddEmp()));
                   },
                   goAttendanceScreen,
+                  goStateScreen,
                   goScreen
                 ]),
                 Visibility(

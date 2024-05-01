@@ -37,6 +37,7 @@ class InActiveEmployeeScreen extends StatelessWidget {
         final bool connected = connectivity != ConnectivityResult.none;
         if (connected) {
           return Scaffold(
+            bottomNavigationBar: const MyBottomNavigationBar(),
             drawer: const CustomDrawer(),
             appBar: AppBar(
               title: const Text('All Employee'),

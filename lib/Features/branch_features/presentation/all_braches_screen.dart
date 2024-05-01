@@ -1,68 +1,88 @@
-import 'package:bloc_v2/Features/branch_features/Data/get_all_branchs.dart';
-import 'package:bloc_v2/Features/branch_features/presentation/custom_branch_card.dart';
+import 'package:bloc_v2/Features/branch_features/presentation/category_screen.dart';
+import 'package:bloc_v2/Features/branch_features/presentation/recipes_screeen.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/custom_tool_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
-import 'package:bloc_v2/Features/branch_features/models/branch_model.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:bloc_v2/Features/branch_features/Data/get_all_branchs.dart';
+import 'package:bloc_v2/Features/branch_features/models/branch_model.dart';
+import 'package:bloc_v2/Features/branch_features/presentation/custom_branch_card.dart';
 
-class AllBranchScreen extends StatelessWidget {
+class AllBranchScreen extends StatefulWidget {
   const AllBranchScreen({Key? key}) : super(key: key);
 
   @override
+  _AllBranchScreenState createState() => _AllBranchScreenState();
+}
+
+class _AllBranchScreenState extends State<AllBranchScreen> {
+  List<BranchModel>? branches;
+  BranchModel? selectedBranch;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBranches();
+  }
+
+  Future<void> fetchBranches() async {
+    try {
+      branches = await GetAllBranches().getAllBranches();
+      setState(() {
+        selectedBranch = branches?.first;
+      });
+    } catch (e) {
+      print('Failed to fetch branches: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return OfflineBuilder(
-      connectivityBuilder: (BuildContext context,
-          ConnectivityResult connectivity, Widget child) {
-        final bool connected = connectivity != ConnectivityResult.none;
-        return connected
-            ? buildConnectedScreen(context)
-            : noInternetWidget(context);
-      },
-      child: const Text('No internet connection'),
-    );
-  }
-
-  Widget noInternetWidget(BuildContext context) {
-    return Scaffold(
-      appBar:
-          AppBar(title: Text('No Connection', style: GoogleFonts.openSans())),
-      body: Center(
-        child: Text(
-          'No Internet Connection.\nPlease check your network settings and try again.',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.openSans(color: Colors.grey, fontSize: 16),
-        ),
-      ),
-    );
-  }
-
-  Widget buildConnectedScreen(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('All Branches', style: GoogleFonts.openSans()),
         centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              // Placeholder for search functionality
+            },
+          ),
+        ],
       ),
-      body: FutureBuilder<List<BranchModel>>(
-        future: GetAllBranches()
-            .getAllBranches(), // Your actual data fetching function
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return CustomCard(branch: snapshot.data![index]);
-              },
-            );
-          } else {
-            return Center(
-                child:
-                    Text('No branches found', style: GoogleFonts.openSans()));
-          }
-        },
+      body: Column(
+        children: [
+          CustomToolBar(
+            titles: ['All Branches', 'Kitchen Category', 'Recipe Item'],
+            icons: [Icons.home, Icons.category, Icons.food_bank],
+            callbacks: [
+              () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AllBranchScreen())),
+              () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CategoryScreen())),
+              () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => RecipesList(
+                            2,
+                            iD: 2,
+                          ))), // Corrected here
+            ],
+          ),
+          Expanded(
+            child: branches == null
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: branches!.length,
+                    itemBuilder: (context, index) {
+                      return CustomCard(branch: branches![index]);
+                      // Ensure CustomBranchCard is implemented or replace with appropriate widget
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
