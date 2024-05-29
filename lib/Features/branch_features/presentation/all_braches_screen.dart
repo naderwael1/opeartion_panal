@@ -45,7 +45,7 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
         backgroundColor: Colors.deepPurple,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               // Placeholder for search functionality
             },
@@ -55,13 +55,17 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
       body: Column(
         children: [
           CustomToolBar(
-            titles: ['All Branches', 'Kitchen Category', 'Recipe Item'],
-            icons: [Icons.home, Icons.category, Icons.food_bank],
+            titles: const ['All Branches', 'Kitchen Category', 'Recipe Item'],
+            icons: const [Icons.home, Icons.category, Icons.food_bank],
             callbacks: [
-              () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AllBranchScreen())),
-              () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CategoryScreen())),
+              () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AllBranchScreen())),
+              () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CategoryScreen())),
               () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -73,12 +77,11 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
           ),
           Expanded(
             child: branches == null
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     itemCount: branches!.length,
                     itemBuilder: (context, index) {
                       return CustomCard(branch: branches![index]);
-                      // Ensure CustomBranchCard is implemented or replace with appropriate widget
                     },
                   ),
           ),

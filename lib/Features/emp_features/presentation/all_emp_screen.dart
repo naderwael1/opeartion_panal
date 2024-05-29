@@ -22,6 +22,10 @@ class AllEmployeeScreen extends StatefulWidget {
 
 class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   bool _showSearch = false;
+  bool _isSearching = false;
+  final _searchTextController = TextEditingController(); //?searchAboutThat
+  List<EmployeeModel> searchedForEmployeeList = [];
+  List<EmployeeModel> allEmployeeList = [];
 
   void toggleSearch() {
     setState(() {
@@ -42,6 +46,38 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   void goStateScreen() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const ActiveEmployeeScreen()));
+  }
+
+  void addSearchedFOrItemsToSearchedList(String searchedCharacter) {
+    searchedForEmployeeList = allEmployeeList
+        .where((employee) => employee.category!
+            .toLowerCase()
+            .startsWith(searchedCharacter.toLowerCase()))
+        .toList();
+    setState(() {});
+  }
+
+  void _startSearch() {
+    ModalRoute.of(context)!
+        .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+
+    setState(() {
+      _isSearching = true;
+    });
+  }
+
+  void _stopSearching() {
+    _clearSearch();
+
+    setState(() {
+      _isSearching = false;
+    });
+  }
+
+  void _clearSearch() {
+    setState(() {
+      _searchTextController.clear();
+    });
   }
 
   Widget NoInternetWidget() {
@@ -154,6 +190,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                       children: [
                         Expanded(
                           child: TextField(
+                            controller: _searchTextController,
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.search),
                               hintText: 'Search',
@@ -161,12 +198,16 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
+                            onChanged: (searchedCharacter) {
+                              addSearchedFOrItemsToSearchedList(
+                                  searchedCharacter);
+                            },
                           ),
                         ),
                         const SizedBox(width: 8),
                         ElevatedButton.icon(
                           onPressed: () {
-                            // Implement filter logic
+                            // todo
                           },
                           icon: const Icon(Icons.filter_list),
                           label: const Text('Filter'),
@@ -189,11 +230,16 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                       } else if (snapshot.hasError) {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       } else if (snapshot.hasData) {
-                        List<EmployeeModel> employees = snapshot.data!;
+                        allEmployeeList = snapshot.data!;
+                        List<EmployeeModel> employeesToShow =
+                            _searchTextController.text.isEmpty
+                                ? allEmployeeList
+                                : searchedForEmployeeList;
+
                         return ListView.builder(
-                          itemCount: employees.length,
+                          itemCount: employeesToShow.length,
                           itemBuilder: (context, index) {
-                            return CustomCard(employee: employees[index]);
+                            return CustomCard(employee: employeesToShow[index]);
                           },
                         );
                       } else {
