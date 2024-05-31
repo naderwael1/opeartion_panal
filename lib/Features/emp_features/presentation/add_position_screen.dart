@@ -15,6 +15,7 @@ class AddPositionScreen extends StatefulWidget {
 class _AddPositionScreen extends State<AddPositionScreen> {
   TextEditingController positionNameController = TextEditingController();
   TextEditingController jobDescriptionController = TextEditingController();
+  int _selectedIndex = 2;
 
   bool isEditing = false;
   final _formKey = GlobalKey<FormState>();

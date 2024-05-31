@@ -15,8 +15,7 @@ class EmpAttendanceScreen extends StatefulWidget {
 
 class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
   int? branchId = 2;
-  DateTime? fromDate;
-  DateTime? toDate;
+  DateTimeRange? selectedDateRange;
   List<BranchModel>? branches;
   BranchModel? selectedBranch;
   List<EmployeesAttendanceModel>?
@@ -40,41 +39,29 @@ class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
     }
   }
 
-  Future<void> _selectFromDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  void _selectDateRange(BuildContext context) async {
+    final DateTimeRange? result = await showDateRangePicker(
       context: context,
-      initialDate: fromDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
+      currentDate: DateTime.now(),
+      saveText: 'Done',
     );
-    if (picked != null && picked != fromDate) {
-      setState(() {
-        fromDate = picked;
-      });
-    }
-  }
 
-  Future<void> _selectToDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: toDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null && picked != toDate) {
+    if (result != null) {
       setState(() {
-        toDate = picked;
+        selectedDateRange = result;
       });
     }
   }
 
   void loadData() async {
-    if (selectedBranch != null && fromDate != null && toDate != null) {
+    if (selectedBranch != null && selectedDateRange != null) {
       try {
         var fetchedData = await GetEmpAtndance().getEmpAtndance(
           branch_id: selectedBranch!.branchID.toString(),
-          fromDate: fromDate!,
-          toDate: toDate!,
+          fromDate: selectedDateRange!.start,
+          toDate: selectedDateRange!.end,
         );
         setState(() {
           attendanceData = fetchedData;
@@ -90,8 +77,8 @@ class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
     return DropdownButtonHideUnderline(
       child: DropdownButton<BranchModel>(
         value: selectedBranch,
-        icon: const Icon(Icons.arrow_downward, color: Colors.deepPurple),
-        style: GoogleFonts.lato(color: Colors.deepPurple, fontSize: 16),
+        icon: const Icon(Icons.arrow_downward, color: Colors.blueGrey),
+        style: GoogleFonts.lato(color: Colors.blueGrey, fontSize: 16),
         onChanged: (BranchModel? newValue) {
           setState(() {
             selectedBranch = newValue;
@@ -115,78 +102,89 @@ class _EmpAttendanceScreenState extends State<EmpAttendanceScreen> {
       appBar: AppBar(
         title: Text('Employee Attendance', style: GoogleFonts.openSans()),
         centerTitle: true,
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.blueGrey,
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.blueGrey.shade100],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         child: Column(
           children: [
-            ListTile(
-              title: const Text('Select Branch',
-                  style: TextStyle(color: Colors.deepPurple)),
-              subtitle: buildDropDownButton(),
-            ),
-            DatePickerTile(
-                label: 'Select From Date',
-                date: fromDate,
-                onSelectDate: _selectFromDate),
-            DatePickerTile(
-                label: 'Select To Date',
-                date: toDate,
-                onSelectDate: _selectToDate),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed:
-                    fromDate != null && toDate != null && selectedBranch != null
-                        ? loadData
-                        : null,
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple),
-                child: const Text('Load Attendance Data'),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: ListTile(
+                title: const Text('Select Branch',
+                    style: TextStyle(color: Colors.blueGrey)),
+                subtitle: buildDropDownButton(),
               ),
             ),
+            const SizedBox(height: 20),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: ListTile(
+                title: const Text('Select Date Range',
+                    style: TextStyle(color: Colors.blueGrey)),
+                subtitle: selectedDateRange == null
+                    ? const Text('No date range selected',
+                        style: TextStyle(color: Colors.black54))
+                    : Text(
+                        'From: ${DateFormat('yyyy-MM-dd').format(selectedDateRange!.start)}\nTo: ${DateFormat('yyyy-MM-dd').format(selectedDateRange!.end)}',
+                        style: const TextStyle(color: Colors.black54),
+                      ),
+                onTap: () => _selectDateRange(context),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: selectedDateRange != null && selectedBranch != null
+                  ? loadData
+                  : null,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueGrey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15)),
+              child: const Text('Load Attendance Data',
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+            ),
+            const SizedBox(height: 20),
             if (attendanceData != null)
-              ListView.builder(
-                shrinkWrap:
-                    true, // Important to prevent scrolling within scrolling
-                itemCount: attendanceData!.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(attendanceData![index]
-                        .employee), // Assuming 'employeeName' is a field in your model
-                    subtitle: Text(
-                        'Attendance details here...'), // Add more details as necessary
-                  );
-                },
+              Expanded(
+                child: ListView.builder(
+                  itemCount: attendanceData!.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      elevation: 4,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ListTile(
+                        title: Text(attendanceData![index]
+                            .employee), // Assuming 'employeeName' is a field in your model
+                        subtitle: const Text(
+                            'Attendance details here...'), // Add more details as necessary
+                      ),
+                    );
+                  },
+                ),
               ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class DatePickerTile extends StatelessWidget {
-  final String label;
-  final DateTime? date;
-  final Future<void> Function(BuildContext) onSelectDate;
-
-  const DatePickerTile({
-    required this.label,
-    this.date,
-    required this.onSelectDate,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(label, style: TextStyle(color: Colors.deepPurple)),
-      subtitle: Text(
-        date == null ? 'Not set' : DateFormat('yyyy-MM-dd').format(date!),
-        style: GoogleFonts.lato(color: Colors.black54, fontSize: 16),
-      ),
-      onTap: () => onSelectDate(context),
     );
   }
 }
