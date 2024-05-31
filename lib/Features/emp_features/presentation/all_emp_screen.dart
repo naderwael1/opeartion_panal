@@ -1,19 +1,16 @@
 import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
-import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/add_emp.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../../Drawer/customDrawer.dart';
+import 'package:flutter_offline/flutter_offline.dart';
+import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
 import '../../../Drawer/sidebarx.dart';
 import '../../../core/utils/theme.dart';
-import '../../../custom_nav_bar.dart';
 import '../Data/get_all_emp_list.dart';
-import 'add_emp.dart';
 import 'custom_card.dart';
-import 'package:flutter_offline/flutter_offline.dart';
 import 'custom_tool_bar.dart';
-import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 
 class AllEmployeeScreen extends StatefulWidget {
   @override
@@ -23,9 +20,10 @@ class AllEmployeeScreen extends StatefulWidget {
 class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   bool _showSearch = false;
   bool _isSearching = false;
-  final _searchTextController = TextEditingController(); //?searchAboutThat
+  final _searchTextController = TextEditingController();
   List<EmployeeModel> searchedForEmployeeList = [];
   List<EmployeeModel> allEmployeeList = [];
+  int _selectedIndex = 0;
 
   void toggleSearch() {
     setState(() {
@@ -33,24 +31,9 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
     });
   }
 
-  void goScreen() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const AddPositionScreen()));
-  }
-
-  void goAttendanceScreen() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const EmpAttendanceScreen()));
-  }
-
-  void goStateScreen() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const ActiveEmployeeScreen()));
-  }
-
   void addSearchedFOrItemsToSearchedList(String searchedCharacter) {
     searchedForEmployeeList = allEmployeeList
-        .where((employee) => employee.category!
+        .where((employee) => employee.category
             .toLowerCase()
             .startsWith(searchedCharacter.toLowerCase()))
         .toList();
@@ -80,6 +63,18 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
     });
   }
 
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => HrFlashyTabBar.tabItems[index].screen),
+    );
+  }
+
   Widget NoInternetWidget() {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -91,7 +86,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Image.asset('assets/images/undraw_bug_fixing_oc7a.png',
-                  height: 200), // Ensure you have an appealing image
+                  height: 200),
               const SizedBox(height: 40),
               const Text(
                 'Oops! No Internet Connection.',
@@ -118,8 +113,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Theme.of(context)
-                      .primaryColor, // This sets the text color on the button
+                  backgroundColor: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
@@ -149,6 +143,10 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
         final bool connected = connectivity != ConnectivityResult.none;
         if (connected) {
           return Scaffold(
+            bottomNavigationBar: HrFlashyTabBar(
+              selectedIndex: _selectedIndex,
+              onItemSelected: _onTabSelected,
+            ),
             drawer: const sideBarHR(),
             appBar: AppBar(
               title: const Text('All Employee'),
@@ -162,8 +160,8 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                   "Explore",
                   "Add",
                   "Attendance",
-                  "List of Sate",
-                  "profile "
+                  "List of State",
+                  "Profile"
                 ], icons: const [
                   Icons.explore,
                   Icons.add,
@@ -178,9 +176,25 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                         MaterialPageRoute(
                             builder: (context) => const AddEmp()));
                   },
-                  goAttendanceScreen,
-                  goStateScreen,
-                  goScreen
+                  () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EmpAttendanceScreen()));
+                  },
+                  () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const ActiveEmployeeScreen()));
+                  },
+                  () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AddPositionScreen()));
+                  }
                 ]),
                 Visibility(
                   visible: _showSearch,

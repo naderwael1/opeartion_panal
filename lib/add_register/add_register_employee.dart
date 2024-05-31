@@ -1,9 +1,11 @@
-import 'package:bloc_v2/add_register/add_register_model.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
+import 'package:bloc_v2/add_register/add_register_model.dart';
 
 class AddRegisterEmp extends StatefulWidget {
-  const AddRegisterEmp({Key? key});
+  const AddRegisterEmp({Key? key}) : super(key: key);
 
   @override
   State<AddRegisterEmp> createState() => _AddRegisterEmp();
@@ -16,9 +18,22 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
   TextEditingController genderController = TextEditingController();
   TextEditingController salaryController = TextEditingController();
   TextEditingController statusController = TextEditingController();
+  int _selectedIndex = 1;
 
   bool isEditing = false;
   final _formKey = GlobalKey<FormState>();
+
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      case 0:
+        // Navigate to a screen, for example
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => AllEmployeeScreen()));
+    }
+  }
 
   void clearForm() {
     ssnNumberController.clear();
@@ -33,8 +48,12 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        bottomNavigationBar: HrFlashyTabBar(
+          selectedIndex: _selectedIndex,
+          onItemSelected: _onTabSelected,
+        ),
         appBar: AppBar(
-          title: Text('Add Employee Registration'),
+          title: const Text('Add Employee Registration'),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -62,7 +81,7 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                       controller: firstNameController,
                       key: const ValueKey('First Name'),
                       decoration: const InputDecoration(
@@ -70,22 +89,22 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter first name';
+                          return 'Please enter a first name';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                       controller: lastNameController,
-                      key: const ValueKey('LAST Name'),
+                      key: const ValueKey('Last Name'),
                       decoration: const InputDecoration(
                         hintText: 'Last Name',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter last name';
+                          return 'Please enter a last name';
                         }
                         return null;
                       },
@@ -100,7 +119,7 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                           genderController.text = newValue!;
                         });
                       },
-                      items: [
+                      items: const [
                         DropdownMenuItem(
                           value: 'm',
                           child: Text('Male'),
@@ -110,7 +129,7 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                           child: Text('Female'),
                         ),
                       ],
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Gender',
                       ),
                       validator: (value) {
@@ -125,19 +144,19 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       controller: salaryController,
                       keyboardType: TextInputType.number,
-                      key: const ValueKey('SALARY'),
+                      key: const ValueKey('Salary'),
                       decoration: const InputDecoration(
                         hintText: 'Salary',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an Salary';
+                          return 'Please enter a salary';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
+                    DropdownButtonFormField<String>(
                       value: statusController.text.isEmpty
                           ? null
                           : statusController.text,
@@ -146,26 +165,26 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                           statusController.text = newValue!;
                         });
                       },
-                      items: [
+                      items: const [
                         DropdownMenuItem(
                           value: 'pending',
-                          child: Text('pending'),
+                          child: Text('Pending'),
                         ),
                         DropdownMenuItem(
                           value: 'active',
-                          child: Text('active'),
+                          child: Text('Active'),
                         ),
                         DropdownMenuItem(
                           value: 'inactive',
-                          child: Text('inactive'),
+                          child: Text('Inactive'),
                         ),
                       ],
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Status',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please select a gender';
+                          return 'Please select a status';
                         }
                         return null;
                       },
@@ -187,9 +206,7 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                             "Clear",
                             style: TextStyle(fontSize: 20),
                           ),
-                          onPressed: () {
-                            clearForm();
-                          },
+                          onPressed: clearForm,
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
@@ -200,12 +217,12 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                           ),
                           icon: const Icon(Icons.upload),
                           label: const Text(
-                            "ADD Register Employee",
+                            "Add Register Employee",
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               try {
-                                final add_register_emp =
+                                final addRegisterEmp =
                                     await addregisteremployee(
                                   ssnNumber: ssnNumberController.text,
                                   firstName: firstNameController.text,
@@ -214,7 +231,7 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
                                   salary: salaryController.text,
                                   status: statusController.text,
                                 );
-                                print('Adding employee: $add_register_emp');
+                                print('Adding employee: $addRegisterEmp');
                                 clearForm();
                               } catch (e) {
                                 print('Error adding employee: $e');
