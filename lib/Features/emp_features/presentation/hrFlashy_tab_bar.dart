@@ -22,7 +22,7 @@ class HrFlashyTabBar extends StatelessWidget {
     FlashyTabBarItemData(
       icon: const Icon(Icons.add),
       title: const Text('Add & Edit'),
-      screen: const AddRegisterEmp(),
+      screen: const AddPositionScreen(),
     ),
     FlashyTabBarItemData(
       icon: const Icon(Icons.settings),
