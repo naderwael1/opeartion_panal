@@ -3,6 +3,7 @@ import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dar
 import 'package:bloc_v2/Features/emp_features/presentation/add_emp.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
+import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
@@ -174,7 +175,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AddEmp()));
+                            builder: (context) => const AddRegisterEmp()));
                   },
                   () {
                     Navigator.push(

@@ -1,5 +1,6 @@
 import 'package:bloc_v2/Features/emp_features/Data/add_position.dart';
 import 'package:bloc_v2/add_general_Section/add_general_model.dart';
+import 'package:bloc_v2/add_register/style.dart';
 import 'package:flutter/material.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
@@ -15,8 +16,6 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
   TextEditingController positionNameController = TextEditingController();
   TextEditingController jobDescriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  final Color baseColor = Color(0xFF4CAF50);
 
   void clearForm() {
     positionNameController.clear();
@@ -35,9 +34,9 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
                 child: Container(
                   height: 200,
                   color: baseColor,
-                  child: Center(
+                  child: const Center(
                     child: Text(
-                      'Add Position',
+                      'Add New Job Position',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 28,
@@ -63,26 +62,8 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.newline,
                         key: const ValueKey('position name'),
-                        decoration: InputDecoration(
+                        decoration: inputDecoration.copyWith(
                           labelText: 'Position Name',
-                          labelStyle: const TextStyle(fontSize: 18),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[200],
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: baseColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: baseColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: baseColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -100,26 +81,8 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
                         maxLines: 8,
                         maxLength: 1000,
                         textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(
+                        decoration: inputDecoration.copyWith(
                           labelText: 'Job Description',
-                          labelStyle: const TextStyle(fontSize: 18),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[200],
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: baseColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: baseColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: baseColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -133,41 +96,17 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(12),
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
+                            style: clearButtonStyle,
                             icon: const Icon(Icons.clear),
-                            label: const Text(
-                              "Clear",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
+                            label: const Text("Clear"),
                             onPressed: () {
                               clearForm();
                             },
                           ),
                           ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(12),
-                              backgroundColor: baseColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
+                            style: elevatedButtonStyle,
                             icon: const Icon(Icons.upload),
-                            label: const Text(
-                              "Add Position",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
+                            label: const Text("Add Position"),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 try {
