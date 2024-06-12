@@ -144,10 +144,11 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
         final bool connected = connectivity != ConnectivityResult.none;
         if (connected) {
           return Scaffold(
-            bottomNavigationBar: HrFlashyTabBar(
+            /*  bottomNavigationBar: HrFlashyTabBar(
               selectedIndex: _selectedIndex,
               onItemSelected: _onTabSelected,
             ),
+            */
             drawer: const sideBarHR(),
             appBar: AppBar(
               title: const Text('All Employee'),

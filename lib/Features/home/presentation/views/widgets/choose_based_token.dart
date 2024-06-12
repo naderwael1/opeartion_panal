@@ -7,6 +7,7 @@ import 'package:bloc_v2/add_ingredient/add_ingredient_screen.dart';
 import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:bloc_v2/add_storage/add_storage_screen.dart';
 import 'package:bloc_v2/add_table/add_table_screen.dart';
+import 'package:bloc_v2/app_layout/screens/app_layout_screen.dart';
 import 'package:bloc_v2/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +41,7 @@ class HomeBody extends StatelessWidget {
       body: GridView.count(
         crossAxisCount: 2,
         children: [
-          _buildCard(context, 'HR Dept', hrImage, AllEmployeeScreen()),
+          _buildCard(context, 'HR Dept', hrImage, const AppLayoutScreen()),
           _buildCard(context, 'Operation Manager', operationImage,
               const AllBranchScreen()),
           _buildCard(
