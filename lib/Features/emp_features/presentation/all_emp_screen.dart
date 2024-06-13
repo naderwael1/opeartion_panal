@@ -3,6 +3,7 @@ import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dar
 import 'package:bloc_v2/Features/emp_features/presentation/add_emp.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
 import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
@@ -160,13 +161,13 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
               children: [
                 CustomToolBar(titles: const [
                   "Explore",
-                  "Add",
+                  "All Positions",
                   "Attendance",
                   "List of State",
                   "Profile"
                 ], icons: const [
                   Icons.explore,
-                  Icons.add,
+                  Icons.workspaces,
                   Icons.feed,
                   Icons.quiz_sharp,
                   Icons.person,
@@ -176,13 +177,13 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AddRegisterEmp()));
+                            builder: (context) => PositionListScreen()));
                   },
                   () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const EmpAttendanceScreen()));
+                            builder: (context) => PositionListScreen()));
                   },
                   () {
                     Navigator.push(
