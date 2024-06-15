@@ -1,17 +1,10 @@
-import 'package:bloc_v2/Features/emp_features/Data/udage_employee.dart';
+import 'package:bloc_v2/Features/edit_data_employee/edit_data_employee_screen.dart';
 import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
-import 'update_employee.dart';
-
-import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:get/get.dart';
-
-import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
   final ActiveEmployeesModel activeEmployee;
-// Assume EmployeeModel is defined elsewhere
 
   const CustomCard({
     required this.activeEmployee,
@@ -29,7 +22,13 @@ class CustomCard extends StatelessWidget {
           backgroundColor: Colors.transparent,
         ),
         title: Text(activeEmployee.employeeName), // Your employee's name
-        subtitle: Text(activeEmployee.employeePosition),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(activeEmployee.employeePosition),
+            Text('ID: ${activeEmployee.employeeId}'),
+          ],
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -41,7 +40,12 @@ class CustomCard extends StatelessWidget {
             ),
             IconButton(
               onPressed: () {
-                // Action for this button
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditEmployeeScreen(employeeId: activeEmployee.employeeId),
+                  ),
+                );
               },
               icon: const Icon(Icons.edit),
             ),

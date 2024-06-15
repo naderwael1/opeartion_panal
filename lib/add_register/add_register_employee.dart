@@ -2,7 +2,6 @@ import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:bloc_v2/add_register/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
 import 'package:bloc_v2/add_register/add_register_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
@@ -13,6 +12,7 @@ class AddRegisterEmp extends StatefulWidget {
   @override
   State<AddRegisterEmp> createState() => _AddRegisterEmpState();
 }
+
 
 class _AddRegisterEmpState extends State<AddRegisterEmp> {
   TextEditingController ssnNumberController = TextEditingController();
@@ -71,6 +71,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                   ),
                 ),
               ),
+
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
