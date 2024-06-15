@@ -1,4 +1,5 @@
 import 'package:bloc_v2/Features/emp_features/Data/udage_employee.dart';
+import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
 import 'update_employee.dart';
 
 import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
@@ -9,10 +10,11 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
-  final EmployeeModel employee; // Assume EmployeeModel is defined elsewhere
+  final ActiveEmployeesModel activeEmployee;
+// Assume EmployeeModel is defined elsewhere
 
   const CustomCard({
-    required this.employee,
+    required this.activeEmployee,
     Key? key,
   }) : super(key: key);
 
@@ -20,13 +22,14 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage:
-              NetworkImage(employee.image), // Your employee's image URL
+        leading: const CircleAvatar(
+          backgroundImage: NetworkImage(
+            'https://tse3.mm.bing.net/th?id=OIP.CuBCc2R2knpvmVugLTBczAHaJU&pid=Api&P=0&h=220',
+          ), // Your employee's image URL
           backgroundColor: Colors.transparent,
         ),
-        title: Text(employee.category), // Your employee's name
-        subtitle: Text(employee.title),
+        title: Text(activeEmployee.employeeName), // Your employee's name
+        subtitle: Text(activeEmployee.employeePosition),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -34,19 +37,19 @@ class CustomCard extends StatelessWidget {
               onPressed: () {
                 // Action for this button
               },
-              icon: Icon(Icons.remove_red_eye),
+              icon: const Icon(Icons.remove_red_eye),
             ),
             IconButton(
               onPressed: () {
                 // Action for this button
               },
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
             ),
             IconButton(
               onPressed: () {
                 // Action for this button
               },
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
             ),
           ],
         ),

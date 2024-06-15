@@ -1,4 +1,6 @@
 import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
+import 'package:bloc_v2/Features/emp_features/Data/get_active_emp.dart';
+import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_emp.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
@@ -23,8 +25,8 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   bool _showSearch = false;
   bool _isSearching = false;
   final _searchTextController = TextEditingController();
-  List<EmployeeModel> searchedForEmployeeList = [];
-  List<EmployeeModel> allEmployeeList = [];
+  List<ActiveEmployeesModel> searchedForEmployeeList = [];
+  List<ActiveEmployeesModel> allEmployeeList = [];
   int _selectedIndex = 0;
 
   void toggleSearch() {
@@ -35,7 +37,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
 
   void addSearchedFOrItemsToSearchedList(String searchedCharacter) {
     searchedForEmployeeList = allEmployeeList
-        .where((employee) => employee.category
+        .where((activeEmployee) => activeEmployee.employeeName
             .toLowerCase()
             .startsWith(searchedCharacter.toLowerCase()))
         .toList();
@@ -239,8 +241,8 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                   ),
                 ),
                 Expanded(
-                  child: FutureBuilder<List<EmployeeModel>>(
-                    future: GetAllEmployee().getAllProduct(),
+                  child: FutureBuilder<List<ActiveEmployeesModel>>(
+                    future: GetActiveEmployee().fetchActiveEmployees(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -248,7 +250,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       } else if (snapshot.hasData) {
                         allEmployeeList = snapshot.data!;
-                        List<EmployeeModel> employeesToShow =
+                        List<ActiveEmployeesModel> employeesToShow =
                             _searchTextController.text.isEmpty
                                 ? allEmployeeList
                                 : searchedForEmployeeList;
@@ -256,7 +258,8 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                         return ListView.builder(
                           itemCount: employeesToShow.length,
                           itemBuilder: (context, index) {
-                            return CustomCard(employee: employeesToShow[index]);
+                            return CustomCard(
+                                activeEmployee: employeesToShow[index]);
                           },
                         );
                       } else {
