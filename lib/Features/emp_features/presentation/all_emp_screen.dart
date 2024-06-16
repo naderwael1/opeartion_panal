@@ -152,7 +152,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
               onItemSelected: _onTabSelected,
             ),
             */
-            drawer: const sideBarHR(),
+            //  drawer: const sideBarHR(),
             appBar: AppBar(
               title: const Text('All Employee'),
               actions: const [

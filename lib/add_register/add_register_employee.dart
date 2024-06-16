@@ -1,4 +1,8 @@
+import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/custom_tool_bar.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
 import 'package:bloc_v2/add_register/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +16,6 @@ class AddRegisterEmp extends StatefulWidget {
   @override
   State<AddRegisterEmp> createState() => _AddRegisterEmpState();
 }
-
 
 class _AddRegisterEmpState extends State<AddRegisterEmp> {
   TextEditingController ssnNumberController = TextEditingController();
@@ -57,21 +60,77 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
               ClipPath(
                 clipper: HeaderClipper(),
                 child: Container(
-                  height: 200,
+                  height: 200, // Adjusted height to fit the toolbar and text
                   color: baseColor,
-                  child: const Center(
-                    child: Text(
-                      'Add Employee Registration',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 20.0), // Padding above the toolbar
+                        child: CustomToolBar(titles: const [
+                          "Explore",
+                          "All Positions",
+                          "Attendance",
+                          "List of State",
+                          "Profile"
+                        ], icons: const [
+                          Icons.explore,
+                          Icons.workspaces,
+                          Icons.feed,
+                          Icons.quiz_sharp,
+                          Icons.person,
+                        ], callbacks: [
+                          () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PositionListScreen()));
+                          },
+                          () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PositionListScreen()));
+                          },
+                          () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PositionListScreen()));
+                          },
+                          () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ActiveEmployeeScreen()));
+                          },
+                          () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddPositionScreen()));
+                          }
+                        ]),
                       ),
-                    ),
+                      const Center(
+                        child: Text(
+                          'Add Employee Registration',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -285,12 +344,12 @@ class HeaderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    path.lineTo(0, size.height - 50);
+    path.lineTo(0, size.height - 30); // Adjusted height of the clip path
     path.quadraticBezierTo(
       size.width / 2,
       size.height,
       size.width,
-      size.height - 50,
+      size.height - 30,
     );
     path.lineTo(size.width, 0);
     path.close();
