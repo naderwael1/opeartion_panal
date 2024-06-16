@@ -3,7 +3,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:spincircle_bottom_bar/modals.dart';
 import 'package:spincircle_bottom_bar/spincircle_bottom_bar.dart';
 import 'Features/emp_features/presentation/all_emp_screen.dart';
-import 'Features/emp_features/presentation/inActive_emp_screen.dart';
 import 'Features/emp_features/presentation/active_emp_screen.dart';
 import 'spincircle.dart';
 import 'Features/emp_features/presentation/add_position_screen.dart';

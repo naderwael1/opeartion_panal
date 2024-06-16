@@ -1,8 +1,6 @@
-import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/custom_tool_bar.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
 import 'package:bloc_v2/add_register/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

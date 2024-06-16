@@ -3,10 +3,6 @@ import 'package:bloc_v2/Features/emp_features/presentation/inActive_emp_screen.d
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-import 'Features/emp_features/presentation/add_emp.dart';
-import 'Features/emp_features/presentation/add_position_screen.dart';
-import 'Features/emp_features/presentation/all_emp_screen.dart';
-
 class MyBottomNavigationBar extends StatelessWidget {
   const MyBottomNavigationBar({Key? key}) : super(key: key);
 
