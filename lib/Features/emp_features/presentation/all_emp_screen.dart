@@ -12,7 +12,6 @@ import 'package:flutter_offline/flutter_offline.dart';
 import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
 import '../../../Drawer/sidebarx.dart';
 import '../../../core/utils/theme.dart';
-import '../Data/get_all_emp_list.dart';
 import 'custom_card.dart';
 import 'custom_tool_bar.dart';
 

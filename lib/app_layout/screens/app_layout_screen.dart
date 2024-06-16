@@ -23,7 +23,8 @@ class AppLayoutScreen extends StatelessWidget {
       child: BlocBuilder<AppLayoutCubit, int>(
         builder: (context, state) {
           return Scaffold(
-            backgroundColor: const Color(0xFF2D2D2D), // Dark background color
+            backgroundColor:
+                Color.fromARGB(255, 75, 72, 72), // Dark background color
             body: screens[state],
             bottomNavigationBar: BottomNavigationBar(
               backgroundColor: const Color(
