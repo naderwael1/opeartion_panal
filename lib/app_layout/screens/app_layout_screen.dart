@@ -15,8 +15,7 @@ class AppLayoutScreen extends StatelessWidget {
     final screens = <Widget>[
       AllEmployeeScreen(),
       const AddRegisterEmp(),
-      HomeBody(),
-      HomeBody(),
+      HomeBody(), //will replace with profile screen to change the profile setting
     ];
 
     return BlocProvider(
@@ -33,34 +32,6 @@ class AppLayoutScreen extends StatelessWidget {
                 BottomNavigationBarItem(
                   icon: Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Icon(Icons.home),
-                  ),
-                  activeIcon: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Icon(
-                      Icons.home_outlined,
-                      color: Color(0xFFE8EAF6), // Light purple
-                    ),
-                  ),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Icon(Icons.search),
-                  ),
-                  activeIcon: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Icon(
-                      Icons.search_outlined,
-                      color: Color(0xFFE8EAF6), // Light purple
-                    ),
-                  ),
-                  label: 'Search',
-                ),
-                BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
                     child: Icon(Icons.dashboard_sharp),
                   ),
                   activeIcon: Padding(
@@ -71,6 +42,20 @@ class AppLayoutScreen extends StatelessWidget {
                     ),
                   ),
                   label: 'Explore',
+                ),
+                BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Icon(Icons.manage_accounts_outlined),
+                  ),
+                  activeIcon: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Icon(
+                      Icons.manage_accounts,
+                      color: Color(0xFFE8EAF6), // Light purple
+                    ),
+                  ),
+                  label: 'Modify Data',
                 ),
                 BottomNavigationBarItem(
                   icon: Padding(
