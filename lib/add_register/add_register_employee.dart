@@ -68,13 +68,13 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         padding: const EdgeInsets.only(
                             top: 20.0), // Padding above the toolbar
                         child: CustomToolBar(titles: const [
-                          "Explore",
+                          "Add Employee",
                           "All Positions",
                           "Attendance",
                           "List of State",
                           "Profile"
                         ], icons: const [
-                          Icons.explore,
+                          Icons.add_business_rounded,
                           Icons.workspaces,
                           Icons.feed,
                           Icons.quiz_sharp,
@@ -85,28 +85,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        PositionListScreen()));
-                          },
-                          () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PositionListScreen()));
-                          },
-                          () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PositionListScreen()));
-                          },
-                          () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ActiveEmployeeScreen()));
+                                        const AddRegisterEmp()));
                           },
                           () {
                             Navigator.push(
@@ -114,6 +93,27 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         const AddPositionScreen()));
+                          },
+                          () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddPositionScreen())); //post schedule
+                          },
+                          () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddPositionScreen())); //post vacation
+                          },
+                          () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddPositionScreen())); //post att in and out
                           }
                         ]),
                       ),
