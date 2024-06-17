@@ -14,11 +14,15 @@ class AddPositionScreen extends StatefulWidget {
 class _AddPositionScreenState extends State<AddPositionScreen> {
   TextEditingController positionNameController = TextEditingController();
   TextEditingController jobDescriptionController = TextEditingController();
+  TextEditingController employeeRoleController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   void clearForm() {
     positionNameController.clear();
     jobDescriptionController.clear();
+    setState(() {
+      employeeRoleController.clear();
+    });
   }
 
   @override
@@ -72,6 +76,56 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
                         },
                       ),
                       const SizedBox(height: 20),
+                      DropdownButtonFormField<String>(
+                        value: employeeRoleController.text.isEmpty
+                            ? null
+                            : employeeRoleController.text,
+                        onChanged: (newValue) {
+                          setState(() {
+                            employeeRoleController.text = newValue!;
+                          });
+                        },
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'manager',
+                            child: Text('Manager'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'hr',
+                            child: Text('HR'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'operation manager',
+                            child: Text('Operation Manager'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'section manager',
+                            child: Text('section manager'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'cashier',
+                            child: Text('cashier'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'delivery',
+                            child: Text('delivery'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'no role',
+                            child: Text('no role'),
+                          ),
+                        ],
+                        decoration: inputDecoration.copyWith(
+                          labelText: 'employee Role',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a Employee Role';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 30),
                       TextFormField(
                         keyboardType: TextInputType.text,
                         controller: jobDescriptionController,
@@ -112,9 +166,12 @@ class _AddPositionScreenState extends State<AddPositionScreen> {
                                   final addPositionNameAndDescription =
                                       await addPosition(
                                     positionName: positionNameController.text,
-                                    jopdescription:
+                                    employeeRole: employeeRoleController.text,
+                                    jop_description:
                                         jobDescriptionController.text,
                                   );
+                                  print('object: ' +
+                                      addPositionNameAndDescription);
                                   CherryToast.success(
                                     animationType: AnimationType.fromRight,
                                     toastPosition: Position.bottom,

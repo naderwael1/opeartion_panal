@@ -1,8 +1,9 @@
 import 'package:http/http.dart' as http;
+
 Future<String> addPosition({
   required String positionName,
-  required String jopdescription,
-
+  required String employeeRole,
+  required String jop_description,
 }) async {
   final url = 'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/employees/add-position';
   try {
@@ -10,18 +11,25 @@ Future<String> addPosition({
       Uri.parse(url),
       body: {
         'position_name': positionName,
-        'jop_description': jopdescription,
+        'employeeRole': employeeRole,
+        'jop_description': jop_description,
       },
     );
+    
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
-      final add_menu_item = response.body; // Assuming the branchId is returned in the response body
-      return add_menu_item;
+      final addMenuItem = response.body; // Assuming the response body contains the data you need
+      print('Status: ${response.statusCode}');
+      print('Response: $addMenuItem');
+      return addMenuItem;
     } else {
       // Failure
+      print('Status: ${response.statusCode}');
+      print('Response: ${response.body}');
       throw Exception('Failed to add employee: ${response.statusCode}');
     }
   } catch (e) {
-    throw Exception('Error add employee: $e');
+    print('Error: $e');
+    throw Exception('Error adding employee: $e');
   }
 }

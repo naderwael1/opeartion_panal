@@ -2,10 +2,8 @@ import 'package:bloc_v2/Features/emp_features/Data/get_all_positions.dart';
 import 'package:bloc_v2/Features/emp_features/models/positon_models.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/custom_clip_path';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class PositionListScreen extends StatefulWidget {
   @override
