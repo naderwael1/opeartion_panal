@@ -22,6 +22,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
   TextEditingController genderController = TextEditingController();
   TextEditingController salaryController = TextEditingController();
   TextEditingController statusController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
   int _selectedIndex = 1;
 
   bool isEditing = false;
@@ -46,6 +47,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
     genderController.clear();
     salaryController.clear();
     statusController.clear();
+    addressController.clear();
   }
 
   @override
@@ -185,6 +187,21 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         },
                       ),
                       const SizedBox(height: 20),
+                      TextFormField(
+                        keyboardType: TextInputType.text,
+                        controller: addressController,
+                        key: const ValueKey('Address'),
+                        decoration: inputDecoration.copyWith(
+                          labelText: 'Address',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter Address';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
                         value: genderController.text.isEmpty
                             ? null
@@ -291,6 +308,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                     gender: genderController.text,
                                     salary: salaryController.text,
                                     status: statusController.text,
+                                    address: addressController.text
                                   );
                                   print('Adding employee: $addRegisterEmp');
                                   CherryToast.success(

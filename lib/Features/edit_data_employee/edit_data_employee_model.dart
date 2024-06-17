@@ -7,7 +7,7 @@ Future<String> editSaleryEmployee({
   required String newSalary,
   required String changeReason,
 }) async {
-  const url = 'https://51.44.5.35.nip.io/admin/employees/change-salary';
+  const url = 'http://192.168.56.1:4000/admin/employees/change-salary';
   try {
     final response = await http.patch(
       Uri.parse(url),
@@ -33,3 +33,9 @@ Future<String> editSaleryEmployee({
     throw Exception('Error editing employee salary: $e');
   }
 }
+
+
+
+
+
+

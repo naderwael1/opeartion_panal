@@ -7,8 +7,9 @@ Future<String> addregisteremployee({
   required String gender,
   required String salary,
   required String status,
+    required String address,
 }) async {
-  const url = 'http://192.168.205.1:4000/admin/auth/register';
+  const url = 'http://192.168.56.1:4000/admin/employees/employee';
   try {
     final response = await http.post(
       Uri.parse(url),
@@ -19,6 +20,7 @@ Future<String> addregisteremployee({
         'gender': gender,
         'salary': salary,
         'status': status,
+        'address': address,
       },
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
