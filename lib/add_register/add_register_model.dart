@@ -64,15 +64,18 @@ Future<String> addPhoneNumber({
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
-      final add_menu_item = response
-          .body; // Assuming the branchId is returned in the response body
-      return add_menu_item;
+      final addMenuItem = response.body; // Assuming the response body contains the data you need
+      print('Status: ${response.statusCode}');
+      print('Response: $addMenuItem');
+      return addMenuItem;
     } else {
       // Failure
-      throw Exception(
-          'Failed to add employee Registration: ${response.statusCode}');
+      print('Status: ${response.statusCode}');
+      print('Response: ${response.body}');
+      throw Exception('Failed to add employee: ${response.statusCode}');
     }
   } catch (e) {
-    throw Exception('Error add employee Registration: $e');
+    print('Error: $e');
+    throw Exception('Error adding employee: $e');
   }
 }

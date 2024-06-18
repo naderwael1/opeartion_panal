@@ -2,6 +2,7 @@ import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.d
 import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/custom_tool_bar.dart';
 import 'package:bloc_v2/add_register/style.dart';
+import 'package:bloc_v2/screens/employe_schedule.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bloc_v2/add_register/add_register_model.dart';
@@ -68,9 +69,6 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
   List<Map<String, dynamic>> branch = [];
   List<Map<String, dynamic>> positions = [];
   List<dynamic> sections = [];
-  TextEditingController selectedPositionId1Controller = TextEditingController();
-  TextEditingController selectedPositionId2Controller = TextEditingController();
-  TextEditingController selectedPositionId3Controller = TextEditingController();
 
   @override
   void initState() {
@@ -206,7 +204,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         child: CustomToolBar(titles: const [
                           "Add Employee",
                           "Add Position",
-                          "Attendance",
+                          "Employee Schedule",
                           "List of State",
                           "Profile"
                         ], icons: const [
@@ -235,7 +233,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const AddPositionScreen())); //post schedule
+                                        const AddEmployeeSchedule())); //post schedule
                           },
                           () {
                             Navigator.push(
