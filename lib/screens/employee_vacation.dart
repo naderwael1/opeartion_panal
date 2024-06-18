@@ -97,7 +97,7 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                       ),
                       const Center(
                         child: Text(
-                          'Add Employee Schedule',
+                          'Add Employee Vacation',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -210,7 +210,7 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                           ElevatedButton.icon(
                             style: elevatedButtonStyle,
                             icon: const Icon(Icons.upload),
-                            label: const Text("Add Register Employee"),
+                            label: const Text("Add Vacation Employee"),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 try {

@@ -228,7 +228,7 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                           ElevatedButton.icon(
                             style: elevatedButtonStyle,
                             icon: const Icon(Icons.upload),
-                            label: const Text("Add Register Employee"),
+                            label: const Text("Add Schedule Employee"),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 try {
