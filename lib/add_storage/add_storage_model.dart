@@ -5,8 +5,7 @@ Future<String> addStorageModel({
   required String storageAddress,
   required String managerId,
 }) async {
-  final url =
-      'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/add-storage';
+  final url = 'http://192.168.56.1:4000/admin/branch/add-storage';
   try {
     final response = await http.post(
       Uri.parse(url),
@@ -18,14 +17,19 @@ Future<String> addStorageModel({
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
-      final add_menu_item = response
-          .body; // Assuming the branchId is returned in the response body
-      return add_menu_item;
+      final addMenuItem = response
+          .body; // Assuming the response body contains the data you need
+      print('Status: ${response.statusCode}');
+      print('Response: $addMenuItem');
+      return addMenuItem;
     } else {
       // Failure
-      throw Exception('Failed to Add Storage: ${response.statusCode}');
+      print('Status: ${response.statusCode}');
+      print('Response: ${response.body}');
+      throw Exception('Failed to add employee: ${response.statusCode}');
     }
   } catch (e) {
-    throw Exception('Error AddStorage: $e');
+    print('Error: $e');
+    throw Exception('Error adding employee: $e');
   }
 }

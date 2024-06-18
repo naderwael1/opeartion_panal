@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:bloc_v2/Drawer/sidebarx.dart';
+import 'package:bloc_v2/add_register/style.dart';
 import 'package:bloc_v2/add_storage/add_storage_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
+import 'package:http/http.dart' as http;
 
 class AddStorage extends StatefulWidget {
   const AddStorage({Key? key});
@@ -17,13 +21,43 @@ class _AddStorage extends State<AddStorage> {
   TextEditingController storageAddressController = TextEditingController();
   TextEditingController managerIdController = TextEditingController();
 
-  bool isEditing = false;
   final _formKey = GlobalKey<FormState>();
 
   void clearForm() {
     storageNameController.clear();
     storageAddressController.clear();
     managerIdController.clear();
+  }
+
+  List<Map<String, dynamic>> managerEmployees = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchManagerEmployees();
+  }
+
+  Future<void> fetchManagerEmployees() async {
+    final url = Uri.parse(
+        'http://192.168.56.1:4000/admin/employees/manager-employees-list');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        setState(() {
+          managerEmployees = jsonBody['data']
+              .map<Map<String, dynamic>>((employee) => {
+                    'employee_id': employee['id'],
+                    'employee_name': employee['name'],
+                  })
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load manager employees');
+      }
+    } catch (e) {
+      print('Error loading manager employees: $e');
+    }
   }
 
   @override
@@ -72,16 +106,27 @@ class _AddStorage extends State<AddStorage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    TextFormField(
-                      keyboardType: TextInputType.number,
-                      controller: managerIdController,
-                      key: const ValueKey('manager Id'),
-                      decoration: const InputDecoration(
-                        hintText: 'manager Id',
+                    DropdownButtonFormField<int>(
+                      value: managerIdController.text.isEmpty
+                          ? null
+                          : int.tryParse(managerIdController.text),
+                      onChanged: (newValue) {
+                        setState(() {
+                          managerIdController.text = newValue?.toString() ?? '';
+                        });
+                      },
+                      items: managerEmployees.map((employee) {
+                        return DropdownMenuItem<int>(
+                          value: employee['employee_id'],
+                          child: Text(employee['employee_name']),
+                        );
+                      }).toList(),
+                      decoration: inputDecoration.copyWith(
+                        labelText: 'Employee Name',
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please an Enter manager Id';
+                        if (value == null) {
+                          return 'Please select an Employee Name';
                         }
                         return null;
                       },
