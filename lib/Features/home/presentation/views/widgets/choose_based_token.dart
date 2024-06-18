@@ -1,3 +1,4 @@
+import 'package:bloc_v2/Features/branch_features/presentation/add_branch_screen.dart';
 import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
@@ -52,7 +53,7 @@ class HomeBody extends StatelessWidget {
           _buildCard(context, 'Upload', cloud,
               const AddStorage()), // add menu item (EditOrUploadProductScreen)
           _buildCard(context, 'table', table,
-              const AddStorage()), // (AddGeneralSection)
+              const AddBranchScreen()), // (AddGeneralSection)
         ],
       ),
     );
