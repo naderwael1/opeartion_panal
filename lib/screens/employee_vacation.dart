@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:bloc_v2/add_register/style.dart';
 import 'package:bloc_v2/screens/employee_vacation_model.dart';
@@ -23,11 +24,25 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
   bool isEditing = false;
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> activeEmployees = [];
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     fetchActiveEmployees();
+    startPolling();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void startPolling() {
+    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+      fetchActiveEmployees();
+    });
   }
 
   Future<void> fetchActiveEmployees() async {
@@ -110,8 +125,7 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -123,8 +137,7 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                             : int.tryParse(employeeIddController.text),
                         onChanged: (newValue) {
                           setState(() {
-                            employeeIddController.text =
-                                newValue?.toString() ?? '';
+                            employeeIddController.text = newValue?.toString() ?? '';
                           });
                         },
                         items: activeEmployees.map((employee) {
@@ -188,8 +201,7 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                           labelText: 'Vacation Reason',
                         ),
                         maxLength: 150,
-                        maxLines:
-                            null, // Allows the text field to grow with the content
+                        maxLines: null, // Allows the text field to grow with the content
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a reason for the vacation';
@@ -216,11 +228,9 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                                 try {
                                   final addRegisterEmp = ModelEmployeeVacation(
                                     employeeId: employeeIddController.text,
-                                    vacationStartDate:
-                                        vacationStartDateController.text,
+                                    vacationStartDate: vacationStartDateController.text,
                                     vacationEndDate: vacationEndController.text,
-                                    vacationReason:
-                                        vacationReasonController.text,
+                                    vacationReason: vacationReasonController.text,
                                   );
                                   print('Adding employee: $addRegisterEmp');
                                   CherryToast.success(
@@ -267,6 +277,7 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
     );
   }
 }
+
 
 class HeaderClipper extends CustomClipper<Path> {
   @override
