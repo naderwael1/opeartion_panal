@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:bloc_v2/add_register/add_register_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class AddRegisterEmp extends StatefulWidget {
   const AddRegisterEmp({Key? key}) : super(key: key);
@@ -21,8 +23,14 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController genderController = TextEditingController();
   TextEditingController salaryController = TextEditingController();
+  TextEditingController positionIdController = TextEditingController();
   TextEditingController statusController = TextEditingController();
+  TextEditingController branchIdController = TextEditingController();
+  TextEditingController sectionIdController = TextEditingController();
+  TextEditingController birthDateController = TextEditingController();
   TextEditingController addressController = TextEditingController();
+  TextEditingController dateHiredController = TextEditingController();
+
   int _selectedIndex = 1;
 
   bool isEditing = false;
@@ -47,7 +55,135 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
     genderController.clear();
     salaryController.clear();
     statusController.clear();
+    birthDateController.clear();
     addressController.clear();
+    dateHiredController.clear();
+    setState(() {
+      positionIdController.clear();
+      branchIdController.clear();
+      sectionIdController.clear();
+    });
+  }
+
+  List<Map<String, dynamic>> branch = [];
+  List<Map<String, dynamic>> positions = [];
+  List<dynamic> sections = [];
+  TextEditingController selectedPositionId1Controller = TextEditingController();
+  TextEditingController selectedPositionId2Controller = TextEditingController();
+  TextEditingController selectedPositionId3Controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBranch();
+    fetchSections();
+    fetchPositions();
+  }
+
+  Future<void> fetchBranch() async {
+    final url =
+        Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        setState(() {
+          branch = jsonBody['data']
+              .map<Map<String, dynamic>>((position) => {
+                    'branch_id': position['branch_id'],
+                    'branch_name': position['branch_name'],
+                  })
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load positions');
+      }
+    } catch (e) {
+      print('Error loading positions: $e');
+    }
+  }
+
+  Future<void> fetchSections() async {
+    final url = Uri.parse('http://192.168.56.1:4000/admin/branch/sections/1');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body)['data']['sections'];
+        setState(() {
+          sections = jsonData
+              .map((section) => {
+                    'id': section['id'],
+                    'name': section['name'],
+                    'manager': section['manager'],
+                    // You can add more fields if needed
+                  })
+              .toList();
+        });
+      } else {
+        print('Failed to load sections');
+      }
+    } catch (e) {
+      print('Error fetching sections: $e');
+    }
+  }
+
+  Future<void> fetchPositions() async {
+    final url = Uri.parse(
+        'http://192.168.56.1:4000/admin/employees/positions-list');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        setState(() {
+          positions = (jsonBody['data'] as List).map((position) {
+            return {
+              'position_id': position['position_id'],
+              'position': position['position'],
+            };
+          }).toList();
+        });
+      } else {
+        throw Exception('Failed to load positions');
+      }
+    } catch (e) {
+      print('Error loading positions: $e');
+    }
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      // Format the picked date to show only the date part (yyyy-MM-dd)
+      String formattedDate = picked.toLocal().toString().split(' ')[0];
+
+      setState(() {
+        birthDateController.text = formattedDate; // Update birthDateController
+      });
+    }
+  }
+
+  Future<void> _HiredDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      // Format the picked date to show only the date part (yyyy-MM-dd)
+      String formattedDate = picked.toLocal().toString().split(' ')[0];
+
+      setState(() {
+        dateHiredController.text = formattedDate; // Update dateHiredController
+      });
+    }
   }
 
   @override
@@ -69,7 +205,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                             top: 20.0), // Padding above the toolbar
                         child: CustomToolBar(titles: const [
                           "Add Employee",
-                          "All Positions",
+                          "Add Position",
                           "Attendance",
                           "List of State",
                           "Profile"
@@ -187,21 +323,6 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         },
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        controller: addressController,
-                        key: const ValueKey('Address'),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Address',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Address';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
                         value: genderController.text.isEmpty
                             ? null
@@ -250,6 +371,33 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         },
                       ),
                       const SizedBox(height: 20),
+                      DropdownButtonFormField<int>(
+                        value: positionIdController.text.isEmpty
+                            ? null
+                            : int.tryParse(positionIdController.text),
+                        onChanged: (newValue) {
+                          setState(() {
+                            positionIdController.text =
+                                newValue?.toString() ?? '';
+                          });
+                        },
+                        items: positions.map((position) {
+                          return DropdownMenuItem<int>(
+                            value: position['position_id'],
+                            child: Text(position['position']),
+                          );
+                        }).toList(),
+                        decoration: inputDecoration.copyWith(
+                          labelText: 'position',
+                        ),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please select a position changer id';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
                         value: statusController.text.isEmpty
                             ? null
@@ -284,6 +432,113 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         },
                       ),
                       const SizedBox(height: 30),
+                      DropdownButtonFormField<int>(
+                        value: branchIdController.text.isEmpty
+                            ? null
+                            : int.tryParse(branchIdController.text),
+                        onChanged: (newValue) {
+                          setState(() {
+                            branchIdController.text =
+                                newValue?.toString() ?? '';
+                          });
+                        },
+                        items: branch.map((position) {
+                          return DropdownMenuItem<int>(
+                            value: position['branch_id'],
+                            child: Text(position['branch_name']),
+                          );
+                        }).toList(),
+                        decoration: inputDecoration.copyWith(
+                          labelText: 'Branch Name',
+                        ),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please select a Branch Name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      DropdownButtonFormField<int>(
+                        value: sectionIdController.text.isEmpty
+                            ? null
+                            : int.tryParse(sectionIdController.text),
+                        onChanged: (newValue) {
+                          setState(() {
+                            sectionIdController.text =
+                                newValue?.toString() ?? '';
+                          });
+                        },
+                        items: sections.map((section) {
+                          return DropdownMenuItem<int>(
+                            value: section['id'],
+                            child: Text(section['name']),
+                          );
+                        }).toList(),
+                        decoration: inputDecoration.copyWith(
+                          labelText: 'Section Name',
+                        ),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please select a Section Name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: birthDateController,
+                        decoration: const InputDecoration(
+                          labelText: 'BirthDate',
+                          filled: true,
+                          prefixIcon: const Icon(Icons.calendar_today),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                        ),
+                        readOnly: true,
+                        onTap: () {
+                          _selectDate();
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        keyboardType: TextInputType.text,
+                        controller: addressController,
+                        key: const ValueKey('Address'),
+                        decoration: inputDecoration.copyWith(
+                          labelText: 'Address',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter Address';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 30),
+                      TextField(
+                        controller: dateHiredController,
+                        decoration: const InputDecoration(
+                          labelText: 'Date Hired',
+                          filled: true,
+                          prefixIcon: const Icon(Icons.calendar_today),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                        ),
+                        readOnly: true,
+                        onTap: () {
+                          _HiredDate();
+                        },
+                      ),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -307,8 +562,13 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                     lastName: lastNameController.text,
                                     gender: genderController.text,
                                     salary: salaryController.text,
+                                    positionId: positionIdController.text,
                                     status: statusController.text,
-                                    address: addressController.text
+                                    branchId: branchIdController.text,
+                                    sectionId: sectionIdController.text,
+                                    birthDate: birthDateController.text,
+                                    address: addressController.text,
+                                    dateHired: dateHiredController.text,
                                   );
                                   print('Adding employee: $addRegisterEmp');
                                   CherryToast.success(
