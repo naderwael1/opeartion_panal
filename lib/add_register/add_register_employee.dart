@@ -2,6 +2,7 @@ import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.d
 import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/custom_tool_bar.dart';
 import 'package:bloc_v2/add_register/style.dart';
+import 'package:bloc_v2/screens/attendanceIn.dart';
 import 'package:bloc_v2/screens/employe_schedule.dart';
 import 'package:bloc_v2/screens/employee_vacation.dart';
 import 'package:flutter/material.dart';
@@ -207,7 +208,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           "Add Position",
                           "Employee Schedule",
                           "Employee Vacation",
-                          "Profile"
+                          "Time In Attendance"
                         ], icons: const [
                           Icons.add_business_rounded,
                           Icons.workspaces,
@@ -248,7 +249,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const AddPositionScreen())); //post att in and out
+                                        const Attendancein())); //post att in and out
                           }
                         ]),
                       ),
