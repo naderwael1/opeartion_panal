@@ -208,7 +208,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           "Add Position",
                           "Employee Schedule",
                           "Employee Vacation",
-                          "Time In Attendance"
+                          "Time In|Out Attendance"
                         ], icons: const [
                           Icons.add_business_rounded,
                           Icons.workspaces,

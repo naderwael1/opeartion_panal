@@ -126,7 +126,7 @@ class _Attendancein extends State<Attendancein> {
                       ),
                       const Center(
                         child: Text(
-                          'Add Employee Attendance In',
+                          'Employee Attendance In | Out',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
