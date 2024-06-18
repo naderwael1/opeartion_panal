@@ -1,50 +1,27 @@
-import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
+import 'dart:convert';
 import 'package:bloc_v2/add_register/style.dart';
-import 'package:bloc_v2/screens/employe_schedule_model.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:bloc_v2/screens/employee_vacation_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
-import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class AddEmployeeSchedule extends StatefulWidget {
-  const AddEmployeeSchedule({Key? key}) : super(key: key);
+class AddEmployeeVacation extends StatefulWidget {
+  const AddEmployeeVacation({Key? key}) : super(key: key);
 
   @override
-  State<AddEmployeeSchedule> createState() => _AddEmployeeSchedule();
+  State<AddEmployeeVacation> createState() => _AddEmployeeVacation();
 }
 
-class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
+class _AddEmployeeVacation extends State<AddEmployeeVacation> {
   TextEditingController employeeIddController = TextEditingController();
-  TextEditingController shiftStartTimeController = TextEditingController();
-  TextEditingController shiftEndTimeController = TextEditingController();
+  TextEditingController vacationStartDateController = TextEditingController();
+  TextEditingController vacationReasonController = TextEditingController();
+  TextEditingController vacationEndController = TextEditingController();
 
   int _selectedIndex = 1;
-
   bool isEditing = false;
   final _formKey = GlobalKey<FormState>();
-
-  void _onTabSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    switch (index) {
-      case 0:
-        // Navigate to a screen, for example
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => AllEmployeeScreen()));
-    }
-  }
-
-  void clearForm() {
-    shiftEndTimeController.clear();
-    shiftStartTimeController.clear();
-    setState(() {
-      employeeIddController.clear();
-    });
-  }
-
   List<Map<String, dynamic>> activeEmployees = [];
 
   @override
@@ -54,17 +31,18 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
   }
 
   Future<void> fetchActiveEmployees() async {
-    final url = Uri.parse('http://192.168.56.1:4000/admin/employees/active-employees-list');
+    final url = Uri.parse(
+        'http://192.168.56.1:4000/admin/employees/active-employees-list');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final jsonBody = json.decode(response.body);
         setState(() {
-          activeEmployees = jsonBody['data']
+          activeEmployees = (jsonBody['data'] as List)
               .map<Map<String, dynamic>>((employee) => {
-                'employee_id': employee['employee_id'],
-                'employee_name': employee['employee_name'],
-              })
+                    'employee_id': employee['employee_id'],
+                    'employee_name': employee['employee_name'],
+                  })
               .toList();
         });
       } else {
@@ -75,7 +53,7 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
     }
   }
 
-  Future<void> _selectDate() async {
+  Future<void> _selectDate(TextEditingController controller) async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -84,31 +62,20 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
     );
 
     if (picked != null) {
-      // Format the picked date to show only the date part (yyyy-MM-dd)
       String formattedDate = picked.toLocal().toString().split(' ')[0];
-
       setState(() {
-        shiftStartTimeController.text = formattedDate; // Update birthDateController
+        controller.text = formattedDate;
       });
     }
   }
 
-  Future<void> _HiredDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked != null) {
-      // Format the picked date to show only the date part (yyyy-MM-dd)
-      String formattedDate = picked.toLocal().toString().split(' ')[0];
-
-      setState(() {
-        shiftEndTimeController.text = formattedDate; // Update dateHiredController
-      });
-    }
+  void clearForm() {
+    vacationStartDateController.clear();
+    vacationReasonController.clear();
+    vacationEndController.clear();
+    setState(() {
+      employeeIddController.clear();
+    });
   }
 
   @override
@@ -121,13 +88,12 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
               ClipPath(
                 clipper: HeaderClipper(),
                 child: Container(
-                  height: 200, // Adjusted height to fit the toolbar and text
+                  height: 200,
                   color: baseColor,
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(
-                            top: 75.0), // Padding above the toolbar
+                        padding: const EdgeInsets.only(top: 75.0),
                       ),
                       const Center(
                         child: Text(
@@ -161,10 +127,10 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                                 newValue?.toString() ?? '';
                           });
                         },
-                        items: activeEmployees.map((section) {
+                        items: activeEmployees.map((employee) {
                           return DropdownMenuItem<int>(
-                            value: section['employee_id'],
-                            child: Text(section['employee_name']),
+                            value: employee['employee_id'],
+                            child: Text(employee['employee_name']),
                           );
                         }).toList(),
                         decoration: inputDecoration.copyWith(
@@ -172,47 +138,63 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                         ),
                         validator: (value) {
                           if (value == null) {
-                            return 'Please select a Employee Name';
+                            return 'Please select an Employee Name';
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 20),
                       TextField(
-                        controller: shiftStartTimeController,
+                        controller: vacationStartDateController,
                         decoration: const InputDecoration(
-                          labelText: 'Shift Start Time',
+                          labelText: 'Vacation Start Date',
                           filled: true,
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          enabledBorder: const OutlineInputBorder(
+                          prefixIcon: Icon(Icons.calendar_today),
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         readOnly: true,
                         onTap: () {
-                          _selectDate();
+                          _selectDate(vacationStartDateController);
                         },
                       ),
                       const SizedBox(height: 30),
                       TextField(
-                        controller: shiftEndTimeController,
+                        controller: vacationEndController,
                         decoration: const InputDecoration(
-                          labelText: 'Shift End Time',
+                          labelText: 'Vacation End Date',
                           filled: true,
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          enabledBorder: const OutlineInputBorder(
+                          prefixIcon: Icon(Icons.calendar_today),
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         readOnly: true,
                         onTap: () {
-                          _HiredDate();
+                          _selectDate(vacationEndController);
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: vacationReasonController,
+                        decoration: inputDecoration.copyWith(
+                          labelText: 'Vacation Reason',
+                        ),
+                        maxLength: 150,
+                        maxLines:
+                            null, // Allows the text field to grow with the content
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a reason for the vacation';
+                          }
+                          return null;
                         },
                       ),
                       const SizedBox(height: 20),
@@ -232,18 +214,20 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 try {
-                                  final addRegisterEmp =
-                                      await addEmployeeSchedule(
+                                  final addRegisterEmp = ModelEmployeeVacation(
                                     employeeId: employeeIddController.text,
-                                    shiftStartTime: shiftStartTimeController.text,
-                                    shiftEndTime: shiftEndTimeController.text,
+                                    vacationStartDate:
+                                        vacationStartDateController.text,
+                                    vacationEndDate: vacationEndController.text,
+                                    vacationReason:
+                                        vacationReasonController.text,
                                   );
                                   print('Adding employee: $addRegisterEmp');
                                   CherryToast.success(
                                     animationType: AnimationType.fromRight,
                                     toastPosition: Position.bottom,
                                     description: const Text(
-                                      "Employee Sechedule successfully",
+                                      "Employee Schedule successfully",
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ).show(context);
@@ -288,7 +272,7 @@ class HeaderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    path.lineTo(0, size.height - 30); // Adjusted height of the clip path
+    path.lineTo(0, size.height - 30);
     path.quadraticBezierTo(
       size.width / 2,
       size.height,
