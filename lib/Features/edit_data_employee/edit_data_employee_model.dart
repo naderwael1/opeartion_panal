@@ -18,19 +18,19 @@ Future<String> editSaleryEmployee({
         'changeReason': changeReason,
       },
     );
-
     if (response.statusCode == 200 || response.statusCode == 201) {
-      // Success
-      final jsonResponse = jsonDecode(response.body);
-      String message = jsonResponse['message']; // Extract the message
-      return message;
+      final addMenuItem = response.body; // Assuming the response body contains the data you need
+      print('Status: ${response.statusCode}');
+      print('Response: $addMenuItem');
+      return addMenuItem;
     } else {
-      // Failure
-      throw Exception(
-          'Failed to edit employee salary. Status code: ${response.statusCode}');
+      print('Status: ${response.statusCode}');
+      print('Response: ${response.body}');
+      throw Exception('Failed to add vacation: ${response.statusCode}');
     }
   } catch (e) {
-    throw Exception('Error editing employee salary: $e');
+    print('Error: $e');
+    throw Exception('Error adding vacation: $e');
   }
 }
 

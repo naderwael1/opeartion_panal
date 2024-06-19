@@ -32,10 +32,8 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
   TextEditingController newPhoneController = TextEditingController();
   TextEditingController newAddressController = TextEditingController();
   TextEditingController positionchangetypeController = TextEditingController();
-TextEditingController selectedPositionId1Controller = TextEditingController();
-TextEditingController selectedPositionId2Controller = TextEditingController();
-
-  
+  TextEditingController selectedPositionId1Controller = TextEditingController();
+  TextEditingController selectedPositionId2Controller = TextEditingController();
 
   List<Map<String, dynamic>> positions = [];
   int? selectedPositionId1; // State variable for the first dropdown
@@ -81,6 +79,7 @@ TextEditingController selectedPositionId2Controller = TextEditingController();
 
   final _formKeyAddress = GlobalKey<FormState>();
   final _formKeyPhone = GlobalKey<FormState>();
+
   void _onTabSelected(int index) {
     setState(() {
       _selectedIndex = index;
@@ -362,8 +361,8 @@ TextEditingController selectedPositionId2Controller = TextEditingController();
                   ),
                   const SizedBox(height: 30),
                   Form(
+                    key: _formKeyPhone, // Ensure the form key is assigned here
                     child: Column(
-                      key: _formKeyPhone,
                       children: [
                         TextFormField(
                           keyboardType: TextInputType.number,
@@ -414,169 +413,26 @@ TextEditingController selectedPositionId2Controller = TextEditingController();
                               icon: const Icon(Icons.upload),
                               label: const Text("Change Phone"),
                               onPressed: () async {
-                                try {
-                                  final editedEmployee =
-                                      await editPhoneEmployee(
-                                    employeeId: widget.employeeId,
-                                    oldPhone: oldPhoneController.text,
-                                    newPhone: newPhoneController.text,
-                                  );
-                                  print('Edit Phone employee: $editedEmployee');
-                                  CherryToast.success(
-                                    animationType: AnimationType.fromRight,
-                                    toastPosition: Position.bottom,
-                                    description: const Text(
-                                      "Edit Phone successfully",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ).show(context);
-                                  oldPhoneController.clear();
-                                  newPhoneController.clear();
-                                } catch (e) {
-                                  CherryToast.warning(
-                                    toastPosition: Position.bottom,
-                                    animationType: AnimationType.fromLeft,
-                                    description: const Text(
-                                      "Data is not valid or not complete",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ).show(context);
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 30),
-                        Form(
-                    key: _formKeySalarys,
-                    child: Column(
-                      children: [
-
-DropdownButtonFormField<int>(
-  value: selectedPositionId1Controller.text.isEmpty
-      ? null
-      : int.tryParse(selectedPositionId1Controller.text),
-  onChanged: (newValue) {
-    setState(() {
-      selectedPositionId1Controller.text = newValue?.toString() ?? '';
-    });
-  },
-  items: positions.map((position) {
-    return DropdownMenuItem<int>(
-      value: position['position_id'],
-      child: Text(position['position']),
-    );
-  }).toList(),
-  decoration: inputDecoration.copyWith(
-    labelText: 'position changer id',
-  ),
-  validator: (value) {
-    if (value == null) {
-      return 'Please select a position changer id';
-    }
-    return null;
-  },
-),
-                        const SizedBox(height: 30),
-
-DropdownButtonFormField<int>(
-  value: selectedPositionId2Controller.text.isEmpty
-      ? null
-      : int.tryParse(selectedPositionId2Controller.text),
-  onChanged: (newValue) {
-    setState(() {
-      selectedPositionId2Controller.text = newValue?.toString() ?? '';
-    });
-  },
-  items: positions.map((position) {
-    return DropdownMenuItem<int>(
-      value: position['position_id'],
-      child: Text(position['position']),
-    );
-  }).toList(),
-  decoration: inputDecoration.copyWith(
-    labelText: 'position changer id',
-  ),
-  validator: (value) {
-    if (value == null) {
-      return 'Please select a position changer id';
-    }
-    return null;
-  },
-),
-
-const SizedBox(height: 30),
-DropdownButtonFormField<String>(
-value: positionchangetypeController.text.isEmpty
-? null
-: positionchangetypeController.text,
-onChanged: (newValue) {
-setState(() {
-positionchangetypeController.text = newValue!;
-});
-},
-items: const [
-DropdownMenuItem(
-value: 'promote',
-child: Text('promote'),
-),
-],
-decoration: inputDecoration.copyWith(
-labelText: 'position change type',
-),
-validator: (value) {
-if (value == null || value.isEmpty) {
-return 'Please select a position change type';
-}
-return null;
-},
-),
-const SizedBox(height: 30),
-                        const SizedBox(height: 30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            ElevatedButton.icon(
-                              style: clearButtonStyle,
-                              icon: const Icon(Icons.clear),
-                              label: const Text("Clear"),
-                              onPressed: () async {
-                                clearForm();
-                                setState(() {
-                                  selectedPositionId1Controller.clear();
-                                  selectedPositionId2Controller.clear();
-                                  positionchangetypeController.clear();
-                                });
-                              },
-                            ),
-                            ElevatedButton.icon(
-                              style: elevatedButtonStyle,
-                              icon: const Icon(Icons.upload),
-                              label: const Text("Change Position"),
-                              onPressed: () async {
-                                if (_formKeySalarys.currentState!.validate()) {
+                                if (_formKeyPhone.currentState!.validate()) {
                                   try {
                                     final editedEmployee =
-                                        await editPositionEmployee(
-                                      employee_id: widget.employeeId,
-                                      position_changer_id: '1',
-                                      new_position: '15',
-                                      position_change_type: positionchangetypeController.text,
+                                        await editPhoneEmployee(
+                                      employeeId: widget.employeeId,
+                                      oldPhone: oldPhoneController.text,
+                                      newPhone: newPhoneController.text,
                                     );
                                     print(
-                                        'Edit position employee: $editedEmployee');
+                                        'Edit phone employee: $editedEmployee');
                                     CherryToast.success(
                                       animationType: AnimationType.fromRight,
                                       toastPosition: Position.bottom,
                                       description: const Text(
-                                        "Edit position successfully",
+                                        "Edit phone successfully",
                                         style: TextStyle(color: Colors.black),
                                       ),
                                     ).show(context);
-                                    clearForm();
-                                    setState(() {
-                                      changerIdController.text = '';
-                                    });
+                                    oldPhoneController.clear();
+                                    newPhoneController.clear();
                                   } catch (e) {
                                     // Print the error message
                                     print('Error: $e');
@@ -603,9 +459,185 @@ const SizedBox(height: 30),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
+                        const SizedBox(height: 30),
+                        Form(
+                          key: _formKeySalarys,
+                          child: Column(
+                            children: [
+                              DropdownButtonFormField<int>(
+                                value:
+                                    selectedPositionId1Controller.text.isEmpty
+                                        ? null
+                                        : int.tryParse(
+                                            selectedPositionId1Controller.text),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedPositionId1Controller.text =
+                                        newValue?.toString() ?? '';
+                                  });
+                                },
+                                items: positions.map((position) {
+                                  return DropdownMenuItem<int>(
+                                    value: position['position_id'],
+                                    child: Text(position['position']),
+                                  );
+                                }).toList(),
+                                decoration: inputDecoration.copyWith(
+                                  labelText: 'position changer id',
+                                ),
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select a position changer id';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 30),
+                              DropdownButtonFormField<int>(
+                                value:
+                                    selectedPositionId2Controller.text.isEmpty
+                                        ? null
+                                        : int.tryParse(
+                                            selectedPositionId2Controller.text),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedPositionId2Controller.text =
+                                        newValue?.toString() ?? '';
+                                  });
+                                },
+                                items: positions.map((position) {
+                                  return DropdownMenuItem<int>(
+                                    value: position['position_id'],
+                                    child: Text(position['position']),
+                                  );
+                                }).toList(),
+                                decoration: inputDecoration.copyWith(
+                                  labelText: 'position changer id',
+                                ),
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select a position changer id';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 30),
+                              DropdownButtonFormField<String>(
+                                value: positionchangetypeController.text.isEmpty
+                                    ? null
+                                    : positionchangetypeController.text,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    positionchangetypeController.text =
+                                        newValue!;
+                                  });
+                                },
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'promote',
+                                    child: Text('promote'),
+                                  ),
+                                ],
+                                decoration: inputDecoration.copyWith(
+                                  labelText: 'position change type',
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a position change type';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 30),
+                              const SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton.icon(
+                                    style: clearButtonStyle,
+                                    icon: const Icon(Icons.clear),
+                                    label: const Text("Clear"),
+                                    onPressed: () async {
+                                      clearForm();
+                                      setState(() {
+                                        selectedPositionId1Controller.clear();
+                                        selectedPositionId2Controller.clear();
+                                        positionchangetypeController.clear();
+                                      });
+                                    },
+                                  ),
+                                  ElevatedButton.icon(
+                                    style: elevatedButtonStyle,
+                                    icon: const Icon(Icons.upload),
+                                    label: const Text("Change Position"),
+                                    onPressed: () async {
+                                      if (_formKeySalarys.currentState!
+                                          .validate()) {
+                                        try {
+                                          final editedEmployee =
+                                              await editPositionEmployee(
+                                            employee_id: widget.employeeId,
+                                            position_changer_id:
+                                                selectedPositionId1Controller
+                                                    .text,
+                                            new_position:
+                                                selectedPositionId2Controller
+                                                    .text,
+                                            position_change_type:
+                                                positionchangetypeController
+                                                    .text,
+                                          );
+                                          print(
+                                              'Edit position employee: $editedEmployee');
+                                          CherryToast.success(
+                                            animationType:
+                                                AnimationType.fromRight,
+                                            toastPosition: Position.bottom,
+                                            description: const Text(
+                                              "Edit position successfully",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                          ).show(context);
+                                          selectedPositionId1Controller.clear();
+                                          selectedPositionId2Controller.clear();
+                                          positionchangetypeController.clear();
+                                          setState(() {
+                                            changerIdController.text = '';
+                                          });
+                                        } catch (e) {
+                                          // Print the error message
+                                          print('Error: $e');
+                                          CherryToast.error(
+                                            toastPosition: Position.bottom,
+                                            animationType:
+                                                AnimationType.fromRight,
+                                            description: const Text(
+                                              "Something went wrong!",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                          ).show(context);
+                                        }
+                                      } else {
+                                        CherryToast.warning(
+                                          toastPosition: Position.bottom,
+                                          animationType: AnimationType.fromLeft,
+                                          description: const Text(
+                                            "Data is not valid or not complete",
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        ).show(context);
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   )
