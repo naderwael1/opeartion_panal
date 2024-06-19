@@ -10,12 +10,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cherry_toast/cherry_toast.dart';
 
-class BranchMangerOpeartion extends StatefulWidget {
+class BranchManagerOperation extends StatefulWidget {
   @override
-  _BranchMangerOpeartionState createState() => _BranchMangerOpeartionState();
+  _BranchManagerOperationState createState() => _BranchManagerOperationState();
 }
 
-class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
+class _BranchManagerOperationState extends State<BranchManagerOperation> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> managerEmployees = [];
   List<Map<String, dynamic>> branches = [];
@@ -185,6 +185,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                     'healthy'
                   ],
                   managerEmployees: managerEmployees,
+                  branches: branches,
                   onSubmit: (values) async {
                     if (_formKey.currentState!.validate()) {
                       try {
@@ -197,18 +198,18 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                           vegetarian: values['vegetarian']!,
                           healthy: values['healthy']!,
                         );
-                        print('Adding Storage: $addStorage_Model');
+                        print('Adding Menu Item: $addStorage_Model');
                         CherryToast.success(
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
                           description: const Text(
-                            "Add Item Menu successfully",
+                            "Add Menu Item successfully",
                             style: TextStyle(color: Colors.black),
                           ),
                         ).show(context);
                         clearFormFields();
                       } catch (e) {
-                        print('Error adding storage: $e');
+                        print('Error adding menu item: $e');
                         CherryToast.error(
                           toastPosition: Position.bottom,
                           animationType: AnimationType.fromRight,
@@ -230,7 +231,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                       ).show(context);
                     }
                   },
-                  selectMinutes: _selectMinutes, // Pass the selectMinutes function here
+                  selectMinutes: _selectMinutes,
                 ),
                 FunctionInputTile(
                   functionName: 'add-ingredient',
@@ -244,7 +245,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                           recipeUnit: values['recipeUnit']!,
                           shipmentUnit: values['shipmentUnit']!,
                         );
-                        print('Adding Storage: $addStorage_Model');
+                        print('Adding Ingredient: $addStorage_Model');
                         CherryToast.success(
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
@@ -255,7 +256,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                         ).show(context);
                         clearFormFields();
                       } catch (e) {
-                        print('Error adding storage: $e');
+                        print('Error adding ingredient: $e');
                         CherryToast.error(
                           toastPosition: Position.bottom,
                           animationType: AnimationType.fromRight,
@@ -285,25 +286,25 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                   branches: branches,
                   sections: sections,
                   onSubmit: (values) async {
-                    if (_formKey.currentState!.validate()) {
+                      if (_formKey.currentState!.validate()) {
                       try {
                         final addStorage_Model = await addGeneralSectionModel(
                           branch_id: values['Branch Name']!,
                           section_id: values['section_id']!,
                           manager_id: values['manager_id']!,
                         );
-                        print('Adding Storage: $addStorage_Model');
+                        print('Adding Branch Section: $addStorage_Model');
                         CherryToast.success(
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
                           description: const Text(
-                            "Add Ingredient successfully",
+                            "Add Branch Section successfully",
                             style: TextStyle(color: Colors.black),
                           ),
                         ).show(context);
                         clearFormFields();
                       } catch (e) {
-                        print('Error adding storage: $e');
+                        print('Error adding branch section: $e');
                         CherryToast.error(
                           toastPosition: Position.bottom,
                           animationType: AnimationType.fromRight,
@@ -330,7 +331,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                   functionName: 'addIngredientToStock',
                   attributeNames: const ['branchId', 'ingredientId', 'ingredientQuantity'],
                   managerEmployees: managerEmployees,
-                  branches: branches, // Pass branches here
+                  branches: branches,
                   onSubmit: (values) {
                     // TODO: Call the post function for addIngredientToStock
                     // Example: PostFunction.addIngredientToStock(values);
@@ -351,18 +352,18 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                           itemStatus: values['itemStatus']!,
                           itemDiscount: values['itemDiscount']!,
                         );
-                        print('Adding Storage: $addStorage_Model');
+                        print('Adding Item to Branch Menu: $addStorage_Model');
                         CherryToast.success(
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
                           description: const Text(
-                            "Add Ingredient successfully",
+                            "Add Item to Branch Menu successfully",
                             style: TextStyle(color: Colors.black),
                           ),
                         ).show(context);
                         clearFormFields();
                       } catch (e) {
-                        print('Error adding storage: $e');
+                        print('Error adding item to branch menu: $e');
                         CherryToast.error(
                           toastPosition: Position.bottom,
                           animationType: AnimationType.fromRight,
@@ -816,7 +817,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'addIngredientToStock' && attributeName == 'branchId') {
+                      } else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'branchId') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<int>(
@@ -865,56 +866,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      }else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'branchId') {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: DropdownButtonFormField<int>(
-                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
-                            onChanged: (newValue) {
-                              setState(() {
-                                controller.text = newValue?.toString() ?? '';
-                              });
-                            },
-                            items: widget.branches!.map((branch) {
-                              return DropdownMenuItem<int>(
-                                value: branch['branch_id'],
-                                child: Text(branch['branch_name']),
-                              );
-                            }).toList(),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                  color: Colors.teal,
-                                  width: 1.5,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                  color: Colors.teal,
-                                  width: 1.5,
-                                ),
-                              ),
-                              labelText: attributeName,
-                              labelStyle: GoogleFonts.lato(color: Colors.teal),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                  color: Colors.teal,
-                                  width: 2.0,
-                                ),
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Please select a branch';
-                              }
-                              return null;
-                            },
-                          ),
-                        );
-                      }else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'itemStatus') {
+                      } else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'itemStatus') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<String>(
@@ -1010,7 +962,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
                             controller: controller,
-                            keyboardType: TextInputType.number, // Allow only numerical input
+                            keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
