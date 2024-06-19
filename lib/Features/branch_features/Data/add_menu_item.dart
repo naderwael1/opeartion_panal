@@ -34,10 +34,10 @@ Future<String> addMenuItem({
       // Failure
       print('Status: ${response.statusCode}');
       print('Response: ${response.body}');
-      throw Exception('Failed to add employee: ${response.statusCode}');
+      throw Exception('Failed to add menu item: ${response.statusCode}');
     }
   } catch (e) {
     print('Error: $e');
-    throw Exception('Error adding employee: $e');
+    throw Exception('Error adding menu item: $e');
   }
 }

@@ -365,7 +365,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
                           description: const Text(
-                            "Add Ingredient successfully",
+                            "Add Branch Section successfully",
                             style: TextStyle(color: Colors.black),
                           ),
                         ).show(context);
@@ -473,7 +473,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
                           description: const Text(
-                            "Add Ingredient successfully",
+                            "Add Item Branch Menu successfully",
                             style: TextStyle(color: Colors.black),
                           ),
                         ).show(context);
