@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-Future<String> EmployeeInModel({
+Future<String> AttendanceIn({
   required String scheduleId,
   required String employeeId,
   required String timeIn,
@@ -24,10 +24,10 @@ Future<String> EmployeeInModel({
       // Failure
       print('Status: ${response.statusCode}');
       print('Response: ${response.body}');
-      throw Exception('Failed to add employee: ${response.statusCode}');
+      throw Exception('Failed to add AttendanceInOut: ${response.statusCode}');
     }
   } catch (e) {
     print('Error: $e');
-    throw Exception('Error adding employee: $e');
+    throw Exception('Error adding AttendanceInOut: $e');
   }
 }

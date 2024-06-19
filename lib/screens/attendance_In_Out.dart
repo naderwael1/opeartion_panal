@@ -7,14 +7,14 @@ import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class AddEmployeeVacation extends StatefulWidget {
-  const AddEmployeeVacation({Key? key}) : super(key: key);
+class AttendanceInAndOut extends StatefulWidget {
+  const AttendanceInAndOut({Key? key}) : super(key: key);
 
   @override
-  State<AddEmployeeVacation> createState() => _AddEmployeeVacation();
+  State<AttendanceInAndOut> createState() => _AttendanceInAndOut();
 }
 
-class _AddEmployeeVacation extends State<AddEmployeeVacation> {
+class _AttendanceInAndOut extends State<AttendanceInAndOut> {
   TextEditingController employeeIddController = TextEditingController();
   TextEditingController vacationStartDateController = TextEditingController();
   TextEditingController vacationReasonController = TextEditingController();
