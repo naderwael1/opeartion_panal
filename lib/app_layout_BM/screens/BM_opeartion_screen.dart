@@ -1,6 +1,7 @@
 import 'package:bloc_v2/Features/branch_features/Data/add_menu_item.dart';
 import 'package:bloc_v2/Features/branch_features/models/add_general_section_model.dart';
 import 'package:bloc_v2/add_ingredient/add_ingredient_model.dart';
+import 'package:bloc_v2/add_ingredient/add_ingredient_toStock_model.dart';
 import 'package:bloc_v2/add_storage/add_storage_model.dart';
 import 'package:bloc_v2/app_layout_BM/screens/add_item_branch_menu_model.dart';
 import 'package:cherry_toast/resources/arrays.dart';
@@ -30,7 +31,8 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
   }
 
   Future<void> fetchManagerEmployees() async {
-    final url = Uri.parse('http://192.168.56.1:4000/admin/employees/manager-employees-list');
+    final url = Uri.parse(
+        'http://192.168.56.1:4000/admin/employees/manager-employees-list');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -52,7 +54,8 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
   }
 
   Future<void> fetchBranches() async {
-    final url = Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list');
+    final url =
+        Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -107,7 +110,8 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
 
     if (pickedTime != null) {
       setState(() {
-        String formattedTime = "00:" + pickedTime.minute.toString().padLeft(2, '0') + ":00";
+        String formattedTime =
+            "00:" + pickedTime.minute.toString().padLeft(2, '0') + ":00";
         controller.text = formattedTime;
       });
     }
@@ -129,7 +133,11 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
               children: [
                 FunctionInputTile(
                   functionName: 'add-storage',
-                  attributeNames: const ['Storage Name', 'storageAddress', 'managerId'],
+                  attributeNames: const [
+                    'Storage Name',
+                    'storageAddress',
+                    'managerId'
+                  ],
                   managerEmployees: managerEmployees,
                   onSubmit: (values) async {
                     if (_formKey.currentState!.validate()) {
@@ -230,11 +238,16 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                       ).show(context);
                     }
                   },
-                  selectMinutes: _selectMinutes, // Pass the selectMinutes function here
+                  selectMinutes:
+                      _selectMinutes, // Pass the selectMinutes function here
                 ),
                 FunctionInputTile(
                   functionName: 'add-ingredient',
-                  attributeNames: const ['Ingredient Name', 'recipeUnit', 'shipmentUnit'],
+                  attributeNames: const [
+                    'Ingredient Name',
+                    'recipeUnit',
+                    'shipmentUnit'
+                  ],
                   managerEmployees: managerEmployees,
                   onSubmit: (values) async {
                     if (_formKey.currentState!.validate()) {
@@ -280,12 +293,16 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                 ),
                 FunctionInputTile(
                   functionName: 'add_branch_section',
-                  attributeNames: const ['Branch Name', 'section_id', 'manager_id'],
+                  attributeNames: const [
+                    'Branch Name',
+                    'section_id',
+                    'manager_id'
+                  ],
                   managerEmployees: managerEmployees,
                   branches: branches,
                   sections: sections,
                   onSubmit: (values) async {
-                      if (_formKey.currentState!.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       try {
                         final addStorage_Model = await addGeneralSectionModel(
                           branch_id: values['Branch Name']!,
@@ -328,16 +345,64 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                 ),
                 FunctionInputTile(
                   functionName: 'addIngredientToStock',
-                  attributeNames: const ['branchId', 'ingredientId', 'ingredientQuantity'],
+                  attributeNames: const [
+                    'branchId',
+                    'ingredientId',
+                    'ingredientQuantity'
+                  ],
                   managerEmployees: managerEmployees,
-                  onSubmit: (values) {
-                    // TODO: Call the post function for addIngredientToStock
-                    // Example: PostFunction.addIngredientToStock(values);
+                  branches: branches, // Make sure this is passed
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addIngredientToStock_model(
+                          branchId: values['branchId']!,
+                          ingredientId: values['ingredientId']!,
+                          ingredientQuantity: values['ingredientQuantity']!,
+                        );
+                        print('Adding Ingredient To Stock: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Ingredient To the Stock successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error adding Ingredient To the Stock: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
                   functionName: 'addItemBranchMenu',
-                  attributeNames: const ['branchId', 'itemId', 'itemPrice', 'itemStatus', 'itemDiscount'],
+                  attributeNames: const [
+                    'branchId',
+                    'itemId',
+                    'itemPrice',
+                    'itemStatus',
+                    'itemDiscount'
+                  ],
                   managerEmployees: managerEmployees,
                   branches: branches,
                   onSubmit: (values) async {
@@ -350,7 +415,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                           itemStatus: values['itemStatus']!,
                           itemDiscount: values['itemDiscount']!,
                         );
-                        print('Adding Storage: $addStorage_Model');
+                        print('Adding Item to Branch Menu: $addStorage_Model');
                         CherryToast.success(
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
@@ -423,7 +488,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
   @override
   void initState() {
     super.initState();
-    _textControllers = widget.attributeNames.map((_) => TextEditingController()).toList();
+    _textControllers =
+        widget.attributeNames.map((_) => TextEditingController()).toList();
   }
 
   @override
@@ -466,7 +532,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
             ],
           ),
           child: ExpansionTile(
-            title: Text(widget.functionName, style: GoogleFonts.lato(fontSize: 18, color: Colors.teal)),
+            title: Text(widget.functionName,
+                style: GoogleFonts.lato(fontSize: 18, color: Colors.teal)),
             onExpansionChanged: (expanded) {
               _toggleExpand();
             },
@@ -479,11 +546,14 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                       int idx = entry.key;
                       TextEditingController controller = entry.value;
                       String attributeName = widget.attributeNames[idx];
-                      if (widget.functionName == 'add-storage' && attributeName == 'managerId') {
+                      if (widget.functionName == 'add-storage' &&
+                          attributeName == 'managerId') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<int>(
-                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
                             onChanged: (newValue) {
                               setState(() {
                                 controller.text = newValue?.toString() ?? '';
@@ -528,11 +598,64 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (attributeName == 'vegetarian' || attributeName == 'healthy') {
+                      } else if (widget.functionName == 'addIngredientToStock' && attributeName == 'branchId') {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: DropdownButtonFormField<int>(
+      value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+      onChanged: (newValue) {
+        setState(() {
+          controller.text = newValue?.toString() ?? '';
+        });
+      },
+      items: widget.branches?.map((branch) {
+        return DropdownMenuItem<int>(
+          value: branch['branch_id'],
+          child: Text(branch['branch_name']),
+        );
+      }).toList() ?? [],
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 1.5,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 1.5,
+          ),
+        ),
+        labelText: attributeName,
+        labelStyle: GoogleFonts.lato(color: Colors.teal),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 2.0,
+          ),
+        ),
+      ),
+      validator: (value) {
+        if (value == null) {
+          return 'Please select a branch';
+        }
+        return null;
+      },
+    ),
+  );
+}
+else if (attributeName == 'vegetarian' ||
+                          attributeName == 'healthy') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<String>(
-                            value: controller.text.isEmpty ? null : controller.text,
+                            value: controller.text.isEmpty
+                                ? null
+                                : controller.text,
                             onChanged: (newValue) {
                               setState(() {
                                 controller.text = newValue ?? '';
@@ -577,7 +700,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'add-menu-item' && attributeName == 'prepTime') {
+                      } else if (widget.functionName == 'add-menu-item' &&
+                          attributeName == 'prepTime') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
@@ -619,17 +743,27 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'add-ingredient' && (attributeName == 'recipeUnit' || attributeName == 'shipmentUnit')) {
+                      } else if (widget.functionName == 'add-ingredient' &&
+                          (attributeName == 'recipeUnit' ||
+                              attributeName == 'shipmentUnit')) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<String>(
-                            value: controller.text.isEmpty ? null : controller.text,
+                            value: controller.text.isEmpty
+                                ? null
+                                : controller.text,
                             onChanged: (newValue) {
                               setState(() {
                                 controller.text = newValue?.toLowerCase() ?? '';
                               });
                             },
-                            items: ['Gram', 'Kilogram', 'Liter', 'Milliliter', 'Piece'].map((option) {
+                            items: [
+                              'Gram',
+                              'Kilogram',
+                              'Liter',
+                              'Milliliter',
+                              'Piece'
+                            ].map((option) {
                               return DropdownMenuItem<String>(
                                 value: option.toLowerCase(),
                                 child: Text(option),
@@ -668,11 +802,14 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'add_branch_section' && attributeName == 'Branch Name') {
+                      } else if (widget.functionName == 'add_branch_section' &&
+                          attributeName == 'Branch Name') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<int>(
-                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
                             onChanged: (newValue) {
                               setState(() {
                                 controller.text = newValue?.toString() ?? '';
@@ -717,11 +854,14 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'add_branch_section' && attributeName == 'section_id') {
+                      } else if (widget.functionName == 'add_branch_section' &&
+                          attributeName == 'section_id') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<int>(
-                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
                             onChanged: (newValue) {
                               setState(() {
                                 controller.text = newValue?.toString() ?? '';
@@ -766,11 +906,14 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'add_branch_section' && attributeName == 'manager_id') {
+                      } else if (widget.functionName == 'add_branch_section' &&
+                          attributeName == 'manager_id') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<int>(
-                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
                             onChanged: (newValue) {
                               setState(() {
                                 controller.text = newValue?.toString() ?? '';
@@ -815,11 +958,14 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'branchId') {
+                      } else if (widget.functionName == 'addItemBranchMenu' &&
+                          attributeName == 'branchId') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<int>(
-                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
                             onChanged: (newValue) {
                               setState(() {
                                 controller.text = newValue?.toString() ?? '';
@@ -864,17 +1010,24 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'itemStatus') {
+                      } else if (widget.functionName == 'addItemBranchMenu' &&
+                          attributeName == 'itemStatus') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<String>(
-                            value: controller.text.isEmpty ? null : controller.text,
+                            value: controller.text.isEmpty
+                                ? null
+                                : controller.text,
                             onChanged: (newValue) {
                               setState(() {
                                 controller.text = newValue?.toLowerCase() ?? '';
                               });
                             },
-                            items: ['Active', 'Inactive', 'Not enough ingredients'].map((option) {
+                            items: [
+                              'Active',
+                              'Inactive',
+                              'Not enough ingredients'
+                            ].map((option) {
                               return DropdownMenuItem<String>(
                                 value: option.toLowerCase(),
                                 child: Text(option),
@@ -913,7 +1066,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'itemPrice') {
+                      } else if (widget.functionName == 'addItemBranchMenu' &&
+                          attributeName == 'itemPrice') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
@@ -999,7 +1153,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                     ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(Colors.teal),
-                        padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
+                        padding: MaterialStateProperty.all(
+                            EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
                         shape: MaterialStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -1016,7 +1171,9 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                       onPressed: () async {
                         if (Form.of(context)?.validate() ?? false) {
                           final values = {
-                            for (int i = 0; i < widget.attributeNames.length; i++)
+                            for (int i = 0;
+                                i < widget.attributeNames.length;
+                                i++)
                               widget.attributeNames[i]: _textControllers[i].text
                           };
                           widget.onSubmit(values);

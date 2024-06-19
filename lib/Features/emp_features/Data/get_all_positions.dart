@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 Future<List<PositionModel>> fetchPositions() async {
   final response = await http.get(
     Uri.parse(
-        'http://localhost:4000/admin/employees/positions-list'), // Replace with your actual API endpoint
+        'http://192.168.56.1:4000/admin/employees/positions-list'), // Replace with your actual API endpoint
     headers: {'Content-Type': 'application/json'},
   );
 
