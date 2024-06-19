@@ -6,7 +6,6 @@ import 'Features/emp_features/presentation/all_emp_screen.dart';
 import 'Features/emp_features/presentation/active_emp_screen.dart';
 import 'spincircle.dart';
 import 'Features/emp_features/presentation/add_position_screen.dart';
-import 'add_storage/add_storage_screen.dart';
 
 //
 class SpincircleAll extends StatefulWidget {
@@ -50,14 +49,6 @@ class _SpincircleState extends State<SpincircleAll> {
           ],
           circleItems: [
             SCItem(icon: Icon(Icons.person_add_alt), onPressed: () {}),
-            SCItem(
-                icon: const Icon(Icons.add_home_work),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AddStorage()));
-                }),
             SCItem(
                 icon: Icon(Icons.workspace_premium_rounded),
                 onPressed: () {

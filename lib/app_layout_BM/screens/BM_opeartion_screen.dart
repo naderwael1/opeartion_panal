@@ -1,3 +1,4 @@
+import 'package:bloc_v2/Features/branch_features/Data/add_menu_item.dart';
 import 'package:bloc_v2/add_storage/add_storage_model.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,20 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
 
   void clearFormFields() {
     _formKey.currentState?.reset();
+  }
+
+  Future<void> _selectMinutes(TextEditingController controller) async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: 0, minute: 0),
+    );
+
+    if (pickedTime != null) {
+      setState(() {
+        String formattedTime = "00:" + pickedTime.minute.toString().padLeft(2, '0') + ":00";
+        controller.text = formattedTime;
+      });
+    }
   }
 
   @override
@@ -119,10 +134,52 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                     'healthy'
                   ],
                   managerEmployees: managerEmployees,
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add-menu-item
-                    // Example: PostFunction.addMenuItem(values);
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addMenuItem(
+                          itemName: values['Item Name']!,
+                          itemDesc: values['itemDesc']!,
+                          categoryID: values['Category']!,
+                          prepTime: values['prepTime']!,
+                          picPath: values['picPath']!,
+                          vegetarian: values['vegetarian']!,
+                          healthy: values['healthy']!,
+                        );
+                        print('Adding Storage: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Item Menu successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error adding storage: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
+                  selectMinutes: _selectMinutes, // Pass the selectMinutes function here
                 ),
                 FunctionInputTile(
                   functionName: 'add-ingredient',
@@ -174,12 +231,14 @@ class FunctionInputTile extends StatefulWidget {
   final List<String> attributeNames;
   final List<Map<String, dynamic>> managerEmployees;
   final void Function(Map<String, String> values) onSubmit;
+  final Future<void> Function(TextEditingController controller)? selectMinutes; // Add the selectMinutes function parameter
 
   FunctionInputTile({
     required this.functionName,
     required this.attributeNames,
     required this.managerEmployees,
     required this.onSubmit,
+    this.selectMinutes, // Initialize the selectMinutes function parameter
   });
 
   @override
@@ -248,7 +307,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                     ..._textControllers.asMap().entries.map((entry) {
                       int idx = entry.key;
                       TextEditingController controller = entry.value;
-                      if (widget.attributeNames[idx] == 'managerId' && widget.functionName == 'add-storage') {
+                      String attributeName = widget.attributeNames[idx];
+                      if (widget.functionName == 'add-storage' && attributeName == 'managerId') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<int>(
@@ -297,6 +357,97 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
+                      } else if (attributeName == 'vegetarian' || attributeName == 'healthy') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<String>(
+                            value: controller.text.isEmpty ? null : controller.text,
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue ?? '';
+                              });
+                            },
+                            items: ['True', 'False'].map((option) {
+                              return DropdownMenuItem<String>(
+                                value: option,
+                                child: Text(option),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select an option';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.functionName == 'add-menu-item' && attributeName == 'prepTime') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: controller,
+                            readOnly: true,
+                            onTap: () {
+                              widget.selectMinutes!(controller);
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select minutes';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
                       } else {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -317,7 +468,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                                   width: 1.5,
                                 ),
                               ),
-                              labelText: widget.attributeNames[idx],
+                              labelText: attributeName,
                               labelStyle: GoogleFonts.lato(color: Colors.teal),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
