@@ -1,4 +1,5 @@
 import 'package:bloc_v2/Features/branch_features/Data/add_menu_item.dart';
+import 'package:bloc_v2/Features/branch_features/models/add_general_section_model.dart';
 import 'package:bloc_v2/add_ingredient/add_ingredient_model.dart';
 import 'package:bloc_v2/add_storage/add_storage_model.dart';
 import 'package:cherry_toast/resources/arrays.dart';
@@ -16,11 +17,15 @@ class BranchMangerOpeartion extends StatefulWidget {
 class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> managerEmployees = [];
+  List<Map<String, dynamic>> branches = [];
+  List<Map<String, dynamic>> sections = [];
 
   @override
   void initState() {
     super.initState();
     fetchManagerEmployees();
+    fetchBranches();
+    fetchSections();
   }
 
   Future<void> fetchManagerEmployees() async {
@@ -42,6 +47,50 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
       }
     } catch (e) {
       print('Error loading manager employees: $e');
+    }
+  }
+
+  Future<void> fetchBranches() async {
+    final url = Uri.parse('http://localhost:4000/admin/branch/branches-list');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        setState(() {
+          branches = (jsonBody['data'] as List)
+              .map<Map<String, dynamic>>((branch) => {
+                    'branch_id': branch['branch_id'],
+                    'branch_name': branch['branch_name'],
+                  })
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load branches');
+      }
+    } catch (e) {
+      print('Error loading branches: $e');
+    }
+  }
+
+  Future<void> fetchSections() async {
+    final url = Uri.parse('http://192.168.56.1:4000/admin/branch/sections/1');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        setState(() {
+          sections = (jsonBody['data']['sections'] as List)
+              .map<Map<String, dynamic>>((section) => {
+                    'id': section['id'],
+                    'name': section['name'],
+                  })
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load sections');
+      }
+    } catch (e) {
+      print('Error loading sections: $e');
     }
   }
 
@@ -232,9 +281,48 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                   functionName: 'add_branch_section',
                   attributeNames: const ['Branch Name', 'section_id', 'manager_id'],
                   managerEmployees: managerEmployees,
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add_branch_section
-                    // Example: PostFunction.addBranchSection(values);
+                  branches: branches,
+                  sections: sections,
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addGeneralSectionModel(
+                          branch_id: values['Branch Name']!,
+                          section_id: values['section_id']!,
+                          manager_id: values['manager_id']!,
+                        );
+                        print('Adding Storage: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Ingredient successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error adding storage: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
@@ -268,6 +356,8 @@ class FunctionInputTile extends StatefulWidget {
   final String functionName;
   final List<String> attributeNames;
   final List<Map<String, dynamic>> managerEmployees;
+  final List<Map<String, dynamic>>? branches;
+  final List<Map<String, dynamic>>? sections;
   final void Function(Map<String, String> values) onSubmit;
   final Future<void> Function(TextEditingController controller)? selectMinutes;
 
@@ -276,6 +366,8 @@ class FunctionInputTile extends StatefulWidget {
     required this.attributeNames,
     required this.managerEmployees,
     required this.onSubmit,
+    this.branches,
+    this.sections,
     this.selectMinutes,
   });
 
@@ -535,6 +627,153 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
+                      } else if (widget.functionName == 'add_branch_section' && attributeName == 'Branch Name') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<int>(
+                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue?.toString() ?? '';
+                              });
+                            },
+                            items: widget.branches!.map((branch) {
+                              return DropdownMenuItem<int>(
+                                value: branch['branch_id'],
+                                child: Text(branch['branch_name']),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select a branch';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.functionName == 'add_branch_section' && attributeName == 'section_id') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<int>(
+                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue?.toString() ?? '';
+                              });
+                            },
+                            items: widget.sections!.map((section) {
+                              return DropdownMenuItem<int>(
+                                value: section['id'],
+                                child: Text(section['name']),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select a section';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.functionName == 'add_branch_section' && attributeName == 'manager_id') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<int>(
+                            value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue?.toString() ?? '';
+                              });
+                            },
+                            items: widget.managerEmployees.map((employee) {
+                              return DropdownMenuItem<int>(
+                                value: employee['employee_id'],
+                                child: Text(employee['employee_name']),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select a manager';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
                       } else {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -637,4 +876,3 @@ class MyCustomClipper extends CustomClipper<Path> {
     return false;
   }
 }
-
