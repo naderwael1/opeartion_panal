@@ -128,8 +128,8 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
   }
 
   Future<void> fetchPositions() async {
-    final url = Uri.parse(
-        'http://192.168.56.1:4000/admin/employees/positions-list');
+    final url =
+        Uri.parse('http://192.168.56.1:4000/admin/employees/positions-list');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -486,22 +486,28 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         },
                       ),
                       const SizedBox(height: 20),
-                      TextField(
+                      TextFormField(
                         controller: birthDateController,
                         decoration: const InputDecoration(
                           labelText: 'BirthDate',
                           filled: true,
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          enabledBorder: const OutlineInputBorder(
+                          prefixIcon: Icon(Icons.calendar_today),
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         readOnly: true,
                         onTap: () {
                           _selectDate();
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a birth date';
+                          }
+                          return null;
                         },
                       ),
                       const SizedBox(height: 20),
@@ -520,22 +526,28 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         },
                       ),
                       const SizedBox(height: 30),
-                      TextField(
+                      TextFormField(
                         controller: dateHiredController,
                         decoration: const InputDecoration(
                           labelText: 'Date Hired',
                           filled: true,
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          enabledBorder: const OutlineInputBorder(
+                          prefixIcon: Icon(Icons.calendar_today),
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         readOnly: true,
                         onTap: () {
                           _HiredDate();
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a hire date';
+                          }
+                          return null;
                         },
                       ),
                       const SizedBox(height: 20),
@@ -570,7 +582,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                     address: addressController.text,
                                     dateHired: dateHiredController.text,
                                   );
-                                  print('Adding employee: $addRegisterEmp');
+                                  print('Employee registered: $addRegisterEmp');
                                   CherryToast.success(
                                     animationType: AnimationType.fromRight,
                                     toastPosition: Position.bottom,
