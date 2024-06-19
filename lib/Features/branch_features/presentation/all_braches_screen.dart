@@ -2,7 +2,6 @@ import 'package:bloc_v2/Features/branch_features/presentation/category_screen.da
 import 'package:bloc_v2/Features/branch_features/presentation/recipes_screeen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/custom_tool_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_offline/flutter_offline.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bloc_v2/Features/branch_features/Data/get_all_branchs.dart';
 import 'package:bloc_v2/Features/branch_features/models/branch_model.dart';
