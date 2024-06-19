@@ -22,6 +22,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
   List<Map<String, dynamic>> branches = [];
   List<Map<String, dynamic>> sections = [];
   List<Map<String, dynamic>> menuItems = [];
+  List<Map<String, dynamic>> categories = [];
 
   @override
   void initState() {
@@ -30,29 +31,54 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
     fetchBranches();
     fetchSections();
     fetchMenuItems();
+    fetchCategories();
+  }
+
+  Future<void> fetchCategories() async {
+    final url =
+        Uri.parse('http://192.168.56.1:4000/admin/branch/categories-list');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        setState(() {
+          categories = (jsonBody['data'] as List)
+              .map<Map<String, dynamic>>((category) => {
+                    'category_id': category['category_id'],
+                    'category_name': category['category_name'],
+                  })
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load categories');
+      }
+    } catch (e) {
+      print('Error loading categories: $e');
+    }
   }
 
   Future<void> fetchMenuItems() async {
-  final url = Uri.parse('http://192.168.56.1:4000/admin/branch/general-menu-list');
-  try {
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final jsonBody = json.decode(response.body);
-      setState(() {
-        menuItems = (jsonBody['data'] as List)
-            .map<Map<String, dynamic>>((item) => {
-                  'id': item['id'],
-                  'name': item['name'],
-                })
-            .toList();
-      });
-    } else {
-      throw Exception('Failed to load menu items');
+    final url =
+        Uri.parse('http://192.168.56.1:4000/admin/branch/general-menu-list');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        setState(() {
+          menuItems = (jsonBody['data'] as List)
+              .map<Map<String, dynamic>>((item) => {
+                    'id': item['id'],
+                    'name': item['name'],
+                  })
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load menu items');
+      }
+    } catch (e) {
+      print('Error loading menu items: $e');
     }
-  } catch (e) {
-    print('Error loading menu items: $e');
   }
-}
 
   Future<void> fetchManagerEmployees() async {
     final url = Uri.parse(
@@ -216,6 +242,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                     'vegetarian',
                     'healthy'
                   ],
+                  categories: categories, // Add this line
                   managerEmployees: managerEmployees,
                   onSubmit: (values) async {
                     if (_formKey.currentState!.validate()) {
@@ -240,7 +267,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                         ).show(context);
                         clearFormFields();
                       } catch (e) {
-                        print('Error adding storage: $e');
+                        print('Error add menu item: $e');
                         CherryToast.error(
                           toastPosition: Position.bottom,
                           animationType: AnimationType.fromRight,
@@ -379,7 +406,8 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                   onSubmit: (values) async {
                     if (_formKey.currentState!.validate()) {
                       try {
-                        final addStorage_Model = await addIngredientToStock_model(
+                        final addStorage_Model =
+                            await addIngredientToStock_model(
                           branchId: values['branchId']!,
                           ingredientId: values['ingredientId']!,
                           ingredientQuantity: values['ingredientQuantity']!,
@@ -490,6 +518,7 @@ class FunctionInputTile extends StatefulWidget {
   final List<Map<String, dynamic>>? branches;
   final List<Map<String, dynamic>>? sections;
   final List<Map<String, dynamic>>? menuItems;
+  final List<Map<String, dynamic>>? categories;
   final void Function(Map<String, String> values) onSubmit;
   final Future<void> Function(TextEditingController controller)? selectMinutes;
 
@@ -499,6 +528,7 @@ class FunctionInputTile extends StatefulWidget {
     required this.managerEmployees,
     required this.onSubmit,
     this.branches,
+    this.categories,
     this.menuItems,
     this.sections,
     this.selectMinutes,
@@ -625,149 +655,156 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.functionName == 'addIngredientToStock' && attributeName == 'branchId') {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: DropdownButtonFormField<int>(
-      value: controller.text.isEmpty ? null : int.tryParse(controller.text),
-      onChanged: (newValue) {
-        setState(() {
-          controller.text = newValue?.toString() ?? '';
-        });
-      },
-      items: widget.branches?.map((branch) {
-        return DropdownMenuItem<int>(
-          value: branch['branch_id'],
-          child: Text(branch['branch_name']),
-        );
-      }).toList() ?? [],
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 1.5,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 1.5,
-          ),
-        ),
-        labelText: attributeName,
-        labelStyle: GoogleFonts.lato(color: Colors.teal),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 2.0,
-          ),
-        ),
-      ),
-      validator: (value) {
-        if (value == null) {
-          return 'Please select a branch';
-        }
-        return null;
-      },
-    ),
-  );
-}
-else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'itemId') {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: DropdownButtonFormField<int>(
-      value: controller.text.isEmpty ? null : int.tryParse(controller.text),
-      onChanged: (newValue) {
-        setState(() {
-          controller.text = newValue?.toString() ?? '';
-        });
-      },
-      items: widget.menuItems?.map((item) {
-        return DropdownMenuItem<int>(
-          value: item['id'],
-          child: Text(item['name']),
-        );
-      }).toList(),
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 1.5,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 1.5,
-          ),
-        ),
-        labelText: attributeName,
-        labelStyle: GoogleFonts.lato(color: Colors.teal),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 2.0,
-          ),
-        ),
-      ),
-      validator: (value) {
-        if (value == null) {
-          return 'Please select an item';
-        }
-        return null;
-      },
-    ),
-  );
-} else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'itemDiscount') {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: TextFormField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 1.5,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 1.5,
-          ),
-        ),
-        labelText: attributeName,
-        labelStyle: GoogleFonts.lato(color: Colors.teal),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 2.0,
-          ),
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter a value';
-        }
-        if (double.tryParse(value) == null) {
-          return 'Please enter a valid number';
-        }
-        return null;
-      },
-    ),
-  );
-}
-else if (attributeName == 'vegetarian' ||
+                      } else if (widget.functionName ==
+                              'addIngredientToStock' &&
+                          attributeName == 'branchId') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<int>(
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue?.toString() ?? '';
+                              });
+                            },
+                            items: widget.branches?.map((branch) {
+                                  return DropdownMenuItem<int>(
+                                    value: branch['branch_id'],
+                                    child: Text(branch['branch_name']),
+                                  );
+                                }).toList() ??
+                                [],
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select a branch';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.functionName == 'addItemBranchMenu' &&
+                          attributeName == 'itemId') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<int>(
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue?.toString() ?? '';
+                              });
+                            },
+                            items: widget.menuItems?.map((item) {
+                              return DropdownMenuItem<int>(
+                                value: item['id'],
+                                child: Text(item['name']),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select an item';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.functionName == 'addItemBranchMenu' &&
+                          attributeName == 'itemDiscount') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a value';
+                              }
+                              if (double.tryParse(value) == null) {
+                                return 'Please enter a valid number';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (attributeName == 'vegetarian' ||
                           attributeName == 'healthy') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -1020,6 +1057,58 @@ else if (attributeName == 'vegetarian' ||
                             validator: (value) {
                               if (value == null) {
                                 return 'Please select a section';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.functionName == 'add-menu-item' &&
+                          attributeName == 'Category') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<int>(
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue?.toString() ?? '';
+                              });
+                            },
+                            items: widget.categories?.map((category) {
+                              return DropdownMenuItem<int>(
+                                value: category['category_id'],
+                                child: Text(category['category_name']),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select a category';
                               }
                               return null;
                             },
