@@ -21,6 +21,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
   List<Map<String, dynamic>> managerEmployees = [];
   List<Map<String, dynamic>> branches = [];
   List<Map<String, dynamic>> sections = [];
+  List<Map<String, dynamic>> menuItems = [];
 
   @override
   void initState() {
@@ -28,7 +29,30 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
     fetchManagerEmployees();
     fetchBranches();
     fetchSections();
+    fetchMenuItems();
   }
+
+  Future<void> fetchMenuItems() async {
+  final url = Uri.parse('http://192.168.56.1:4000/admin/branch/general-menu-list');
+  try {
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonBody = json.decode(response.body);
+      setState(() {
+        menuItems = (jsonBody['data'] as List)
+            .map<Map<String, dynamic>>((item) => {
+                  'id': item['id'],
+                  'name': item['name'],
+                })
+            .toList();
+      });
+    } else {
+      throw Exception('Failed to load menu items');
+    }
+  } catch (e) {
+    print('Error loading menu items: $e');
+  }
+}
 
   Future<void> fetchManagerEmployees() async {
     final url = Uri.parse(
@@ -405,6 +429,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                   ],
                   managerEmployees: managerEmployees,
                   branches: branches,
+                  menuItems: menuItems, // Add this line
                   onSubmit: (values) async {
                     if (_formKey.currentState!.validate()) {
                       try {
@@ -464,6 +489,7 @@ class FunctionInputTile extends StatefulWidget {
   final List<Map<String, dynamic>> managerEmployees;
   final List<Map<String, dynamic>>? branches;
   final List<Map<String, dynamic>>? sections;
+  final List<Map<String, dynamic>>? menuItems;
   final void Function(Map<String, String> values) onSubmit;
   final Future<void> Function(TextEditingController controller)? selectMinutes;
 
@@ -473,6 +499,7 @@ class FunctionInputTile extends StatefulWidget {
     required this.managerEmployees,
     required this.onSubmit,
     this.branches,
+    this.menuItems,
     this.sections,
     this.selectMinutes,
   });
@@ -642,6 +669,98 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
       validator: (value) {
         if (value == null) {
           return 'Please select a branch';
+        }
+        return null;
+      },
+    ),
+  );
+}
+else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'itemId') {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: DropdownButtonFormField<int>(
+      value: controller.text.isEmpty ? null : int.tryParse(controller.text),
+      onChanged: (newValue) {
+        setState(() {
+          controller.text = newValue?.toString() ?? '';
+        });
+      },
+      items: widget.menuItems?.map((item) {
+        return DropdownMenuItem<int>(
+          value: item['id'],
+          child: Text(item['name']),
+        );
+      }).toList(),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 1.5,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 1.5,
+          ),
+        ),
+        labelText: attributeName,
+        labelStyle: GoogleFonts.lato(color: Colors.teal),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 2.0,
+          ),
+        ),
+      ),
+      validator: (value) {
+        if (value == null) {
+          return 'Please select an item';
+        }
+        return null;
+      },
+    ),
+  );
+} else if (widget.functionName == 'addItemBranchMenu' && attributeName == 'itemDiscount') {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 1.5,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 1.5,
+          ),
+        ),
+        labelText: attributeName,
+        labelStyle: GoogleFonts.lato(color: Colors.teal),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.teal,
+            width: 2.0,
+          ),
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a value';
+        }
+        if (double.tryParse(value) == null) {
+          return 'Please enter a valid number';
         }
         return null;
       },
