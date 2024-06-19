@@ -54,7 +54,8 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
   }
 
   Future<void> fetchActiveEmployees() async {
-    final url = Uri.parse('http://192.168.56.1:4000/admin/employees/active-employees-list');
+    final url = Uri.parse(
+        'http://192.168.56.1:4000/admin/employees/active-employees-list');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -62,9 +63,9 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
         setState(() {
           activeEmployees = jsonBody['data']
               .map<Map<String, dynamic>>((employee) => {
-                'employee_id': employee['employee_id'],
-                'employee_name': employee['employee_name'],
-              })
+                    'employee_id': employee['employee_id'],
+                    'employee_name': employee['employee_name'],
+                  })
               .toList();
         });
       } else {
@@ -75,39 +76,74 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
     }
   }
 
-  Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
+  Future<void> _selectDateTime() async {
+    // Pick the date
+    DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
-    if (picked != null) {
-      // Format the picked date to show only the date part (yyyy-MM-dd)
-      String formattedDate = picked.toLocal().toString().split(' ')[0];
+    if (pickedDate != null) {
+      // Pick the time after the date has been picked
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
 
-      setState(() {
-        shiftStartTimeController.text = formattedDate; // Update birthDateController
-      });
+      if (pickedTime != null) {
+        // Combine the date and time into a single DateTime object
+        DateTime pickedDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+
+        // Format the picked date and time to show (yyyy-MM-dd HH:mm)
+        String formattedDateTime = pickedDateTime.toString();
+
+        setState(() {
+          shiftStartTimeController.text =
+              formattedDateTime; // Update shiftStartTimeController
+        });
+      }
     }
   }
 
   Future<void> _HiredDate() async {
-    DateTime? picked = await showDatePicker(
+    DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
-    if (picked != null) {
-      // Format the picked date to show only the date part (yyyy-MM-dd)
-      String formattedDate = picked.toLocal().toString().split(' ')[0];
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
 
-      setState(() {
-        shiftEndTimeController.text = formattedDate; // Update dateHiredController
-      });
+      if (pickedTime != null) {
+        DateTime finalDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+
+        String formattedDateTime =
+            "${finalDateTime.toLocal().toString().split(' ')[0]} ${pickedTime.format(context)}";
+
+        setState(() {
+          shiftEndTimeController.text =
+              formattedDateTime; // Update shiftEndTimeController
+        });
+      }
     }
   }
 
@@ -178,7 +214,7 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                         },
                       ),
                       const SizedBox(height: 20),
-                      TextField(
+                      TextFormField(
                         controller: shiftStartTimeController,
                         decoration: const InputDecoration(
                           labelText: 'Shift Start Time',
@@ -193,11 +229,17 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                         ),
                         readOnly: true,
                         onTap: () {
-                          _selectDate();
+                          _selectDateTime();
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the shift start time';
+                          }
+                          return null;
                         },
                       ),
                       const SizedBox(height: 30),
-                      TextField(
+                      TextFormField(
                         controller: shiftEndTimeController,
                         decoration: const InputDecoration(
                           labelText: 'Shift End Time',
@@ -213,6 +255,12 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                         readOnly: true,
                         onTap: () {
                           _HiredDate();
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the shift end time';
+                          }
+                          return null;
                         },
                       ),
                       const SizedBox(height: 20),
@@ -235,10 +283,11 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                                   final addRegisterEmp =
                                       await addEmployeeSchedule(
                                     employeeId: employeeIddController.text,
-                                    shiftStartTime: shiftStartTimeController.text,
+                                    shiftStartTime:
+                                        shiftStartTimeController.text,
                                     shiftEndTime: shiftEndTimeController.text,
                                   );
-                                  print('Adding employee: $addRegisterEmp');
+                                  print('Adding Sechedule: $addRegisterEmp');
                                   CherryToast.success(
                                     animationType: AnimationType.fromRight,
                                     toastPosition: Position.bottom,
