@@ -1,4 +1,5 @@
 import 'package:bloc_v2/Features/branch_features/Data/add_menu_item.dart';
+import 'package:bloc_v2/add_ingredient/add_ingredient_model.dart';
 import 'package:bloc_v2/add_storage/add_storage_model.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
@@ -185,9 +186,46 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                   functionName: 'add-ingredient',
                   attributeNames: const ['Ingredient Name', 'recipeUnit', 'shipmentUnit'],
                   managerEmployees: managerEmployees,
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add-ingredient
-                    // Example: PostFunction.addIngredient(values);
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addIngredient_model(
+                          name: values['Ingredient Name']!,
+                          recipeUnit: values['recipeUnit']!,
+                          shipmentUnit: values['shipmentUnit']!,
+                        );
+                        print('Adding Storage: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Ingredient successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error adding storage: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
@@ -231,14 +269,14 @@ class FunctionInputTile extends StatefulWidget {
   final List<String> attributeNames;
   final List<Map<String, dynamic>> managerEmployees;
   final void Function(Map<String, String> values) onSubmit;
-  final Future<void> Function(TextEditingController controller)? selectMinutes; // Add the selectMinutes function parameter
+  final Future<void> Function(TextEditingController controller)? selectMinutes;
 
   FunctionInputTile({
     required this.functionName,
     required this.attributeNames,
     required this.managerEmployees,
     required this.onSubmit,
-    this.selectMinutes, // Initialize the selectMinutes function parameter
+    this.selectMinutes,
   });
 
   @override
@@ -448,6 +486,55 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
+                      } else if (widget.functionName == 'add-ingredient' && (attributeName == 'recipeUnit' || attributeName == 'shipmentUnit')) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<String>(
+                            value: controller.text.isEmpty ? null : controller.text,
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue?.toLowerCase() ?? '';
+                              });
+                            },
+                            items: ['Gram', 'Kilogram', 'Liter', 'Milliliter', 'Piece'].map((option) {
+                              return DropdownMenuItem<String>(
+                                value: option.toLowerCase(),
+                                child: Text(option),
+                              );
+                            }).toList(),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a unit';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
                       } else {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -550,3 +637,4 @@ class MyCustomClipper extends CustomClipper<Path> {
     return false;
   }
 }
+
