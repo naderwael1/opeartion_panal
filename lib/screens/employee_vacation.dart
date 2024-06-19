@@ -157,43 +157,55 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                         },
                       ),
                       const SizedBox(height: 20),
-                      TextField(
-                        controller: vacationStartDateController,
-                        decoration: const InputDecoration(
-                          labelText: 'Vacation Start Date',
-                          filled: true,
-                          prefixIcon: Icon(Icons.calendar_today),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                        ),
-                        readOnly: true,
-                        onTap: () {
-                          _selectDate(vacationStartDateController);
-                        },
-                      ),
+                                TextFormField(
+            controller: vacationStartDateController,
+            decoration: const InputDecoration(
+              labelText: 'Vacation Start Date',
+              filled: true,
+              prefixIcon: Icon(Icons.calendar_today),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+            readOnly: true,
+            onTap: () {
+              _selectDate(vacationStartDateController);
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a valid date';
+              }
+              return null;
+            },
+          ),
                       const SizedBox(height: 30),
-                      TextField(
-                        controller: vacationEndController,
-                        decoration: const InputDecoration(
-                          labelText: 'Vacation End Date',
-                          filled: true,
-                          prefixIcon: Icon(Icons.calendar_today),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                        ),
-                        readOnly: true,
-                        onTap: () {
-                          _selectDate(vacationEndController);
-                        },
-                      ),
+                      TextFormField(
+    controller: vacationEndController,
+    decoration: const InputDecoration(
+      labelText: 'Vacation End Date',
+      filled: true,
+      prefixIcon: Icon(Icons.calendar_today),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.blue),
+      ),
+    ),
+    readOnly: true,
+    onTap: () {
+      _selectDate(vacationEndController);
+    },
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'Please enter a Vacation End Date';
+      }
+      return null;
+    },
+  ),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: vacationReasonController,
