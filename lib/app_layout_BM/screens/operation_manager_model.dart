@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../../all_model_operation_manager/add_item_by_time_mode.dart';
+
 class OperationManagerRole extends StatefulWidget {
   @override
   _OperationManagerRole createState() => _OperationManagerRole();
@@ -199,7 +201,7 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                           itemId: values['itemId']!,
                           seasonId: values['seasonId']!,
                         );
-                        print('Adding Recipe: $addStorage_Model');
+                        print('Adding Season: $addStorage_Model');
                         CherryToast.success(
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
@@ -210,7 +212,7 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                         ).show(context);
                         clearFormFields();
                       } catch (e) {
-                        print('Error Recipe: $e');
+                        print('Error Season: $e');
                         CherryToast.error(
                           toastPosition: Position.bottom,
                           animationType: AnimationType.fromRight,
@@ -241,6 +243,46 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                     'itemDayType',
                   ],
                   onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addItemByTime(
+                          itemId: values['itemId']!,
+                          itemDayType: values['itemDayType']!,
+                        );
+                        print('Adding Time: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Item by Time successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error Time: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
+                    
                     
 
 
