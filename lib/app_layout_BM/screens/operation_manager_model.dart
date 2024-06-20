@@ -1,4 +1,5 @@
 import 'package:bloc_v2/all_model_operation_manager/add_branch_model.dart';
+import 'package:bloc_v2/all_model_operation_manager/add_general_section_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class OperationManagerRole extends StatefulWidget {
 class _OperationManagerRole extends State<OperationManagerRole> {
   final _formKey = GlobalKey<FormState>();
 
+  
   void clearFormFields() {
     _formKey.currentState?.reset();
   }
@@ -54,18 +56,18 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                           branchPhone: values['branchPhone']!,
                           manager_id: values['manager_id']!,
                         );
-                        print('Adding Storage: $addStorage_Model');
+                        print('Adding Branch: $addStorage_Model');
                         CherryToast.success(
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
                           description: const Text(
-                            "Add Storage successfully",
+                            "Add New Branch successfully",
                             style: TextStyle(color: Colors.black),
                           ),
                         ).show(context);
                         clearFormFields();
                       } catch (e) {
-                        print('Error adding storage: $e');
+                        print('Error New Branch: $e');
                         CherryToast.error(
                           toastPosition: Position.bottom,
                           animationType: AnimationType.fromRight,
@@ -94,9 +96,44 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                     'section_name',
                     'section_description',
                   ],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add-menu-item
-                    // Example: PostFunction.addMenuItem(values);
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addGeneralSectionModel(
+                          section_name: values['section_name']!,
+                          section_description: values['section_description']!,
+                        );
+                        print('Adding General Section: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add General Section successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      } catch (e) {
+                        print('Error General Section: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
@@ -167,11 +204,13 @@ class FunctionInputTile extends StatefulWidget {
   final String functionName;
   final List<String> attributeNames;
   final void Function(Map<String, String> values) onSubmit;
+  final void Function(List<String> attributeNamesToClear)? onClear;
 
   FunctionInputTile({
     required this.functionName,
     required this.attributeNames,
     required this.onSubmit,
+    this.onClear,
   });
 
   @override
@@ -216,6 +255,12 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
     setState(() {
       _isExpanded = !_isExpanded;
     });
+  }
+
+    void clearForm() {
+    for (var controller in _textControllers) {
+      controller.clear();
+    }
   }
 
   @override
@@ -427,10 +472,10 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                           };
                           // Call the onSubmit function with the form values
                           widget.onSubmit(values);
-
-                          // TODO: Call the post function for each specific use case here.
-                          // For example: PostFunction.addStorage(values);
-                          // Your partner should implement the PostFunction class with appropriate methods to handle the data submission.
+                          clearForm();
+                          if (widget.onClear != null) {
+                            widget.onClear!(widget.attributeNames);
+                          }
                         }
                       },
                       child: Text('Submit'),
