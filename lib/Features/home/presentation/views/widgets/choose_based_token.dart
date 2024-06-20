@@ -2,6 +2,7 @@ import 'package:bloc_v2/Features/branch_features/presentation/add_branch_screen.
 import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
 import 'package:bloc_v2/app_layout/screens/app_layout_screen.dart';
 import 'package:bloc_v2/app_layout_BM/screens/app_layout_screen.dart';
+import 'package:bloc_v2/app_layout_BM/screens/operation_manager_model.dart';
 import 'package:bloc_v2/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,7 @@ class HomeBody extends StatelessWidget {
         children: [
           _buildCard(context, 'HR Dept', hrImage, const AppLayoutScreen()),
           _buildCard(context, 'Operation Manager', operationImage,
-              const AllBranchScreen()),
+              OperationManagerRole()),
           _buildCard(context, 'Branch Manager', mangerImage,
               const AppLayoutScreenBM()),
           _buildCard(
