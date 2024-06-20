@@ -7,6 +7,7 @@ Future<String> addBranchModel({
   required String coverage,
   required String branchPhone,
   required String manager_id,
+
 }) async {
   const url = 'http://192.168.56.1:4000/admin/branch/add-new';
   try {
@@ -24,17 +25,12 @@ Future<String> addBranchModel({
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final branchId = response.body;
-      print('Status: ${response.statusCode}');
-      print('Branch added successfully. Branch ID: $branchId');
       return branchId;
     } else {
       // Failure
-      print('Status: ${response.statusCode}');
-      print('Failed to add branch: ${response.body}');
       throw Exception('Failed to add branch: ${response.statusCode}');
     }
   } catch (e) {
-    print('Error: $e');
     throw Exception('Error adding branch: $e');
   }
 }

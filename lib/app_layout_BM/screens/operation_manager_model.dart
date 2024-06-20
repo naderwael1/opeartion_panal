@@ -4,6 +4,7 @@ import 'package:bloc_v2/all_model_operation_manager/add_general_section_model.da
 import 'package:bloc_v2/all_model_operation_manager/add_item_by_season_model.dart';
 import 'package:bloc_v2/all_model_operation_manager/add_recipe_model.dart';
 import 'package:bloc_v2/all_model_operation_manager/add_season_model.dart';
+import 'package:bloc_v2/all_model_operation_manager/add_table_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import '../../all_model_operation_manager/add_item_by_time_mode.dart';
 
 class OperationManagerRole extends StatefulWidget {
@@ -21,7 +21,6 @@ class OperationManagerRole extends StatefulWidget {
 
 class _OperationManagerRole extends State<OperationManagerRole> {
   final _formKey = GlobalKey<FormState>();
-
   void clearFormFields() {
     _formKey.currentState?.reset();
   }
@@ -73,6 +72,55 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                         clearFormFields();
                       } catch (e) {
                         print('Error New Branch: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
+                  },
+                ),
+                FunctionInputTile(
+                  functionName: 'Add New Table',
+                  attributeNames: const [
+                    'branchId',
+                    'capacity',
+                    'status',
+                  ],
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addTableModel(
+                          branchId: values['branchId']!,
+                          capacity: values['capacity']!,
+                          status: values['status']!,
+                        );
+                        print('Adding Branch: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add New Table successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error New Table: $e');
                         CherryToast.error(
                           toastPosition: Position.bottom,
                           animationType: AnimationType.fromRight,
@@ -197,7 +245,7 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                   functionName: 'Item By Season',
                   attributeNames: const ['itemId', 'seasonId'],
                   onSubmit: (values) async {
-                      if (_formKey.currentState!.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       try {
                         final addStorage_Model = await addItemBySeason(
                           itemId: values['itemId']!,
@@ -342,7 +390,7 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                     'categoryDescription'
                   ],
                   onSubmit: (values) async {
-                      if (_formKey.currentState!.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       try {
                         final addStorage_Model = await addCategoryModel(
                           sectionId: values['sectionId']!,
@@ -414,6 +462,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
   late List<TextEditingController> _textControllers;
   Future<List<Map<String, dynamic>>>? _managerListFuture;
   Future<List<Map<String, dynamic>>>? _itemListFuture;
+  Future<List<Map<String, dynamic>>>? _branchesListFuture;
   bool _isExpanded = false;
 
   @override
@@ -428,6 +477,21 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
         widget.functionName == 'Item By Season' ||
         widget.functionName == 'Item By Time') {
       _itemListFuture = fetchItemList();
+    }
+    if (widget.functionName == 'Add New Table') {
+      _branchesListFuture = fetchBranchesList();
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchBranchesList() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return List<Map<String, dynamic>>.from(data['data'].map(
+          (item) => {'id': item['branch_id'], 'name': item['branch_name']}));
+    } else {
+      throw Exception('Failed to load branches list');
     }
   }
 
@@ -510,7 +574,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                       TextEditingController controller = entry.value;
 
                       if (widget.attributeNames[idx] == 'coverage' ||
-                          widget.attributeNames[idx] == 'quantity') {
+                          widget.attributeNames[idx] == 'quantity' ||
+                          widget.attributeNames[idx] == 'capacity') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
@@ -551,6 +616,70 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                               return null;
                             },
                           ),
+                        );
+                      }
+
+                      if (widget.attributeNames[idx] == 'branchId') {
+                        return FutureBuilder<List<Map<String, dynamic>>>(
+                          future: _branchesListFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final branchesList = snapshot.data!;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: DropdownButtonFormField<int>(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    labelText: 'Branch',
+                                    labelStyle:
+                                        GoogleFonts.lato(color: Colors.blue),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  items: branchesList.map((branch) {
+                                    return DropdownMenuItem<int>(
+                                      value: branch['id'],
+                                      child: Text(branch['name']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    _textControllers[idx].text =
+                                        value.toString();
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select a branch';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              );
+                            }
+                          },
                         );
                       }
 
@@ -713,6 +842,53 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                               ),
                             ),
                             items: ['Optional', 'Required']
+                                .map((status) => DropdownMenuItem<String>(
+                                      value: status.toLowerCase(),
+                                      child: Text(status),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              _textControllers[idx].text = value.toString();
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a status';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      }
+                      if (widget.attributeNames[idx] == 'status') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'Recipe Status',
+                              labelStyle: GoogleFonts.lato(color: Colors.blue),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            items: ['Available', 'Booked']
                                 .map((status) => DropdownMenuItem<String>(
                                       value: status.toLowerCase(),
                                       child: Text(status),
