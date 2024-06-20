@@ -4,7 +4,7 @@ Future<String> addItemByTime({
   required String itemId,
   required String itemDayType,
 }) async {
-  const url = 'http://192.168.56.1:4000/admin/items/itemByTime';
+  const url = 'http://192.168.56.1:4000/admin/menu/itemByTime';
   try {
     final response = await http.post(
       Uri.parse(url),
