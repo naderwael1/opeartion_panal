@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class GetCategories {
   Future<List<CategoryModel>> getCategories() async {
     final response = await http.get(Uri.parse(
-        'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/categories-list'));
+        'http://192.168.56.1:4000/admin/branch/categories-list'));
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
@@ -27,7 +27,7 @@ class GetCategories {
 class GetSection {
   Future<List<SectionModel>> getSection({required int branchID}) async {
     final response = await http.get(Uri.parse(
-        'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/branch/sections/$branchID'));
+        'http://192.168.56.1:4000/admin/branch/sections/$branchID'));
 
     print('Server response: ${response.body}');
 

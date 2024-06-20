@@ -4,8 +4,6 @@ class CustomCard extends StatelessWidget {
   final String text;
   final String photoUrl;
   //final Widget destination;
-
-
   const CustomCard({
     Key? key,
     required this.text,

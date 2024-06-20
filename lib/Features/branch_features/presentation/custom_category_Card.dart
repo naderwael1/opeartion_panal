@@ -56,6 +56,7 @@ class _CustomCategoryCardState extends State<CustomCategoryCard> {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
+                      overflow: TextOverflow.ellipsis,
                       widget.CategoryItem.categoryName,
                       style: const TextStyle(
                         color: Colors.white,
@@ -66,11 +67,16 @@ class _CustomCategoryCardState extends State<CustomCategoryCard> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text(
-                      widget.CategoryItem.sectionName,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 18,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width*0.2,
+                      child: Text(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        widget.CategoryItem.sectionName,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),

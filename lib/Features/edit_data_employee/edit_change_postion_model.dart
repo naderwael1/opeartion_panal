@@ -36,17 +36,3 @@ Future<Map<String, dynamic>> editPositionEmployee({
   }
 }
 
-void main() async {
-  try {
-    final result = await editPositionEmployee(
-      employee_id: 3,
-      position_changer_id: '1',
-      new_position: '15',
-      position_change_type: 'promote',
-    );
-    print("hi");
-    print(result['message']); // Print the message
-  } catch (e) {
-    print(e);
-  }
-}

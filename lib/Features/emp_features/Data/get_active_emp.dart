@@ -6,7 +6,7 @@ import 'dart:convert';
 class GetActiveEmployee {
   Future<List<ActiveEmployeesModel>> fetchActiveEmployees() async {
     final response = await http.get(Uri.parse(
-        'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/employees/active-employees-list'));
+        'http://192.168.56.1:4000/admin/employees/active-employees-list'));
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
@@ -28,7 +28,7 @@ class GetActiveEmployee {
 class GeIntActiveEmployee {
   Future<List<ActiveEmployeesModel>> geIntActiveEmployee() async {
     final response = await http.get(Uri.parse(
-        'http://ec2-13-37-245-245.eu-west-3.compute.amazonaws.com:4000/admin/employees/inactive-employees-list'));
+        'http://192.168.56.1:4000/admin/employees/inactive-employees-list'));
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
