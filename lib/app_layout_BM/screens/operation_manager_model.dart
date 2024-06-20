@@ -2,6 +2,7 @@ import 'package:bloc_v2/all_model_operation_manager/add_branch_model.dart';
 import 'package:bloc_v2/all_model_operation_manager/add_general_section_model.dart';
 import 'package:bloc_v2/all_model_operation_manager/add_item_by_season_model.dart';
 import 'package:bloc_v2/all_model_operation_manager/add_recipe_model.dart';
+import 'package:bloc_v2/all_model_operation_manager/add_season_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
@@ -282,10 +283,6 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                         ),
                       ).show(context);
                     }
-                    
-                    
-
-
                   },
                 ),
                 FunctionInputTile(
@@ -294,9 +291,46 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                     'seasonName',
                     'seasonDesc',
                   ],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for addItemBranchMenu
-                    // Example: PostFunction.addItemBranchMenu(values);
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addSeasonModel(
+                          seasonName: values['seasonName']!,
+                          seasonDesc: values['seasonDesc']!,
+                        );
+                        print('Adding Season: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Season successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error Time: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
