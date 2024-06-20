@@ -1,5 +1,11 @@
+import 'package:bloc_v2/all_model_operation_manager/add_branch_model.dart';
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class OperationManagerRole extends StatefulWidget {
   @override
@@ -9,12 +15,16 @@ class OperationManagerRole extends StatefulWidget {
 class _OperationManagerRole extends State<OperationManagerRole> {
   final _formKey = GlobalKey<FormState>();
 
+  void clearFormFields() {
+    _formKey.currentState?.reset();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Operation Manager', style: GoogleFonts.lato()),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -33,9 +43,49 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                     'branchPhone',
                     'manager_id'
                   ],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add-storage
-                    // Example: PostFunction.addStorage(values);
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addBranchModel(
+                          branchName: values['branchName']!,
+                          branchAddress: values['branchAddress']!,
+                          branchLocation: values['branchLocation']!,
+                          coverage: values['coverage']!,
+                          branchPhone: values['branchPhone']!,
+                          manager_id: values['manager_id']!,
+                        );
+                        print('Adding Storage: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Storage successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error adding storage: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
@@ -64,10 +114,7 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                 ),
                 FunctionInputTile(
                   functionName: 'Item By Season',
-                  attributeNames: const [
-                    'itemId',
-                    'seasonId'
-                  ],
+                  attributeNames: const ['itemId', 'seasonId'],
                   onSubmit: (values) {
                     // TODO: Call the post function for add_branch_section
                     // Example: PostFunction.addBranchSection(values);
@@ -133,6 +180,7 @@ class FunctionInputTile extends StatefulWidget {
 
 class _FunctionInputTileState extends State<FunctionInputTile> {
   late List<TextEditingController> _textControllers;
+  late Future<List<Map<String, dynamic>>> _managerListFuture;
   bool _isExpanded = false;
 
   @override
@@ -140,6 +188,20 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
     super.initState();
     _textControllers =
         widget.attributeNames.map((_) => TextEditingController()).toList();
+    if (widget.functionName == 'Add New Branch') {
+      _managerListFuture = fetchManagerList();
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchManagerList() async {
+    final response = await http.get(Uri.parse(
+        'http://192.168.56.1:4000/admin/employees/manager-employees-list'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return List<Map<String, dynamic>>.from(data['data']);
+    } else {
+      throw Exception('Failed to load manager list');
+    }
   }
 
   @override
@@ -177,7 +239,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
           ),
           child: ExpansionTile(
             title: Text(widget.functionName,
-                style: GoogleFonts.lato(fontSize: 18, color: Colors.teal)),
+                style: GoogleFonts.lato(fontSize: 18, color: Colors.blue)),
             onExpansionChanged: (expanded) {
               _toggleExpand();
             },
@@ -189,6 +251,115 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                     ..._textControllers.asMap().entries.map((entry) {
                       int idx = entry.key;
                       TextEditingController controller = entry.value;
+
+                      if (widget.attributeNames[idx] == 'coverage') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: widget.attributeNames[idx],
+                              labelStyle: GoogleFonts.lato(color: Colors.blue),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a value';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      }
+
+                      if (widget.attributeNames[idx] == 'manager_id') {
+                        return FutureBuilder<List<Map<String, dynamic>>>(
+                          future: _managerListFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final managerList = snapshot.data!;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: DropdownButtonFormField<int>(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    labelText: 'Manager',
+                                    labelStyle:
+                                        GoogleFonts.lato(color: Colors.blue),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  items: managerList.map((manager) {
+                                    return DropdownMenuItem<int>(
+                                      value: manager['id'],
+                                      child: Text(manager['name']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    _textControllers[idx].text =
+                                        value.toString();
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select a manager';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      }
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
@@ -197,23 +368,23 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color: Colors.teal,
+                                color: Colors.blue,
                                 width: 1.5,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color: Colors.teal,
+                                color: Colors.blue,
                                 width: 1.5,
                               ),
                             ),
                             labelText: widget.attributeNames[idx],
-                            labelStyle: GoogleFonts.lato(color: Colors.teal),
+                            labelStyle: GoogleFonts.lato(color: Colors.blue),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(
-                                color: Colors.teal,
+                                color: Colors.blue,
                                 width: 2.0,
                               ),
                             ),
@@ -230,7 +401,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                     SizedBox(height: 16.0),
                     ElevatedButton(
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.teal),
+                        backgroundColor: MaterialStateProperty.all(Colors.blue),
                         padding: MaterialStateProperty.all(
                             EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
                         shape: MaterialStateProperty.all(

@@ -1,5 +1,5 @@
-import 'package:bloc_v2/Features/branch_features/presentation/add_branch_screen.dart';
 import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
+import 'package:bloc_v2/add_general_Section/add_general_section.dart';
 import 'package:bloc_v2/app_layout/screens/app_layout_screen.dart';
 import 'package:bloc_v2/app_layout_BM/screens/app_layout_screen.dart';
 import 'package:bloc_v2/app_layout_BM/screens/operation_manager_model.dart';
@@ -43,9 +43,9 @@ class HomeBody extends StatelessWidget {
           _buildCard(
               context, 'Storage', storgeImage, const EmpAttendanceScreen()),
           _buildCard(context, 'Upload', cloud,
-              const AddBranchScreen()), // add menu item (EditOrUploadProductScreen)
+              const AddGeneralSection()), // add menu item (EditOrUploadProductScreen)
           _buildCard(context, 'table', table,
-              const AddBranchScreen()), // (AddGeneralSection)
+              const AddGeneralSection()), // (AddGeneralSection)
         ],
       ),
     );
