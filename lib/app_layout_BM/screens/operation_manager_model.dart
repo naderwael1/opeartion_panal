@@ -1,5 +1,6 @@
 import 'package:bloc_v2/all_model_operation_manager/add_branch_model.dart';
 import 'package:bloc_v2/all_model_operation_manager/add_general_section_model.dart';
+import 'package:bloc_v2/all_model_operation_manager/add_item_by_season_model.dart';
 import 'package:bloc_v2/all_model_operation_manager/add_recipe_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
@@ -191,9 +192,46 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                 FunctionInputTile(
                   functionName: 'Item By Season',
                   attributeNames: const ['itemId', 'seasonId'],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add_branch_section
-                    // Example: PostFunction.addBranchSection(values);
+                  onSubmit: (values) async {
+                      if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addItemBySeason(
+                          itemId: values['itemId']!,
+                          seasonId: values['seasonId']!,
+                        );
+                        print('Adding Recipe: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Item by Season successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error Recipe: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
@@ -202,9 +240,10 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                     'itemId',
                     'itemDayType',
                   ],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for addIngredientToStock
-                    // Example: PostFunction.addIngredientToStock(values);
+                  onSubmit: (values) async {
+                    
+
+
                   },
                 ),
                 FunctionInputTile(
@@ -270,7 +309,9 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
     if (widget.functionName == 'Add New Branch') {
       _managerListFuture = fetchManagerList();
     }
-    if (widget.functionName == 'Recipe') {
+    if (widget.functionName == 'Recipe' ||
+        widget.functionName == 'Item By Season' ||
+        widget.functionName == 'Item By Time') {
       _itemListFuture = fetchItemList();
     }
   }
@@ -557,6 +598,60 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                               ),
                             ),
                             items: ['Optional', 'Required']
+                                .map((status) => DropdownMenuItem<String>(
+                                      value: status.toLowerCase(),
+                                      child: Text(status),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              _textControllers[idx].text = value.toString();
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a status';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      }
+                      if (widget.attributeNames[idx] == 'itemDayType') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'Recipe Status',
+                              labelStyle: GoogleFonts.lato(color: Colors.blue),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            items: [
+                              'Breakfast',
+                              'Lunch',
+                              'Dinner',
+                              'Brunch',
+                              'Supper',
+                              'Midnight Snack'
+                            ]
                                 .map((status) => DropdownMenuItem<String>(
                                       value: status.toLowerCase(),
                                       child: Text(status),
