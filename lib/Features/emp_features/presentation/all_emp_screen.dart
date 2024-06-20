@@ -1,16 +1,12 @@
-import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
 import 'package:bloc_v2/Features/emp_features/Data/get_active_emp.dart';
 import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/add_emp.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/get_managers_list.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
-import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
-import 'package:bloc_v2/Features/emp_features/models/product_model.dart';
-import '../../../Drawer/sidebarx.dart';
 import '../../../core/utils/theme.dart';
 import 'custom_card.dart';
 import 'custom_tool_bar.dart';
@@ -184,7 +180,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PositionListScreen()));
+                            builder: (context) => ManagersListScreen()));
                   },
                   () {
                     Navigator.push(
