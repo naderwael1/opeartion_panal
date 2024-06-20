@@ -1,5 +1,6 @@
 import 'package:bloc_v2/all_model_operation_manager/add_branch_model.dart';
 import 'package:bloc_v2/all_model_operation_manager/add_general_section_model.dart';
+import 'package:bloc_v2/all_model_operation_manager/add_recipe_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,6 @@ class OperationManagerRole extends StatefulWidget {
 class _OperationManagerRole extends State<OperationManagerRole> {
   final _formKey = GlobalKey<FormState>();
 
-  
   void clearFormFields() {
     _formKey.currentState?.reset();
   }
@@ -144,9 +144,48 @@ class _OperationManagerRole extends State<OperationManagerRole> {
                     'quantity',
                     'recipeStatus'
                   ],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add-ingredient
-                    // Example: PostFunction.addIngredient(values);
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await addRecipeModel(
+                          itemId: values['itemId']!,
+                          ingredientId: values['ingredientId']!,
+                          quantity: values['quantity']!,
+                          recipeStatus: values['recipeStatus']!,
+                        );
+                        print('Adding Recipe: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Recipe successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error Recipe: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
@@ -219,7 +258,8 @@ class FunctionInputTile extends StatefulWidget {
 
 class _FunctionInputTileState extends State<FunctionInputTile> {
   late List<TextEditingController> _textControllers;
-  late Future<List<Map<String, dynamic>>> _managerListFuture;
+  Future<List<Map<String, dynamic>>>? _managerListFuture;
+  Future<List<Map<String, dynamic>>>? _itemListFuture;
   bool _isExpanded = false;
 
   @override
@@ -229,6 +269,9 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
         widget.attributeNames.map((_) => TextEditingController()).toList();
     if (widget.functionName == 'Add New Branch') {
       _managerListFuture = fetchManagerList();
+    }
+    if (widget.functionName == 'Recipe') {
+      _itemListFuture = fetchItemList();
     }
   }
 
@@ -240,6 +283,19 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
       return List<Map<String, dynamic>>.from(data['data']);
     } else {
       throw Exception('Failed to load manager list');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchItemList() async {
+    final response = await http.get(
+        Uri.parse('http://192.168.56.1:4000/admin/branch/general-menu-list'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      // Extract only id and name
+      return List<Map<String, dynamic>>.from(
+          data['data'].map((item) => {'id': item['id'], 'name': item['name']}));
+    } else {
+      throw Exception('Failed to load item list');
     }
   }
 
@@ -257,7 +313,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
     });
   }
 
-    void clearForm() {
+  void clearForm() {
     for (var controller in _textControllers) {
       controller.clear();
     }
@@ -297,7 +353,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                       int idx = entry.key;
                       TextEditingController controller = entry.value;
 
-                      if (widget.attributeNames[idx] == 'coverage') {
+                      if (widget.attributeNames[idx] == 'coverage' ||
+                          widget.attributeNames[idx] == 'quantity') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
@@ -405,6 +462,118 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                         );
                       }
 
+                      if (widget.attributeNames[idx] == 'itemId') {
+                        return FutureBuilder<List<Map<String, dynamic>>>(
+                          future: _itemListFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              final itemList = snapshot.data!;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: DropdownButtonFormField<int>(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    labelText: 'Item',
+                                    labelStyle:
+                                        GoogleFonts.lato(color: Colors.blue),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  items: itemList.map((item) {
+                                    return DropdownMenuItem<int>(
+                                      value: item['id'],
+                                      child: Text(item['name']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    _textControllers[idx].text =
+                                        value.toString();
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select an item';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              );
+                            } else {
+                              return Text('No items available');
+                            }
+                          },
+                        );
+                      }
+                      if (widget.attributeNames[idx] == 'recipeStatus') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'Recipe Status',
+                              labelStyle: GoogleFonts.lato(color: Colors.blue),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.blue,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            items: ['Optional', 'Required']
+                                .map((status) => DropdownMenuItem<String>(
+                                      value: status.toLowerCase(),
+                                      child: Text(status),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              _textControllers[idx].text = value.toString();
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a status';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      }
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
