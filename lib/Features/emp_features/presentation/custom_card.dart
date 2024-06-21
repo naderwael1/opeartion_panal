@@ -9,9 +9,11 @@ import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
 
 class CustomCard extends StatelessWidget {
   final ActiveEmployeesModel activeEmployee;
+  final Function startPolling; // Add this line
 
   const CustomCard({
     required this.activeEmployee,
+    required this.startPolling, // Add this line
     Key? key,
   }) : super(key: key);
 
@@ -98,8 +100,7 @@ class CustomCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
-                  _showDeleteDialog(
-                      context, activeEmployee.employeeId.toString());
+                  _showDeleteDialog(context, activeEmployee.employeeId.toString());
                 },
                 icon: Icon(Icons.delete, color: Colors.blueGrey.shade700),
               ),
@@ -159,6 +160,7 @@ class CustomCard extends StatelessWidget {
                     ),
                   ).show(context);
                   Navigator.of(context).pop();
+                  startPolling(); // Call startPolling here
                 } catch (e) {
                   print('Error add menu item: $e');
                   CherryToast.error(
@@ -179,7 +181,6 @@ class CustomCard extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // Action for Canceled
               },
               child: Text(
                 'Canceled',

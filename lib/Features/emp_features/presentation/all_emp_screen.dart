@@ -7,6 +7,8 @@ import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart
 import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'dart:async'; // Import dart:async for Timer
+
 import '../../../core/utils/theme.dart';
 import 'custom_card.dart';
 import 'custom_tool_bar.dart';
@@ -24,6 +26,33 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   List<ActiveEmployeesModel> searchedForEmployeeList = [];
   List<ActiveEmployeesModel> allEmployeeList = [];
   bool _isShowingActive = true; // New state variable
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _searchTextController.dispose();
+    super.dispose();
+  }
+
+  void _startPolling() {
+  _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _fetchEmployees();
+  });
+
+  Future.delayed(Duration(seconds: 1), () {
+    _timer?.cancel();
+  });
+}
+
+  void _fetchEmployees() {
+    setState(() {});
+  }
 
   void toggleSearch() {
     setState(() {
@@ -255,7 +284,9 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                           itemCount: employeesToShow.length,
                           itemBuilder: (context, index) {
                             return CustomCard(
-                                activeEmployee: employeesToShow[index]);
+                              activeEmployee: employeesToShow[index],
+                              startPolling: _startPolling, // Pass the startPolling function here
+                            );
                           },
                         );
                       } else {
