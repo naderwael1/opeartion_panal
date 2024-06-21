@@ -180,7 +180,7 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                     buildInfoRow(
                       icon: Icons.person,
                       title: 'Employee Name',
-                      subtitle: capitalize(widget.employee.employeeName ?? 'N/A') + ' (#${widget.employee.employeeId})',
+                      subtitle: widget.employee.employeeName + ' (#${widget.employee.employeeId})',
                       screenSize: screenSize,
                     ),
                     buildInfoRow(
@@ -210,7 +210,7 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                     buildInfoRow(
                       icon: Icons.work_outline,
                       title: 'Position',
-                      subtitle: capitalize(widget.employee.employeePosition ?? 'N/A'),
+                      subtitle: widget.employee.employeePosition,
                       screenSize: screenSize,
                     ),
                     ...phones.map((phone) => buildInfoRow(
