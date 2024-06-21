@@ -33,6 +33,19 @@ class PositionChangeModel {
   }
 }
 
+// PhoneModel class
+class PhoneModel {
+  final String phone;
+
+  PhoneModel({required this.phone});
+
+  factory PhoneModel.fromJson(Map<String, dynamic> json) {
+    return PhoneModel(
+      phone: json['phone'],
+    );
+  }
+}
+
 // Fetch position change data function
 Future<List<PositionChangeModel>> fetchPositionChanges(int employeeId) async {
   final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/positionsChanges/$employeeId'));
@@ -42,6 +55,18 @@ Future<List<PositionChangeModel>> fetchPositionChanges(int employeeId) async {
     return jsonData.map((json) => PositionChangeModel.fromJson(json)).toList();
   } else {
     throw Exception('Failed to load position change data');
+  }
+}
+
+// Fetch phone data function
+Future<List<PhoneModel>> fetchPhones(int employeeId) async {
+  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/phones/$employeeId'));
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = json.decode(response.body)['data']['phones'];
+    return jsonData.map((json) => PhoneModel.fromJson(json)).toList();
+  } else {
+    throw Exception('Failed to load phone data');
   }
 }
 
@@ -71,11 +96,13 @@ class ShowAllDataAboutEmployee extends StatefulWidget {
 
 class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
   late Future<List<PositionChangeModel>> futurePositionChanges;
+  late Future<List<PhoneModel>> futurePhones;
 
   @override
   void initState() {
     super.initState();
     futurePositionChanges = fetchPositionChanges(widget.employeeId);
+    futurePhones = fetchPhones(widget.employeeId);
   }
 
   @override
@@ -104,74 +131,94 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
           ),
           FutureBuilder<List<PositionChangeModel>>(
             future: futurePositionChanges,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+            builder: (context, positionSnapshot) {
+              if (positionSnapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              } else if (positionSnapshot.hasError) {
+                return Center(child: Text('Error: ${positionSnapshot.error}'));
+              } else if (!positionSnapshot.hasData || positionSnapshot.data!.isEmpty) {
                 return Center(child: Text('No data found'));
               } else {
-                final positionChange = snapshot.data!.last;
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.all(screenSize.width * 0.01),
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(screenSize.width * 0.05),
-                        child: Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(screenSize.width * 0.04),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                buildInfoRow(
-                                  icon: Icons.person,
-                                  title: 'Employee Name',
-                                  subtitle: capitalize(positionChange.employeeName ?? 'N/A') + ' (#${widget.employeeId})',
-                                  screenSize: screenSize,
+                final positionChange = positionSnapshot.data!.last;
+                return FutureBuilder<List<PhoneModel>>(
+                  future: futurePhones,
+                  builder: (context, phoneSnapshot) {
+                    if (phoneSnapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (phoneSnapshot.hasError) {
+                      return Center(child: Text('Error: ${phoneSnapshot.error}'));
+                    } else if (!phoneSnapshot.hasData || phoneSnapshot.data!.isEmpty) {
+                      return Center(child: Text('No phone numbers found'));
+                    } else {
+                      final phones = phoneSnapshot.data!;
+                      return SingleChildScrollView(
+                        child: Padding(
+                          padding: EdgeInsets.all(screenSize.width * 0.01),
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(screenSize.width * 0.05),
+                              child: Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                buildInfoRow(
-                                  icon: Icons.swap_horiz,
-                                  title: 'Position Changer',
-                                  subtitle: capitalize(positionChange.positionChanger ?? 'N/A'),
-                                  screenSize: screenSize,
+                                child: Padding(
+                                  padding: EdgeInsets.all(screenSize.width * 0.04),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      buildInfoRow(
+                                        icon: Icons.person,
+                                        title: 'Employee Name',
+                                        subtitle: capitalize(positionChange.employeeName ?? 'N/A') + ' (#${widget.employeeId})',
+                                        screenSize: screenSize,
+                                      ),
+                                      ...phones.map((phone) => buildInfoRow(
+                                        icon: Icons.phone,
+                                        title: 'Phone',
+                                        subtitle: phone.phone,
+                                        screenSize: screenSize,
+                                      )),
+                                      buildInfoRow(
+                                        icon: Icons.swap_horiz,
+                                        title: 'Position Changer',
+                                        subtitle: capitalize(positionChange.positionChanger ?? 'N/A'),
+                                        screenSize: screenSize,
+                                      ),
+                                      buildInfoRow(
+                                        icon: Icons.work,
+                                        title: 'Previous Position',
+                                        subtitle: capitalize(positionChange.previousPosition ?? 'N/A'),
+                                        screenSize: screenSize,
+                                      ),
+                                      buildInfoRow(
+                                        icon: Icons.work_outline,
+                                        title: 'New Position',
+                                        subtitle: capitalize(positionChange.newPosition ?? 'N/A'),
+                                        screenSize: screenSize,
+                                      ),
+                                      buildInfoRow(
+                                        icon: Icons.category,
+                                        title: 'Change Type',
+                                        subtitle: capitalize(positionChange.changeType ?? 'N/A'),
+                                        screenSize: screenSize,
+                                      ),
+                                      buildInfoRow(
+                                        icon: Icons.date_range,
+                                        title: 'Change Date',
+                                        subtitle: extractDate(positionChange.changeDate ?? 'N/A'),
+                                        screenSize: screenSize,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                buildInfoRow(
-                                  icon: Icons.work,
-                                  title: 'Previous Position',
-                                  subtitle: capitalize(positionChange.previousPosition ?? 'N/A'),
-                                  screenSize: screenSize,
-                                ),
-                                buildInfoRow(
-                                  icon: Icons.work_outline,
-                                  title: 'New Position',
-                                  subtitle: capitalize(positionChange.newPosition ?? 'N/A'),
-                                  screenSize: screenSize,
-                                ),
-                                buildInfoRow(
-                                  icon: Icons.category,
-                                  title: 'Change Type',
-                                  subtitle: capitalize(positionChange.changeType ?? 'N/A'),
-                                  screenSize: screenSize,
-                                ),
-                                buildInfoRow(
-                                  icon: Icons.date_range,
-                                  title: 'Change Date',
-                                  subtitle: extractDate(positionChange.changeDate ?? 'N/A'),
-                                  screenSize: screenSize,
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
+                      );
+                    }
+                  },
                 );
               }
             },
