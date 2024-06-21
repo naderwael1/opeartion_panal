@@ -35,7 +35,7 @@ class CustomCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blueGrey.shade100, Colors.blueGrey.shade300],
+            colors: [Colors.teal.shade100, Colors.teal.shade300],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -56,7 +56,7 @@ class CustomCard extends StatelessWidget {
               textStyle: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueGrey.shade900,
+                color: Colors.teal.shade900,
               ),
             ),
             maxLines: 1,
@@ -66,7 +66,7 @@ class CustomCard extends StatelessWidget {
             activeEmployee.employeePosition,
             style: TextStyle(
               fontSize: 16,
-              color: Colors.blueGrey.shade800,
+              color: Colors.teal.shade800,
             ),
           ),
           trailing: Row(
@@ -83,7 +83,7 @@ class CustomCard extends StatelessWidget {
                     ),
                   );
                 },
-                icon: Icon(Icons.remove_red_eye, color: Colors.blueGrey.shade700),
+                icon: Icon(Icons.remove_red_eye, color: Colors.teal.shade700),
               ),
               IconButton(
                 onPressed: () {
@@ -96,13 +96,13 @@ class CustomCard extends StatelessWidget {
                     ),
                   );
                 },
-                icon: Icon(Icons.edit, color: Colors.blueGrey.shade700),
+                icon: Icon(Icons.edit, color: Colors.teal.shade700),
               ),
               IconButton(
                 onPressed: () {
                   _showDeleteDialog(context, activeEmployee.employeeId.toString());
                 },
-                icon: Icon(Icons.delete, color: Colors.blueGrey.shade700),
+                icon: Icon(Icons.delete, color: Colors.teal.shade700),
               ),
             ],
           ),
@@ -125,7 +125,7 @@ class CustomCard extends StatelessWidget {
               textStyle: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueGrey.shade900,
+                color: Colors.teal.shade900,
               ),
             ),
           ),
@@ -134,11 +134,11 @@ class CustomCard extends StatelessWidget {
             style: GoogleFonts.roboto(
               textStyle: TextStyle(
                 fontSize: 16,
-                color: Colors.blueGrey.shade800,
+                color: Colors.teal.shade800,
               ),
             ),
           ),
-          backgroundColor: Colors.blueGrey.shade100,
+          backgroundColor: Colors.teal.shade100,
           actions: <Widget>[
             TextButton(
               onPressed: () async {
@@ -175,7 +175,7 @@ class CustomCard extends StatelessWidget {
               },
               child: Text(
                 activeEmployee.employeeStatus == 'active' ? 'Inactive' : 'Active',
-                style: TextStyle(color: Colors.blueGrey.shade700),
+                style: TextStyle(color: Colors.teal.shade700),
               ),
             ),
             TextButton(
@@ -184,7 +184,7 @@ class CustomCard extends StatelessWidget {
               },
               child: Text(
                 'Canceled',
-                style: TextStyle(color: Colors.blueGrey.shade700),
+                style: TextStyle(color: Colors.teal.shade700),
               ),
             ),
           ],

@@ -7,7 +7,7 @@ import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart
 import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
-import 'dart:async'; // Import dart:async for Timer
+import 'dart:async';
 
 import '../../../core/utils/theme.dart';
 import 'custom_card.dart';
@@ -25,7 +25,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   final _searchTextController = TextEditingController();
   List<ActiveEmployeesModel> searchedForEmployeeList = [];
   List<ActiveEmployeesModel> allEmployeeList = [];
-  bool _isShowingActive = true; // New state variable
+  bool _isShowingActive = true;
   Timer? _timer;
 
   @override
@@ -41,14 +41,14 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   }
 
   void _startPolling() {
-  _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-    _fetchEmployees();
-  });
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _fetchEmployees();
+    });
 
-  Future.delayed(Duration(seconds: 1), () {
-    _timer?.cancel();
-  });
-}
+    Future.delayed(Duration(seconds: 1), () {
+      _timer?.cancel();
+    });
+  }
 
   void _fetchEmployees() {
     setState(() {});
@@ -144,11 +144,11 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
-                  //todo
+                  // Retry action
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Colors.teal,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
@@ -180,6 +180,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
           return Scaffold(
             appBar: AppBar(
               title: const Text('All Employee'),
+              backgroundColor: Colors.teal,
               actions: const [
                 ThemeToggleWidget(),
               ],
@@ -254,6 +255,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                           icon: const Icon(Icons.filter_list),
                           label: Text(_isShowingActive ? 'Show Inactive' : 'Show Active'),
                           style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -285,7 +287,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                           itemBuilder: (context, index) {
                             return CustomCard(
                               activeEmployee: employeesToShow[index],
-                              startPolling: _startPolling, // Pass the startPolling function here
+                              startPolling: _startPolling,
                             );
                           },
                         );
