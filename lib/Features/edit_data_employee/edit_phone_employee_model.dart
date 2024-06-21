@@ -10,27 +10,43 @@ Future<Map<String, dynamic>> editPhoneEmployee({
   try {
     final response = await http.patch(
       Uri.parse(url),
-      body: {
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
         'employeeId': employeeId.toString(),
         'oldPhone': oldPhone,
         'newPhone': newPhone,
-      },
+      }),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
       final jsonResponse = jsonDecode(response.body);
-      String message = jsonResponse['message']; // Extract the message
-      return {'status': 'success', 'message': message};
+
+      if (jsonResponse['status'] == 'success' && jsonResponse['data'] != null) {
+        final data = jsonResponse['data'] as List;
+        print('Data: $data');
+        return {'status': 'success', 'data': data};
+      } else {
+        return {'status': 'error', 'message': 'Unexpected success response format'};
+      }
     } else {
       // Failure
       final jsonResponse = jsonDecode(response.body);
-      String message = jsonResponse['message']; // Extract the message
-      return {'status': 'success', 'message': message};
-      throw Exception('Failed to edit employee Phone. Status code: ${response.statusCode}');
+      String message = jsonResponse['message'] ?? 'Unknown error';
+      print('Failed to edit employee phone. Status code: ${response.statusCode}, Message: $message');
+      return {'status': 'error', 'message': message};
     }
   } catch (e) {
-    throw Exception('Error editing employee Phone: $e');
+    print('Error editing employee phone: $e');
+    return {'status': 'error', 'message': e.toString()};
   }
 }
 
+void main() async {
+  final result = await editPhoneEmployee(
+    employeeId: 1,
+    oldPhone: '1111111',
+    newPhone: '0111344',
+  );
+  print(result);
+}

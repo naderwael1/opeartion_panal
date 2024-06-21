@@ -1,19 +1,42 @@
+import 'dart:convert';
+import 'package:bloc_v2/Features/edit_data_employee/edit_phone_employee_model.dart';
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 
 class EditEmployeeScreen extends StatefulWidget {
-    final int employeeId;
+  final int employeeId;
 
   const EditEmployeeScreen({
     required this.employeeId,
     Key? key,
   }) : super(key: key);
+
   @override
   _EditEmployeeScreen createState() => _EditEmployeeScreen();
 }
 
 class _EditEmployeeScreen extends State<EditEmployeeScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  void clearFormFields() {
+    _formKey.currentState?.reset();
+  }
+
+  Future<List<String>> fetchPhones(int employeeId) async {
+    final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/phones/$employeeId'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final phones = data['data']['phones'] as List;
+      return phones.map((phone) => phone['phone'].toString()).toList();
+    } else {
+      throw Exception('Failed to load phones');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,68 +52,89 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
             key: _formKey,
             child: Column(
               children: [
-                FunctionInputTile(
-                  functionName: 'Update Employee Phone',
-                  attributeNames: const [
-                    'employeeId',
-                    'oldPhone',
-                    'newPhone'
-                  ],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add-storage
-                    // Example: PostFunction.addStorage(values);
+                FutureBuilder<List<String>>(
+                  future: fetchPhones(widget.employeeId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return FunctionInputTile(
+                        functionName: 'Update Employee Phone',
+                        attributeNames: const ['oldPhone', 'newPhone'],
+                        oldPhoneDropdownItems: snapshot.data!,
+                        onSubmit: (values) async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              final addStorage_Model = await editPhoneEmployee(
+                                employeeId: widget.employeeId,
+                                oldPhone: values['oldPhone']!,
+                                newPhone: values['newPhone']!,
+                              );
+                              print('Adding Storage: $addStorage_Model');
+                              CherryToast.success(
+                                animationType: AnimationType.fromRight,
+                                toastPosition: Position.bottom,
+                                description: const Text(
+                                  "Changed Number successfully",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ).show(context);
+                              clearFormFields();
+                            } catch (e) {
+                              print('Error Changed Number : $e');
+                              CherryToast.error(
+                                toastPosition: Position.bottom,
+                                animationType: AnimationType.fromRight,
+                                description: const Text(
+                                  "Something went wrong!",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ).show(context);
+                            }
+                          } else {
+                            print('Form is not valid');
+                            CherryToast.warning(
+                              toastPosition: Position.bottom,
+                              animationType: AnimationType.fromLeft,
+                              description: const Text(
+                                "Data is not valid or not complete",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ).show(context);
+                          }
+                        },
+                      );
+                    }
                   },
                 ),
                 FunctionInputTile(
                   functionName: 'Change Salary',
-                  attributeNames: const [
-                    'employeeId',
-                    'changerId',
-                    'newSalary',
-                    'changeReason'
-                  ],
+                  attributeNames: const ['changerId', 'newSalary', 'changeReason'],
                   onSubmit: (values) {
                     // TODO: Call the post function for add-menu-item
-                    // Example: PostFunction.addMenuItem(values);
                   },
                 ),
                 FunctionInputTile(
                   functionName: 'Change Position',
-                  attributeNames: const [
-                    'employee_id',
-                    'position_changer_id',
-                    'new_position',
-                    'position_change_type'
-                  ],
+                  attributeNames: const ['position_changer_id', 'new_position', 'position_change_type'],
                   onSubmit: (values) {
                     // TODO: Call the post function for add-ingredient
-                    // Example: PostFunction.addIngredient(values);
                   },
                 ),
                 FunctionInputTile(
                   functionName: 'Update Employee Address',
-                  attributeNames: const [
-                    'employeeId',
-                    'newAddress'
-                  ],
+                  attributeNames: const ['newAddress'],
                   onSubmit: (values) {
                     // TODO: Call the post function for add_branch_section
-                    // Example: PostFunction.addBranchSection(values);
                   },
                 ),
                 FunctionInputTile(
                   functionName: 'Edit Employee Salary And Position',
-                  attributeNames: const [
-                    'employeeId',
-                    'changerId',
-                    'newSalary',
-                    'newPosition',
-                    'positionChangeType',
-                    'changeReason'
-                  ],
+                  attributeNames: const ['changerId', 'newSalary', 'newPosition', 'positionChangeType', 'changeReason'],
                   onSubmit: (values) {
                     // TODO: Call the post function for addIngredientToStock
-                    // Example: PostFunction.addIngredientToStock(values);
                   },
                 ),
               ],
@@ -106,11 +150,13 @@ class FunctionInputTile extends StatefulWidget {
   final String functionName;
   final List<String> attributeNames;
   final void Function(Map<String, String> values) onSubmit;
+  final List<String>? oldPhoneDropdownItems; // Added this field to hold dropdown items
 
   FunctionInputTile({
     required this.functionName,
     required this.attributeNames,
     required this.onSubmit,
+    this.oldPhoneDropdownItems,
   });
 
   @override
@@ -120,6 +166,7 @@ class FunctionInputTile extends StatefulWidget {
 class _FunctionInputTileState extends State<FunctionInputTile> {
   late List<TextEditingController> _textControllers;
   bool _isExpanded = false;
+  String? selectedOldPhone;
 
   @override
   void initState() {
@@ -175,10 +222,66 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                     ..._textControllers.asMap().entries.map((entry) {
                       int idx = entry.key;
                       TextEditingController controller = entry.value;
+                      if (widget.attributeNames[idx] == 'oldPhone' && widget.oldPhoneDropdownItems != null) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<String>(
+                            value: selectedOldPhone,
+                            items: widget.oldPhoneDropdownItems!.map((phone) {
+                              return DropdownMenuItem(
+                                value: phone,
+                                child: Text(phone),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedOldPhone = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'Old Phone',
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a phone';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      }
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
                           controller: controller,
+                          keyboardType: widget.attributeNames[idx] == 'newPhone'
+                              ? TextInputType.number
+                              : TextInputType.text,
+                          inputFormatters: widget.attributeNames[idx] == 'newPhone'
+                              ? [FilteringTextInputFormatter.digitsOnly]
+                              : [],
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -238,13 +341,12 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             for (int i = 0;
                                 i < widget.attributeNames.length;
                                 i++)
-                              widget.attributeNames[i]: _textControllers[i].text
+                              widget.attributeNames[i]:
+                                  widget.attributeNames[i] == 'oldPhone'
+                                      ? selectedOldPhone!
+                                      : _textControllers[i].text
                           };
-                          // Call the onSubmit function with the form values
                           widget.onSubmit(values);
-                          // TODO: Call the post function for each specific use case here.
-                          // For example: PostFunction.addStorage(values);
-                          // Your partner should implement the PostFunction class with appropriate methods to handle the data submission.
                         }
                       },
                       child: Text('Submit'),
