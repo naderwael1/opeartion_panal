@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:bloc_v2/Features/edit_data_employee/edit_data_employee_screen.dart';
 import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class CustomCard extends StatelessWidget {
   final ActiveEmployeesModel activeEmployee;
@@ -11,51 +11,84 @@ class CustomCard extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+  String capitalize(String s) => s.isNotEmpty ? '${s[0].toUpperCase()}${s.substring(1).toLowerCase()}' : '';
+
   @override
   Widget build(BuildContext context) {
+    final nameParts = activeEmployee.employeeName.split(' ');
+    final capitalizedEmployeeName = nameParts.map(capitalize).join(' ');
+
     return Card(
-      child: ListTile(
-        leading: const CircleAvatar(
-          backgroundImage: NetworkImage(
-            'https://tse3.mm.bing.net/th?id=OIP.CuBCc2R2knpvmVugLTBczAHaJU&pid=Api&P=0&h=220',
-          ), // Your employee's image URL
-          backgroundColor: Colors.transparent,
+      elevation: 6.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueGrey.shade100, Colors.blueGrey.shade300],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20.0),
         ),
-        title: Text(activeEmployee.employeeName), // Your employee's name
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(activeEmployee.employeePosition),
-            Text('ID: ${activeEmployee.employeeId}'),
-          ],
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              onPressed: () {
-                // Action for this button
-              },
-              icon: const Icon(Icons.remove_red_eye),
+        child: ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          leading: CircleAvatar(
+            radius: 30,
+            backgroundImage: NetworkImage(
+              'https://tse3.mm.bing.net/th?id=OIP.CuBCc2R2knpvmVugLTBczAHaJU&pid=Api&P=0&h=220',
             ),
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditEmployeeScreen(employeeId: activeEmployee.employeeId),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.edit),
+            backgroundColor: Colors.transparent,
+          ),
+          title: Text(
+            capitalizedEmployeeName,
+            style: GoogleFonts.roboto(
+              textStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey.shade900,
+              ),
             ),
-            IconButton(
-              onPressed: () {
-                // Action for this button
-              },
-              icon: const Icon(Icons.delete),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            activeEmployee.employeePosition,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.blueGrey.shade800,
             ),
-          ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: () {
+                  // Action for this button
+                },
+                icon: Icon(Icons.remove_red_eye, color: Colors.blueGrey.shade700),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditEmployeeScreen(employeeId: activeEmployee.employeeId),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.edit, color: Colors.blueGrey.shade700),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Action for this button
+                },
+                icon: Icon(Icons.delete, color: Colors.blueGrey.shade700),
+              ),
+            ],
+          ),
         ),
       ),
     );

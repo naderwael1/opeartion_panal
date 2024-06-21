@@ -27,6 +27,13 @@ class _CustomToolBarState extends State<CustomToolBar> {
   Widget build(BuildContext context) {
     return Container(
       height: 80,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blueGrey.shade100, Colors.blueGrey.shade300],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: widget.titles.length,
@@ -41,7 +48,6 @@ class _CustomToolBarState extends State<CustomToolBar> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               margin: const EdgeInsets.all(5),
-              // Calculate width dynamically based on text length
               width: _calculateWidth(index),
               height: 55,
               decoration: BoxDecoration(
@@ -50,7 +56,7 @@ class _CustomToolBarState extends State<CustomToolBar> {
                     ? BorderRadius.circular(12)
                     : BorderRadius.circular(7),
                 border: current == index
-                    ? Border.all(color: Colors.deepPurpleAccent, width: 2.5)
+                    ? Border.all(color: Colors.blueGrey.shade700, width: 2.5)
                     : null,
               ),
               child: Center(
@@ -61,15 +67,15 @@ class _CustomToolBarState extends State<CustomToolBar> {
                       widget.icons[index],
                       size: current == index ? 23 : 20,
                       color: current == index
-                          ? Colors.black
+                          ? Colors.blueGrey.shade900
                           : Colors.grey.shade400,
                     ),
                     Text(
                       widget.titles[index],
-                      style: GoogleFonts.ubuntu(
+                      style: GoogleFonts.roboto(
                         fontWeight: FontWeight.w500,
                         color: current == index
-                            ? Colors.black
+                            ? Colors.blueGrey.shade900
                             : Colors.grey.shade400,
                       ),
                     ),
@@ -93,7 +99,6 @@ class _CustomToolBarState extends State<CustomToolBar> {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    // Add some padding to the calculated width
     return textPainter.width + 20; // Adjust padding as needed
   }
 }
