@@ -142,9 +142,12 @@ class CustomCard extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 try {
+                  final newStatus = activeEmployee.employeeStatus == 'active'
+                      ? 'inactive'
+                      : 'active';
                   final addStorage_Model = await editChangeStatusModel(
                     employeeId: employeeId,
-                    employeeStatus: 'inactive',
+                    employeeStatus: newStatus,
                   );
                   print('Adding Storage: $addStorage_Model');
                   CherryToast.success(
@@ -169,41 +172,7 @@ class CustomCard extends StatelessWidget {
                 }
               },
               child: Text(
-                'Inactive',
-                style: TextStyle(color: Colors.blueGrey.shade700),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                try {
-                  final addStorage_Model = await editChangeStatusModel(
-                    employeeId: employeeId,
-                    employeeStatus: 'pending',
-                  );
-                  print('Adding Storage: $addStorage_Model');
-                  CherryToast.success(
-                    animationType: AnimationType.fromRight,
-                    toastPosition: Position.bottom,
-                    description: const Text(
-                      "Edit Status successfully",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ).show(context);
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  print('Error add menu item: $e');
-                  CherryToast.error(
-                    toastPosition: Position.bottom,
-                    animationType: AnimationType.fromRight,
-                    description: const Text(
-                      "Something went wrong!",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ).show(context);
-                }
-              },
-              child: Text(
-                'Pending',
+                activeEmployee.employeeStatus == 'active' ? 'Inactive' : 'Active',
                 style: TextStyle(color: Colors.blueGrey.shade700),
               ),
             ),

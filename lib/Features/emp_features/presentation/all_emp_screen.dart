@@ -19,10 +19,11 @@ class AllEmployeeScreen extends StatefulWidget {
 class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   bool _showSearch = false;
   bool _isSearching = false;
+  int _selectedIndex = 0;
   final _searchTextController = TextEditingController();
   List<ActiveEmployeesModel> searchedForEmployeeList = [];
   List<ActiveEmployeesModel> allEmployeeList = [];
-  int _selectedIndex = 0;
+  bool _isShowingActive = true; // New state variable
 
   void toggleSearch() {
     setState(() {
@@ -72,6 +73,12 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
       MaterialPageRoute(
           builder: (context) => HrFlashyTabBar.tabItems[index].screen),
     );
+  }
+
+  void _toggleEmployeeStatus() {
+    setState(() {
+      _isShowingActive = !_isShowingActive;
+    });
   }
 
   Widget NoInternetWidget() {
@@ -153,7 +160,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                 CustomToolBar(titles: const [
                   "Explore",
                   "All Positions",
-                  "ALl Managers",
+                  "All Managers",
                   "List of State",
                   "Profile"
                 ], icons: const [
@@ -214,11 +221,9 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                         ),
                         const SizedBox(width: 8),
                         ElevatedButton.icon(
-                          onPressed: () {
-                            // todo
-                          },
+                          onPressed: _toggleEmployeeStatus,
                           icon: const Icon(Icons.filter_list),
-                          label: const Text('Filter'),
+                          label: Text(_isShowingActive ? 'Show Inactive' : 'Show Active'),
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -231,7 +236,9 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                 ),
                 Expanded(
                   child: FutureBuilder<List<ActiveEmployeesModel>>(
-                    future: GetActiveEmployee().fetchActiveEmployees(),
+                    future: _isShowingActive
+                        ? GetActiveEmployee().fetchActiveEmployees()
+                        : GeIntActiveEmployee().geIntActiveEmployee(), // Assuming a similar function for inactive employees
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
