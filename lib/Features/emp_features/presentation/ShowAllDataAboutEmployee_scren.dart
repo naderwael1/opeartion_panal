@@ -146,10 +146,8 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                       return Center(child: CircularProgressIndicator());
                     } else if (phoneSnapshot.hasError) {
                       return Center(child: Text('Error: ${phoneSnapshot.error}'));
-                    } else if (!phoneSnapshot.hasData || phoneSnapshot.data!.isEmpty) {
-                      return Center(child: Text('No data found'));
                     } else {
-                      final phones = phoneSnapshot.data!;
+                      final phones = phoneSnapshot.data ?? [];
                       return buildDataScreen(screenSize, positionChange, phones);
                     }
                   },
@@ -185,10 +183,40 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                       subtitle: capitalize(widget.employee.employeeName ?? 'N/A') + ' (#${widget.employee.employeeId})',
                       screenSize: screenSize,
                     ),
+                    buildInfoRow(
+                      icon: Icons.calendar_today,
+                      title: 'Date Hired',
+                      subtitle: extractDate(widget.employee.employeeDateHired),
+                      screenSize: screenSize,
+                    ),
+                    buildInfoRow(
+                      icon: Icons.check_circle,
+                      title: 'Status',
+                      subtitle: capitalize(widget.employee.employeeStatus),
+                      screenSize: screenSize,
+                    ),
+                    buildInfoRow(
+                      icon: Icons.location_city,
+                      title: 'Branch',
+                      subtitle: capitalize(widget.employee.employeeBranch),
+                      screenSize: screenSize,
+                    ),
+                    buildInfoRow(
+                      icon: Icons.account_tree,
+                      title: 'Section',
+                      subtitle: capitalize(widget.employee.employeeSection),
+                      screenSize: screenSize,
+                    ),
+                    buildInfoRow(
+                      icon: Icons.work_outline,
+                      title: 'Position',
+                      subtitle: capitalize(widget.employee.employeePosition ?? 'N/A'),
+                      screenSize: screenSize,
+                    ),
                     ...phones.map((phone) => buildInfoRow(
                       icon: Icons.phone,
                       title: 'Phone',
-                      subtitle: phone.phone,
+                      subtitle: capitalize(phone.phone),
                       screenSize: screenSize,
                     )),
                     if (positionChange != null) ...[
@@ -225,36 +253,6 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                     ] else ...[
                       Center(child: Text('No position change data available')),
                     ],
-                    buildInfoRow(
-                      icon: Icons.calendar_today,
-                      title: 'Date Hired',
-                      subtitle: widget.employee.employeeDateHired,
-                      screenSize: screenSize,
-                    ),
-                    buildInfoRow(
-                      icon: Icons.check_circle,
-                      title: 'Status',
-                      subtitle: widget.employee.employeeStatus,
-                      screenSize: screenSize,
-                    ),
-                    buildInfoRow(
-                      icon: Icons.location_city,
-                      title: 'Branch',
-                      subtitle: widget.employee.employeeBranch,
-                      screenSize: screenSize,
-                    ),
-                    buildInfoRow(
-                      icon: Icons.account_tree,
-                      title: 'Section',
-                      subtitle: widget.employee.employeeSection,
-                      screenSize: screenSize,
-                    ),
-                    buildInfoRow(
-                      icon: Icons.work_outline,
-                      title: 'Position',
-                      subtitle: widget.employee.employeePosition ?? 'N/A',
-                      screenSize: screenSize,
-                    ),
                   ],
                 ),
               ),
@@ -291,7 +289,7 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                 ),
               ),
               Text(
-                subtitle,
+                capitalize(subtitle),
                 style: GoogleFonts.lato(
                   textStyle: TextStyle(
                     fontSize: screenSize.width * 0.04,
