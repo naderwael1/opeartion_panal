@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
 
 // PositionChangeModel class
 class PositionChangeModel {
-  final String? employeeName;
   final String? positionChanger;
   final String? previousPosition;
   final String? newPosition;
@@ -13,7 +13,6 @@ class PositionChangeModel {
   final String? changeDate;
 
   PositionChangeModel({
-    this.employeeName,
     this.positionChanger,
     this.previousPosition,
     this.newPosition,
@@ -23,7 +22,6 @@ class PositionChangeModel {
 
   factory PositionChangeModel.fromJson(Map<String, dynamic> json) {
     return PositionChangeModel(
-      employeeName: json['employee_name'],
       positionChanger: json['position_changer'],
       previousPosition: json['previous_position'],
       newPosition: json['new_position'],
@@ -86,9 +84,9 @@ String extractDate(String dateTime) {
 
 // ShowAllDataAboutEmployee screen
 class ShowAllDataAboutEmployee extends StatefulWidget {
-  final int employeeId;
+  final ActiveEmployeesModel employee;
 
-  const ShowAllDataAboutEmployee({required this.employeeId, Key? key}) : super(key: key);
+  const ShowAllDataAboutEmployee({required this.employee, Key? key}) : super(key: key);
 
   @override
   _ShowAllDataAboutEmployeeState createState() => _ShowAllDataAboutEmployeeState();
@@ -101,8 +99,8 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
   @override
   void initState() {
     super.initState();
-    futurePositionChanges = fetchPositionChanges(widget.employeeId);
-    futurePhones = fetchPhones(widget.employeeId);
+    futurePositionChanges = fetchPositionChanges(widget.employee.employeeId);
+    futurePhones = fetchPhones(widget.employee.employeeId);
   }
 
   @override
@@ -137,7 +135,21 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
               } else if (positionSnapshot.hasError) {
                 return Center(child: Text('Error: ${positionSnapshot.error}'));
               } else if (!positionSnapshot.hasData || positionSnapshot.data!.isEmpty) {
-                return Center(child: Text('No data found'));
+                return FutureBuilder<List<PhoneModel>>(
+                  future: futurePhones,
+                  builder: (context, phoneSnapshot) {
+                    if (phoneSnapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (phoneSnapshot.hasError) {
+                      return Center(child: Text('Error: ${phoneSnapshot.error}'));
+                    } else if (!phoneSnapshot.hasData || phoneSnapshot.data!.isEmpty) {
+                      return Center(child: Text('No data found'));
+                    } else {
+                      final phones = phoneSnapshot.data!;
+                      return buildDataScreen(screenSize, null, phones);
+                    }
+                  },
+                );
               } else {
                 final positionChange = positionSnapshot.data!.last;
                 return FutureBuilder<List<PhoneModel>>(
@@ -148,75 +160,10 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                     } else if (phoneSnapshot.hasError) {
                       return Center(child: Text('Error: ${phoneSnapshot.error}'));
                     } else if (!phoneSnapshot.hasData || phoneSnapshot.data!.isEmpty) {
-                      return Center(child: Text('No phone numbers found'));
+                      return buildDataScreen(screenSize, positionChange, []);
                     } else {
                       final phones = phoneSnapshot.data!;
-                      return SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.all(screenSize.width * 0.01),
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(screenSize.width * 0.05),
-                              child: Card(
-                                elevation: 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(screenSize.width * 0.04),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      buildInfoRow(
-                                        icon: Icons.person,
-                                        title: 'Employee Name',
-                                        subtitle: capitalize(positionChange.employeeName ?? 'N/A') + ' (#${widget.employeeId})',
-                                        screenSize: screenSize,
-                                      ),
-                                      ...phones.map((phone) => buildInfoRow(
-                                        icon: Icons.phone,
-                                        title: 'Phone',
-                                        subtitle: phone.phone,
-                                        screenSize: screenSize,
-                                      )),
-                                      buildInfoRow(
-                                        icon: Icons.swap_horiz,
-                                        title: 'Position Changer',
-                                        subtitle: capitalize(positionChange.positionChanger ?? 'N/A'),
-                                        screenSize: screenSize,
-                                      ),
-                                      buildInfoRow(
-                                        icon: Icons.work,
-                                        title: 'Previous Position',
-                                        subtitle: capitalize(positionChange.previousPosition ?? 'N/A'),
-                                        screenSize: screenSize,
-                                      ),
-                                      buildInfoRow(
-                                        icon: Icons.work_outline,
-                                        title: 'New Position',
-                                        subtitle: capitalize(positionChange.newPosition ?? 'N/A'),
-                                        screenSize: screenSize,
-                                      ),
-                                      buildInfoRow(
-                                        icon: Icons.category,
-                                        title: 'Change Type',
-                                        subtitle: capitalize(positionChange.changeType ?? 'N/A'),
-                                        screenSize: screenSize,
-                                      ),
-                                      buildInfoRow(
-                                        icon: Icons.date_range,
-                                        title: 'Change Date',
-                                        subtitle: extractDate(positionChange.changeDate ?? 'N/A'),
-                                        screenSize: screenSize,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
+                      return buildDataScreen(screenSize, positionChange, phones);
                     }
                   },
                 );
@@ -224,6 +171,108 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildDataScreen(Size screenSize, PositionChangeModel? positionChange, List<PhoneModel> phones) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(screenSize.width * 0.01),
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(screenSize.width * 0.05),
+            child: Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(screenSize.width * 0.04),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    if (positionChange != null)
+                      buildInfoRow(
+                        icon: Icons.person,
+                        title: 'Employee Name',
+                        subtitle: capitalize(widget.employee.employeeName ?? 'N/A') + ' (#${widget.employee.employeeId})',
+                        screenSize: screenSize,
+                      ),
+                    ...phones.map((phone) => buildInfoRow(
+                      icon: Icons.phone,
+                      title: 'Phone',
+                      subtitle: phone.phone,
+                      screenSize: screenSize,
+                    )),
+                    if (positionChange != null) ...[
+                      buildInfoRow(
+                        icon: Icons.swap_horiz,
+                        title: 'Position Changer',
+                        subtitle: capitalize(positionChange.positionChanger ?? 'N/A'),
+                        screenSize: screenSize,
+                      ),
+                      buildInfoRow(
+                        icon: Icons.work,
+                        title: 'Previous Position',
+                        subtitle: capitalize(positionChange.previousPosition ?? 'N/A'),
+                        screenSize: screenSize,
+                      ),
+                      buildInfoRow(
+                        icon: Icons.work_outline,
+                        title: 'New Position',
+                        subtitle: capitalize(positionChange.newPosition ?? 'N/A'),
+                        screenSize: screenSize,
+                      ),
+                      buildInfoRow(
+                        icon: Icons.category,
+                        title: 'Change Type',
+                        subtitle: capitalize(positionChange.changeType ?? 'N/A'),
+                        screenSize: screenSize,
+                      ),
+                      buildInfoRow(
+                        icon: Icons.date_range,
+                        title: 'Change Date',
+                        subtitle: extractDate(positionChange.changeDate ?? 'N/A'),
+                        screenSize: screenSize,
+                      ),
+                    ],
+                    buildInfoRow(
+                      icon: Icons.calendar_today,
+                      title: 'Date Hired',
+                      subtitle: widget.employee.employeeDateHired,
+                      screenSize: screenSize,
+                    ),
+                    buildInfoRow(
+                      icon: Icons.check_circle,
+                      title: 'Status',
+                      subtitle: widget.employee.employeeStatus,
+                      screenSize: screenSize,
+                    ),
+                    buildInfoRow(
+                      icon: Icons.location_city,
+                      title: 'Branch',
+                      subtitle: widget.employee.employeeBranch,
+                      screenSize: screenSize,
+                    ),
+                    buildInfoRow(
+                      icon: Icons.account_tree,
+                      title: 'Section',
+                      subtitle: widget.employee.employeeSection,
+                      screenSize: screenSize,
+                    ),
+                    buildInfoRow(
+                      icon: Icons.work_outline,
+                      title: 'Position',
+                      subtitle: widget.employee.employeePosition,
+                      screenSize: screenSize,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

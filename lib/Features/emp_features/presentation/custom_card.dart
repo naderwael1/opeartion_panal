@@ -76,7 +76,8 @@ class CustomCard extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ShowAllDataAboutEmployee(
-                          employeeId: activeEmployee.employeeId),
+                        employee: activeEmployee,
+                      ),
                     ),
                   );
                 },
@@ -88,7 +89,8 @@ class CustomCard extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => EditEmployeeScreen(
-                          employeeId: activeEmployee.employeeId),
+                        employeeId: activeEmployee.employeeId,
+                      ),
                     ),
                   );
                 },
