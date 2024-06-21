@@ -152,13 +152,3 @@ class CustomClipPath extends CustomClipper<Path> {
     return false;
   }
 }
-
-void main() {
-  runApp(MaterialApp(
-    home: ManagersListScreen(),
-    theme: ThemeData(
-      primaryColor: Colors.teal,
-      textTheme: GoogleFonts.latoTextTheme(),
-    ),
-  ));
-}

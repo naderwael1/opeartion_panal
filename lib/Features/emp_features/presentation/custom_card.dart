@@ -1,3 +1,4 @@
+import 'package:bloc_v2/Features/emp_features/presentation/ShowAllDataAboutEmployee_scren.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/edit_change_status_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
@@ -71,10 +72,15 @@ class CustomCard extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: () {
-                  // Action for this button
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ShowAllDataAboutEmployee(
+                          employeeId: activeEmployee.employeeId),
+                    ),
+                  );
                 },
-                icon:
-                    Icon(Icons.remove_red_eye, color: Colors.blueGrey.shade700),
+                icon: Icon(Icons.remove_red_eye, color: Colors.blueGrey.shade700),
               ),
               IconButton(
                 onPressed: () {
@@ -103,116 +109,115 @@ class CustomCard extends StatelessWidget {
   }
 
   void _showDeleteDialog(BuildContext context, String employeeId) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        title: Text(
-          'Select Action',
-          style: GoogleFonts.roboto(
-            textStyle: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.blueGrey.shade900,
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          title: Text(
+            'Select Action',
+            style: GoogleFonts.roboto(
+              textStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey.shade900,
+              ),
             ),
           ),
-        ),
-        content: Text(
-          'What do you want to do with this employee?',
-          style: GoogleFonts.roboto(
-            textStyle: TextStyle(
-              fontSize: 16,
-              color: Colors.blueGrey.shade800,
+          content: Text(
+            'What do you want to do with this employee?',
+            style: GoogleFonts.roboto(
+              textStyle: TextStyle(
+                fontSize: 16,
+                color: Colors.blueGrey.shade800,
+              ),
             ),
           ),
-        ),
-        backgroundColor: Colors.blueGrey.shade100,
-        actions: <Widget>[
-          TextButton(
-            onPressed: () async {
-              try {
-                final addStorage_Model = await editChangeStatusModel(
-                  employeeId: employeeId,
-                  employeeStatus: 'inactive',
-                );
-                print('Adding Storage: $addStorage_Model');
-                CherryToast.success(
-                  animationType: AnimationType.fromRight,
-                  toastPosition: Position.bottom,
-                  description: const Text(
-                    "Edit Status successfully",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ).show(context);
+          backgroundColor: Colors.blueGrey.shade100,
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                try {
+                  final addStorage_Model = await editChangeStatusModel(
+                    employeeId: employeeId,
+                    employeeStatus: 'inactive',
+                  );
+                  print('Adding Storage: $addStorage_Model');
+                  CherryToast.success(
+                    animationType: AnimationType.fromRight,
+                    toastPosition: Position.bottom,
+                    description: const Text(
+                      "Edit Status successfully",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ).show(context);
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  print('Error add menu item: $e');
+                  CherryToast.error(
+                    toastPosition: Position.bottom,
+                    animationType: AnimationType.fromRight,
+                    description: const Text(
+                      "Something went wrong!",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ).show(context);
+                }
+              },
+              child: Text(
+                'Inactive',
+                style: TextStyle(color: Colors.blueGrey.shade700),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  final addStorage_Model = await editChangeStatusModel(
+                    employeeId: employeeId,
+                    employeeStatus: 'pending',
+                  );
+                  print('Adding Storage: $addStorage_Model');
+                  CherryToast.success(
+                    animationType: AnimationType.fromRight,
+                    toastPosition: Position.bottom,
+                    description: const Text(
+                      "Edit Status successfully",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ).show(context);
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  print('Error add menu item: $e');
+                  CherryToast.error(
+                    toastPosition: Position.bottom,
+                    animationType: AnimationType.fromRight,
+                    description: const Text(
+                      "Something went wrong!",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ).show(context);
+                }
+              },
+              child: Text(
+                'Pending',
+                style: TextStyle(color: Colors.blueGrey.shade700),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
                 Navigator.of(context).pop();
-              } catch (e) {
-                print('Error add menu item: $e');
-                CherryToast.error(
-                  toastPosition: Position.bottom,
-                  animationType: AnimationType.fromRight,
-                  description: const Text(
-                    "Something went wrong!",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ).show(context);
-              }
-            },
-            child: Text(
-              'Inactive',
-              style: TextStyle(color: Colors.blueGrey.shade700),
+                // Action for Canceled
+              },
+              child: Text(
+                'Canceled',
+                style: TextStyle(color: Colors.blueGrey.shade700),
+              ),
             ),
-          ),
-          TextButton(
-            onPressed: () async {
-              try {
-                final addStorage_Model = await editChangeStatusModel(
-                  employeeId: employeeId,
-                  employeeStatus: 'pending',
-                );
-                print('Adding Storage: $addStorage_Model');
-                CherryToast.success(
-                  animationType: AnimationType.fromRight,
-                  toastPosition: Position.bottom,
-                  description: const Text(
-                    "Edit Status successfully",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ).show(context);
-                Navigator.of(context).pop();
-              } catch (e) {
-                print('Error add menu item: $e');
-                CherryToast.error(
-                  toastPosition: Position.bottom,
-                  animationType: AnimationType.fromRight,
-                  description: const Text(
-                    "Something went wrong!",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ).show(context);
-              }
-            },
-            child: Text(
-              'Pending',
-              style: TextStyle(color: Colors.blueGrey.shade700),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Action for Canceled
-            },
-            child: Text(
-              'Canceled',
-              style: TextStyle(color: Colors.blueGrey.shade700),
-            ),
-          ),
-        ],
-      );
-    },
-  );
-}
-
+          ],
+        );
+      },
+    );
+  }
 }

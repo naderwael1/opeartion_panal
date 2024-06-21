@@ -1,8 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_offline/flutter_offline.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'custom_card.dart';
-import 'custom_tool_bar.dart';
 import 'package:bloc_v2/Features/emp_features/Data/get_active_emp.dart';
 import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dart';
@@ -10,6 +5,11 @@ import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.d
 import 'package:bloc_v2/Features/emp_features/presentation/get_managers_list.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_offline/flutter_offline.dart';
+import '../../../core/utils/theme.dart';
+import 'custom_card.dart';
+import 'custom_tool_bar.dart';
 
 class AllEmployeeScreen extends StatefulWidget {
   @override
@@ -143,54 +143,53 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
         if (connected) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('All Employees'),
+              title: const Text('All Employee'),
+              actions: const [
+                ThemeToggleWidget(),
+              ],
             ),
             body: Column(
               children: [
-                CustomToolBar(
-                  titles: const [
-                    "Explore",
-                    "All Positions",
-                    "All Managers",
-                    "List of State",
-                    "Profile"
-                  ],
-                  icons: const [
-                    Icons.explore,
-                    Icons.workspaces,
-                    Icons.feed,
-                    Icons.quiz_sharp,
-                    Icons.person,
-                  ],
-                  callbacks: [
-                    toggleSearch,
-                    () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PositionListScreen()));
-                    },
-                    () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ManagersListScreen()));
-                    },
-                    () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const ActiveEmployeeScreen()));
-                    },
-                    () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AddPositionScreen()));
-                    }
-                  ],
-                ),
+                CustomToolBar(titles: const [
+                  "Explore",
+                  "All Positions",
+                  "ALl Managers",
+                  "List of State",
+                  "Profile"
+                ], icons: const [
+                  Icons.explore,
+                  Icons.workspaces,
+                  Icons.feed,
+                  Icons.quiz_sharp,
+                  Icons.person,
+                ], callbacks: [
+                  toggleSearch,
+                  () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PositionListScreen()));
+                  },
+                  () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ManagersListScreen()));
+                  },
+                  () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const ActiveEmployeeScreen()));
+                  },
+                  () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AddPositionScreen()));
+                  }
+                ]),
                 Visibility(
                   visible: _showSearch,
                   child: Padding(
@@ -203,10 +202,6 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.search),
                               hintText: 'Search',
-                              hintStyle: GoogleFonts.roboto(
-                                color: Colors.grey.shade600,
-                                fontSize: 16,
-                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -225,12 +220,6 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                           icon: const Icon(Icons.filter_list),
                           label: const Text('Filter'),
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.blueGrey.shade700,
-                            textStyle: GoogleFonts.roboto(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
