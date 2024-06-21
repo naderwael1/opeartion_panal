@@ -22,13 +22,13 @@ class ActiveEmployeesModel {
       employeeId: jsonData['employee_id'] as int? ??
           0, // Cast and provide a default int value
       employeeName: jsonData['employee_name'] as String? ??
-          '', // Cast and provide a default String value
-      employeeDateHired: jsonData['employee_date_hired'] as String? ?? '',
-      employeeStatus: jsonData['employee_status'] as String? ?? '',
-      employeeBranch: jsonData['employee_branch'] as String? ?? '',
+          'N/A', // Cast and provide a default String value
+      employeeDateHired: jsonData['employee_date_hired'] as String? ?? 'N/A',
+      employeeStatus: jsonData['employee_status'] as String? ?? 'N/A',
+      employeeBranch: jsonData['employee_branch'] as String? ?? 'N/A',
       employeeSection: jsonData['empolyee_section'] as String? ??
-          '', // Corrected the key typo
-      employeePosition: jsonData['employee_position'] as String? ?? '',
+          'N/A', // Corrected the key typo
+      employeePosition: jsonData['employee_position'] as String? ?? 'N/A',
     );
   }
 }

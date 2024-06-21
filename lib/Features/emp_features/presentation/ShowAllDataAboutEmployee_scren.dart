@@ -44,13 +44,16 @@ class PhoneModel {
   }
 }
 
-// Fetch position change data function
-Future<List<PositionChangeModel>> fetchPositionChanges(int employeeId) async {
+// Fetch first position change data function
+Future<PositionChangeModel?> fetchFirstPositionChange(int employeeId) async {
   final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/positionsChanges/$employeeId'));
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = json.decode(response.body)['data']['attendance'];
-    return jsonData.map((json) => PositionChangeModel.fromJson(json)).toList();
+    if (jsonData.isNotEmpty) {
+      return PositionChangeModel.fromJson(jsonData.first);
+    }
+    return null;
   } else {
     throw Exception('Failed to load position change data');
   }
@@ -93,13 +96,13 @@ class ShowAllDataAboutEmployee extends StatefulWidget {
 }
 
 class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
-  late Future<List<PositionChangeModel>> futurePositionChanges;
+  late Future<PositionChangeModel?> futurePositionChange;
   late Future<List<PhoneModel>> futurePhones;
 
   @override
   void initState() {
     super.initState();
-    futurePositionChanges = fetchPositionChanges(widget.employee.employeeId);
+    futurePositionChange = fetchFirstPositionChange(widget.employee.employeeId);
     futurePhones = fetchPhones(widget.employee.employeeId);
   }
 
@@ -127,14 +130,15 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
               height: screenSize.height * 0.25,
             ),
           ),
-          FutureBuilder<List<PositionChangeModel>>(
-            future: futurePositionChanges,
+          FutureBuilder<PositionChangeModel?>(
+            future: futurePositionChange,
             builder: (context, positionSnapshot) {
               if (positionSnapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               } else if (positionSnapshot.hasError) {
                 return Center(child: Text('Error: ${positionSnapshot.error}'));
-              } else if (!positionSnapshot.hasData || positionSnapshot.data!.isEmpty) {
+              } else {
+                final positionChange = positionSnapshot.data;
                 return FutureBuilder<List<PhoneModel>>(
                   future: futurePhones,
                   builder: (context, phoneSnapshot) {
@@ -144,23 +148,6 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                       return Center(child: Text('Error: ${phoneSnapshot.error}'));
                     } else if (!phoneSnapshot.hasData || phoneSnapshot.data!.isEmpty) {
                       return Center(child: Text('No data found'));
-                    } else {
-                      final phones = phoneSnapshot.data!;
-                      return buildDataScreen(screenSize, null, phones);
-                    }
-                  },
-                );
-              } else {
-                final positionChange = positionSnapshot.data!.last;
-                return FutureBuilder<List<PhoneModel>>(
-                  future: futurePhones,
-                  builder: (context, phoneSnapshot) {
-                    if (phoneSnapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (phoneSnapshot.hasError) {
-                      return Center(child: Text('Error: ${phoneSnapshot.error}'));
-                    } else if (!phoneSnapshot.hasData || phoneSnapshot.data!.isEmpty) {
-                      return buildDataScreen(screenSize, positionChange, []);
                     } else {
                       final phones = phoneSnapshot.data!;
                       return buildDataScreen(screenSize, positionChange, phones);
@@ -192,13 +179,12 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    if (positionChange != null)
-                      buildInfoRow(
-                        icon: Icons.person,
-                        title: 'Employee Name',
-                        subtitle: capitalize(widget.employee.employeeName ?? 'N/A') + ' (#${widget.employee.employeeId})',
-                        screenSize: screenSize,
-                      ),
+                    buildInfoRow(
+                      icon: Icons.person,
+                      title: 'Employee Name',
+                      subtitle: capitalize(widget.employee.employeeName ?? 'N/A') + ' (#${widget.employee.employeeId})',
+                      screenSize: screenSize,
+                    ),
                     ...phones.map((phone) => buildInfoRow(
                       icon: Icons.phone,
                       title: 'Phone',
@@ -236,6 +222,8 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                         subtitle: extractDate(positionChange.changeDate ?? 'N/A'),
                         screenSize: screenSize,
                       ),
+                    ] else ...[
+                      Center(child: Text('No position change data available')),
                     ],
                     buildInfoRow(
                       icon: Icons.calendar_today,
@@ -264,7 +252,7 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                     buildInfoRow(
                       icon: Icons.work_outline,
                       title: 'Position',
-                      subtitle: widget.employee.employeePosition,
+                      subtitle: widget.employee.employeePosition ?? 'N/A',
                       screenSize: screenSize,
                     ),
                   ],
@@ -330,7 +318,6 @@ class CustomClipPath extends CustomClipper<Path> {
     path.close();
     return path;
   }
-
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return false;
