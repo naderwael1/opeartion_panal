@@ -120,7 +120,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Image.asset('https://hips.hearstapps.com/clv.h-cdn.co/assets/17/29/2048x1152/hd-aspect-1500566326-gettyimages-512366437-1.jpg',
+              Image.asset('assets/images/undraw_bug_fixing_oc7a.png',
                   height: 200),
               const SizedBox(height: 40),
               const Text(

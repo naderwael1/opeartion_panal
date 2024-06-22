@@ -3,6 +3,7 @@ import 'package:bloc_v2/Features/edit_data_employee/edit_address_employee_model.
 import 'package:bloc_v2/Features/edit_data_employee/edit_change_postion_model.dart';
 import 'package:bloc_v2/Features/edit_data_employee/edit_data_employee_model.dart';
 import 'package:bloc_v2/Features/edit_data_employee/edit_phone_employee_model.dart';
+import 'package:bloc_v2/Features/edit_data_employee/edit_salary_position.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
@@ -279,19 +280,74 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                         ),
                       ).show(context);
                     }
-                  }
+                  },
                 ),
-                FunctionInputTile(
-                  functionName: 'Edit Employee Salary And Position',
-                  attributeNames: const [
-                    'changerId',
-                    'newSalary',
-                    'newPosition',
-                    'positionChangeType',
-                    'changeReason'
-                  ],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for addIngredientToStock
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchPositions(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return FunctionInputTile(
+                        functionName: 'Edit Employee Salary And Position',
+                        attributeNames: const [
+                          'changerId',
+                          'newSalary',
+                          'newPosition',
+                          'positionChangeType',
+                          'changeReason'
+                        ],
+                        newPositionDropdownItems: snapshot.data!,
+                        onSubmit: (values) async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              final addStorage_Model =
+                                  await editSalaryAndPositionEmployee(
+                                employeeId: widget.employeeId,
+                                changerId: values['changerId']!,
+                                newSalary: values['newSalary']!,
+                                newPosition: values['newPosition']!,
+                                positionChangeType:
+                                    values['positionChangeType']!,
+                                changeReason: values['changeReason']!,
+                              );
+                              print('Adding Storage: $addStorage_Model');
+                              CherryToast.success(
+                                animationType: AnimationType.fromRight,
+                                toastPosition: Position.bottom,
+                                description: const Text(
+                                  "Changed Salary and Position successfully",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ).show(context);
+                              clearFormFields();
+                            } catch (e) {
+                              print('Error Changed Salary and Position : $e');
+                              CherryToast.error(
+                                toastPosition: Position.bottom,
+                                animationType: AnimationType.fromRight,
+                                description: const Text(
+                                  "Something went wrong!",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ).show(context);
+                            }
+                          } else {
+                            print('Form is not valid');
+                            CherryToast.warning(
+                              toastPosition: Position.bottom,
+                              animationType: AnimationType.fromLeft,
+                              description: const Text(
+                                "Data is not valid or not complete",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ).show(context);
+                          }
+                        },
+                      );
+                    }
                   },
                 ),
               ],
@@ -434,8 +490,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
-                      } else if (widget.attributeNames[idx] == 'new_position' &&
-                          widget.newPositionDropdownItems != null) {
+                      } else if (widget.attributeNames[idx] == 'new_position' ||
+                          widget.attributeNames[idx] == 'newPosition') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<String>(
@@ -487,7 +543,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                           ),
                         );
                       } else if (widget.attributeNames[idx] ==
-                          'position_change_type') {
+                          'position_change_type' || widget.attributeNames[idx] ==
+                          'positionChangeType' ) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<String>(
@@ -537,21 +594,53 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
+                      } else if (widget.attributeNames[idx] == 'newSalary') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'New Salary',
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a salary';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
                       }
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
                           controller: controller,
-                          keyboardType:
-                              widget.attributeNames[idx] == 'newPhone' ||
-                                      widget.attributeNames[idx] == 'newSalary'
-                                  ? TextInputType.number
-                                  : TextInputType.text,
-                          inputFormatters:
-                              widget.attributeNames[idx] == 'newPhone' ||
-                                      widget.attributeNames[idx] == 'newSalary'
-                                  ? [FilteringTextInputFormatter.digitsOnly]
-                                  : [],
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),

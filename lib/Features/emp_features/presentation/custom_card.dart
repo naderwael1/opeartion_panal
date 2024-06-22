@@ -46,7 +46,7 @@ class CustomCard extends StatelessWidget {
           leading: CircleAvatar(
             radius: 30,
             backgroundImage: NetworkImage(
-              'https://tse3.mm.bing.net/th?id=OIP.CuBCc2R2knpvmVugLTBczAHaJU&pid=Api&P=0&h=220',
+              'https://hips.hearstapps.com/clv.h-cdn.co/assets/17/29/2048x1152/hd-aspect-1500566326-gettyimages-512366437-1.jpg?resize=1200:*',
             ),
             backgroundColor: Colors.transparent,
           ),
