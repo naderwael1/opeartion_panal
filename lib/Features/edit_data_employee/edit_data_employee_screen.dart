@@ -204,7 +204,6 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                           newSalary: values['newSalary']!,
                           changeReason: values['changeReason']!,
                         );
-                        print('Adding Storage: $addStorage_Model');
                         CherryToast.success(
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
@@ -253,7 +252,7 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                           animationType: AnimationType.fromRight,
                           toastPosition: Position.bottom,
                           description: const Text(
-                            "Add Storage successfully",
+                            "Change Address successfully",
                             style: TextStyle(color: Colors.black),
                           ),
                         ).show(context);
@@ -313,7 +312,6 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                                     values['positionChangeType']!,
                                 changeReason: values['changeReason']!,
                               );
-                              print('Adding Storage: $addStorage_Model');
                               CherryToast.success(
                                 animationType: AnimationType.fromRight,
                                 toastPosition: Position.bottom,
@@ -636,6 +634,48 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
+                      } else if (widget.attributeNames[idx] == 'newPhone') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'New Phone',
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a phone number';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
                       }
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -704,10 +744,12 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                                   widget.attributeNames[i] == 'oldPhone'
                                       ? selectedOldPhone!
                                       : widget.attributeNames[i] ==
-                                              'new_position'
+                                              'new_position' || widget.attributeNames[i] ==
+                                              'newPosition'
                                           ? selectedNewPosition!
                                           : widget.attributeNames[i] ==
-                                                  'position_change_type'
+                                                  'position_change_type' || widget.attributeNames[i] ==
+                                              'positionChangeType'
                                               ? selectedPositionChangeType!
                                               : _textControllers[i].text
                           };
@@ -748,3 +790,4 @@ class MyCustomClipper extends CustomClipper<Path> {
     return false;
   }
 }
+

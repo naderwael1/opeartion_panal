@@ -106,6 +106,19 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
     futurePhones = fetchPhones(widget.employee.employeeId);
   }
 
+  IconData getStatusIcon(String status) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return Icons.check_circle;
+      case 'inactive':
+        return Icons.cancel;
+      case 'pending':
+        return Icons.hourglass_empty;
+      default:
+        return Icons.help_outline;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -190,7 +203,7 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                       screenSize: screenSize,
                     ),
                     buildInfoRow(
-                      icon: Icons.check_circle,
+                      icon: getStatusIcon(widget.employee.employeeStatus),
                       title: 'Status',
                       subtitle: capitalize(widget.employee.employeeStatus),
                       screenSize: screenSize,
