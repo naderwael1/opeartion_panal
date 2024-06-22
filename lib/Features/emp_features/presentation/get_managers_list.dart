@@ -10,7 +10,11 @@ class PositionModel {
   final String? branch;
   final String position;
 
-  PositionModel({required this.id, required this.name, this.branch, required this.position});
+  PositionModel(
+      {required this.id,
+      required this.name,
+      this.branch,
+      required this.position});
 
   factory PositionModel.fromJson(Map<String, dynamic> json) {
     return PositionModel(
@@ -24,7 +28,8 @@ class PositionModel {
 
 // Fetch positions function
 Future<List<PositionModel>> fetchPositions() async {
-  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/manager-employees-list'));
+  final response = await http.get(Uri.parse(
+      'http://192.168.56.1:4000/admin/employees/manager-employees-list'));
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = json.decode(response.body)['data'];
@@ -37,7 +42,10 @@ Future<List<PositionModel>> fetchPositions() async {
 // Helper function to capitalize the first letter of each word
 String capitalizeFirstLetterOfEachWord(String text) {
   if (text.isEmpty) return text;
-  return text.split(' ').map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
+  return text
+      .split(' ')
+      .map((word) => word[0].toUpperCase() + word.substring(1))
+      .join(' ');
 }
 
 // ManagersListScreen class
@@ -58,16 +66,6 @@ class _ManagersListScreenState extends State<ManagersListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Managers',
-          style: GoogleFonts.lato(
-            textStyle: TextStyle(
-                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
-        backgroundColor: Colors.teal,
-      ),
       body: Stack(
         children: [
           ClipPath(
@@ -100,7 +98,8 @@ class _ManagersListScreenState extends State<ManagersListScreen> {
                       final position = positions[index];
                       return Card(
                         color: Colors.white,
-                        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: Colors.teal,
@@ -119,7 +118,8 @@ class _ManagersListScreenState extends State<ManagersListScreen> {
                           ),
                           subtitle: Text(
                             'Position: ${position.position}\nBranch: ${position.branch ?? "N/A"}',
-                            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey[700]),
                           ),
                         ),
                       );
@@ -141,7 +141,8 @@ class CustomClipPath extends CustomClipper<Path> {
   Path getClip(Size size) {
     var path = Path();
     path.lineTo(0, size.height - 50);
-    path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height - 50);
+    path.quadraticBezierTo(
+        size.width / 2, size.height, size.width, size.height - 50);
     path.lineTo(size.width, 0);
     path.close();
     return path;

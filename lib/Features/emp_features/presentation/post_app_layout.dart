@@ -28,20 +28,6 @@ class PostAppLayout extends StatelessWidget {
       child: BlocBuilder<AppLayoutCubit, int>(
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'Modify Staff Data',
-                style: GoogleFonts.lato(
-                  textStyle: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              backgroundColor:
-                  Colors.blue, // Change this to your preferred color
-            ),
             body: screens[state],
             bottomNavigationBar: FlashyTabBar(
               selectedIndex: state,

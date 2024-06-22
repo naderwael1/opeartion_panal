@@ -3,7 +3,6 @@ import 'package:bloc_v2/Features/emp_features/models/positon_models.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class PositionListScreen extends StatefulWidget {
   @override
   _PositionListScreenState createState() => _PositionListScreenState();
@@ -22,16 +21,6 @@ class _PositionListScreenState extends State<PositionListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Positions',
-          style: GoogleFonts.lato(
-            textStyle: TextStyle(
-                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
-        backgroundColor: Colors.teal,
-      ),
       body: Stack(
         children: [
           ClipPath(
@@ -56,8 +45,7 @@ class _PositionListScreenState extends State<PositionListScreen> {
                   itemBuilder: (context, index) {
                     final position = positions[index];
                     return Card(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       child: ListTile(
                         title: Text(
                           position.jobName,

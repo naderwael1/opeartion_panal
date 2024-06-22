@@ -179,56 +179,11 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
         final bool connected = connectivity != ConnectivityResult.none;
         if (connected) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('All Employee'),
-              backgroundColor: Colors.teal,
-              actions: const [
-                ThemeToggleWidget(),
-              ],
-            ),
             body: Column(
               children: [
                 // Add space between app bar and CustomToolBar
                 const SizedBox(height: 5.0), // Adjust height as needed
-                CustomToolBar(titles: const [
-                  "Explore",
-                  "All Positions",
-                  "All Managers",
-                  "List of State",
-                  "Profile"
-                ], icons: const [
-                  Icons.explore,
-                  Icons.workspaces,
-                  Icons.feed,
-                  Icons.quiz_sharp,
-                  Icons.person,
-                ], callbacks: [
-                  toggleSearch,
-                  () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PositionListScreen()));
-                  },
-                  () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ManagersListScreen()));
-                  },
-                  () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const PostAppLayout()));
-                  },
-                  () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AddPositionScreen()));
-                  }
-                ]),
+
                 Visibility(
                   visible: _showSearch,
                   child: Padding(
