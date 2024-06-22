@@ -18,13 +18,12 @@ class CustomCard extends StatelessWidget {
   }) : super(key: key);
 
   String capitalize(String s) => s.isNotEmpty
-      ? '${s[0].toUpperCase()}${s.substring(1).toLowerCase()}'
+      ? s.split(' ').map((word) => '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}').join(' ')
       : '';
 
   @override
   Widget build(BuildContext context) {
-    final nameParts = activeEmployee.employeeName.split(' ');
-    final capitalizedEmployeeName = nameParts.map(capitalize).join(' ');
+    final capitalizedEmployeeName = capitalize(activeEmployee.employeeName);
 
     return Card(
       elevation: 6.0,
@@ -41,68 +40,84 @@ class CustomCard extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(20.0),
         ),
-        child: ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          leading: CircleAvatar(
-            radius: 30,
-            backgroundImage: NetworkImage(
-              'https://hips.hearstapps.com/clv.h-cdn.co/assets/17/29/2048x1152/hd-aspect-1500566326-gettyimages-512366437-1.jpg?resize=1200:*',
-            ),
-            backgroundColor: Colors.transparent,
-          ),
-          title: Text(
-            capitalizedEmployeeName,
-            style: GoogleFonts.roboto(
-              textStyle: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal.shade900,
-              ),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            activeEmployee.employeePosition,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.teal.shade800,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ShowAllDataAboutEmployee(
-                        employee: activeEmployee,
-                      ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(
+                  radius: 30,
+                  backgroundImage: NetworkImage(
+                    'https://hips.hearstapps.com/clv.h-cdn.co/assets/17/29/2048x1152/hd-aspect-1500566326-gettyimages-512366437-1.jpg?resize=1200:*',
+                  ),
+                  backgroundColor: Colors.transparent,
+                ),
+                title: Text(
+                  capitalizedEmployeeName,
+                  style: GoogleFonts.roboto(
+                    textStyle: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal.shade900,
                     ),
-                  );
-                },
-                icon: Icon(Icons.remove_red_eye, color: Colors.teal.shade700),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  capitalize(activeEmployee.employeePosition),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.teal.shade800,
+                  ),
+                ),
               ),
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditEmployeeScreen(
-                        employeeId: activeEmployee.employeeId,
-                      ),
-                    ),
-                  );
-                },
-                icon: Icon(Icons.edit, color: Colors.teal.shade700),
-              ),
-              IconButton(
-                onPressed: () {
-                  _showDeleteDialog(context, activeEmployee.employeeId.toString());
-                },
-                icon: Icon(Icons.delete, color: Colors.teal.shade700),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ShowAllDataAboutEmployee(
+                            employee: activeEmployee,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.remove_red_eye, color: Colors.teal.shade700),
+                    padding: EdgeInsets.zero, // Remove padding
+                    constraints: BoxConstraints(), // Remove constraints
+                  ),
+                  SizedBox(width: 8), // Decrease space between buttons
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditEmployeeScreen(
+                            employeeId: activeEmployee.employeeId,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.edit, color: Colors.teal.shade700),
+                    padding: EdgeInsets.zero, // Remove padding
+                    constraints: BoxConstraints(), // Remove constraints
+                  ),
+                  SizedBox(width: 8), // Decrease space between buttons
+                  IconButton(
+                    onPressed: () {
+                      _showDeleteDialog(context, activeEmployee.employeeId.toString());
+                    },
+                    icon: Icon(Icons.delete, color: Colors.teal.shade700),
+                    padding: EdgeInsets.zero, // Remove padding
+                    constraints: BoxConstraints(), // Remove constraints
+                  ),
+                ],
               ),
             ],
           ),
