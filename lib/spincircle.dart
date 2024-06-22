@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:spincircle_bottom_bar/modals.dart';
 import 'package:spincircle_bottom_bar/spincircle_bottom_bar.dart';
-import 'Features/emp_features/presentation/inActive_emp_screen.dart';
-import 'Features/emp_features/presentation/active_emp_screen.dart';
 import 'spincircle2.dart';
 import 'Features/emp_features/presentation/add_position_screen.dart';
 
@@ -35,14 +33,6 @@ class _SpincircleState extends State<Spincircle> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Spincircle()));
                 }),
-            SCBottomBarItem(
-                icon: Icons.person_2_sharp,
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ActiveEmployeeScreen()));
-                }),
             SCBottomBarItem(icon: Iconsax.logout, onPressed: () {}),
             SCBottomBarItem(icon: Icons.settings, onPressed: () {}),
           ],
@@ -70,7 +60,7 @@ class _SpincircleState extends State<Spincircle> {
           activeTitleStyle: const TextStyle(
               color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
         ),
-        child: const InActiveEmployeeScreen(),
+        child: Center(child: Text('Hi')),
       ),
     );
   }

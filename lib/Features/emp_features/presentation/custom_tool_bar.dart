@@ -24,6 +24,18 @@ class _CustomToolBarState extends State<CustomToolBar> {
   int current = 0;
 
   @override
+  void initState() {
+    super.initState();
+    // Detailed debug statements
+    print("Titles length: ${widget.titles.length}");
+    print("Icons length: ${widget.icons.length}");
+    print("Callbacks length: ${widget.callbacks.length}");
+    print("Titles: ${widget.titles}");
+    print("Icons: ${widget.icons}");
+    print("Callbacks: ${widget.callbacks}");
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 80,

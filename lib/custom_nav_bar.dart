@@ -1,5 +1,3 @@
-import 'package:bloc_v2/Features/emp_features/presentation/active_emp_screen.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/inActive_emp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -29,28 +27,6 @@ class MyBottomNavigationBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildNavItem(
-              Iconsax.personalcard,
-              'Employee',
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ActiveEmployeeScreen()),
-                );
-              },
-            ),
-            _buildNavItem(
-              Icons.delete_forever,
-              'inactive Employee',
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => InActiveEmployeeScreen()),
-                );
-              },
-            ),
           ],
         ),
       ),
