@@ -28,7 +28,8 @@ class _RecipesListState extends State<RecipesList> {
   }
 
   Future<void> fetchBranches() async {
-    final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list'));
+    final response = await http
+        .get(Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list'));
     if (response.statusCode == 200) {
       setState(() {
         branches = jsonDecode(response.body)['data'];
@@ -48,24 +49,12 @@ class _RecipesListState extends State<RecipesList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Section List',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color.fromRGBO(209, 239, 234, 1),
-              Colors.grey
-            ],
+            colors: [Color.fromRGBO(209, 239, 234, 1), Colors.grey],
           ),
         ),
         child: Column(
@@ -87,7 +76,8 @@ class _RecipesListState extends State<RecipesList> {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<dynamic>(
                       hint: Text(
@@ -178,7 +168,8 @@ class _RecipesListState extends State<RecipesList> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(section.sectionName,
@@ -197,9 +188,9 @@ class _RecipesListState extends State<RecipesList> {
                                           builder: (context) {
                                             return AlertDialog(
                                               title: const Text("Description"),
-                                              content: Text(
-                                                  section.sectionDecription ??
-                                                      "No description available"),
+                                              content: Text(section
+                                                      .sectionDecription ??
+                                                  "No description available"),
                                             );
                                           },
                                         );

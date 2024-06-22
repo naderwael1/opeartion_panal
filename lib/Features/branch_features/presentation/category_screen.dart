@@ -11,11 +11,6 @@ class CategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const CustomDrawer(),
-      appBar: AppBar(
-        title: const Text('Category in working '),
-        centerTitle: true,
-        actions: const [],
-      ),
       body: FutureBuilder<List<CategoryModel>>(
         future: GetCategories().getCategories(),
         builder: (context, snapshot) {

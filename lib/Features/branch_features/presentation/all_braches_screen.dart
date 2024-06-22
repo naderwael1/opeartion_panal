@@ -38,42 +38,8 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('All Branches', style: GoogleFonts.openSans()),
-        centerTitle: true,
-        backgroundColor: Colors.deepPurple,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // Placeholder for search functionality
-            },
-          ),
-        ],
-      ),
       body: Column(
         children: [
-          CustomToolBar(
-            titles: const ['All Branches', 'Kitchen Category', 'Recipe Item'],
-            icons: const [Icons.home, Icons.category, Icons.food_bank],
-            callbacks: [
-              () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AllBranchScreen())),
-              () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CategoryScreen())),
-              () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => RecipesList(
-                            2,
-                            iD: 2,
-                          ))), // Corrected here
-            ],
-          ),
           Expanded(
             child: branches == null
                 ? const Center(child: CircularProgressIndicator())

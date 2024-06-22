@@ -1,4 +1,5 @@
 import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
+import 'package:bloc_v2/Features/operation_manger/app_layout_operation.dart';
 import 'package:bloc_v2/add_general_Section/add_general_section.dart';
 import 'package:bloc_v2/app_layout/screens/app_layout_screen.dart';
 import 'package:bloc_v2/app_layout_BM/screens/app_layout_screen.dart';
@@ -10,7 +11,6 @@ import '../../../../../Drawer/customDrawer.dart';
 import '../../../../../constants.dart';
 import '../../../../branch_features/presentation/all_braches_screen.dart';
 import 'custom_category_card.dart';
-
 
 class HomeBody extends StatelessWidget {
   @override
@@ -37,7 +37,7 @@ class HomeBody extends StatelessWidget {
         children: [
           _buildCard(context, 'HR Dept', hrImage, const AppLayoutScreen()),
           _buildCard(context, 'Operation Manager', operationImage,
-              OperationManagerRole()),
+              const OpearationMangerLayout()),
           _buildCard(context, 'Branch Manager', mangerImage,
               const AppLayoutScreenBM()),
           _buildCard(
