@@ -23,6 +23,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
   List<Map<String, dynamic>> sections = [];
   List<Map<String, dynamic>> menuItems = [];
   List<Map<String, dynamic>> categories = [];
+  List<Map<String, dynamic>> ingredients = []; // Add this line
 
   @override
   void initState() {
@@ -32,6 +33,29 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
     fetchSections();
     fetchMenuItems();
     fetchCategories();
+    fetchIngredients(); // Add this line
+  }
+
+  Future<void> fetchIngredients() async {
+    final url = Uri.parse('http://192.168.56.1:4000/admin/branch/ingredients');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        setState(() {
+          ingredients = (jsonBody['data'] as List)
+              .map<Map<String, dynamic>>((ingredient) => {
+                    'ingredient_id': ingredient['ingredient_id'],
+                    'ingredients_name': ingredient['ingredients_name'],
+                  })
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load ingredients');
+      }
+    } catch (e) {
+      print('Error loading ingredients: $e');
+    }
   }
 
   Future<void> fetchCategories() async {
@@ -401,6 +425,8 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
                     'ingredientId',
                     'ingredientQuantity'
                   ],
+                  ingredients: ingredients, // Pass ingredients here
+
                   managerEmployees: managerEmployees,
                   branches: branches, // Make sure this is passed
                   onSubmit: (values) async {
@@ -519,6 +545,7 @@ class FunctionInputTile extends StatefulWidget {
   final List<Map<String, dynamic>>? sections;
   final List<Map<String, dynamic>>? menuItems;
   final List<Map<String, dynamic>>? categories;
+  final List<Map<String, dynamic>>? ingredients; // Add this line
   final void Function(Map<String, String> values) onSubmit;
   final Future<void> Function(TextEditingController controller)? selectMinutes;
 
@@ -531,6 +558,7 @@ class FunctionInputTile extends StatefulWidget {
     this.categories,
     this.menuItems,
     this.sections,
+    this.ingredients, // Add this line
     this.selectMinutes,
   });
 
@@ -704,6 +732,60 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             validator: (value) {
                               if (value == null) {
                                 return 'Please select a branch';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.functionName ==
+                              'addIngredientToStock' &&
+                          attributeName == 'ingredientId') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<int>(
+                            value: controller.text.isEmpty
+                                ? null
+                                : int.tryParse(controller.text),
+                            onChanged: (newValue) {
+                              setState(() {
+                                controller.text = newValue?.toString() ?? '';
+                              });
+                            },
+                            items: widget.ingredients?.map((ingredient) {
+                                  return DropdownMenuItem<int>(
+                                    value: ingredient['ingredient_id'],
+                                    child: Text(ingredient['ingredients_name']),
+                                  );
+                                }).toList() ??
+                                [],
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: attributeName,
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select an ingredient';
                               }
                               return null;
                             },

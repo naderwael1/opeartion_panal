@@ -463,6 +463,9 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
   Future<List<Map<String, dynamic>>>? _managerListFuture;
   Future<List<Map<String, dynamic>>>? _itemListFuture;
   Future<List<Map<String, dynamic>>>? _branchesListFuture;
+  Future<List<Map<String, dynamic>>>? _seasonsListFuture;
+  Future<List<Map<String, dynamic>>>? _sectionsListFuture;
+  Future<List<Map<String, dynamic>>>? _ingredientsListFuture;
   bool _isExpanded = false;
 
   @override
@@ -478,8 +481,17 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
         widget.functionName == 'Item By Time') {
       _itemListFuture = fetchItemList();
     }
+    if (widget.functionName == 'Recipe') {
+      _ingredientsListFuture = fetchIngredientsList();
+    }
     if (widget.functionName == 'Add New Table') {
       _branchesListFuture = fetchBranchesList();
+    }
+    if (widget.functionName == 'Item By Season') {
+      _seasonsListFuture = fetchSeasonsList();
+    }
+    if (widget.functionName == 'Category') {
+      _sectionsListFuture = fetchSectionsList();
     }
   }
 
@@ -516,6 +528,42 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
           data['data'].map((item) => {'id': item['id'], 'name': item['name']}));
     } else {
       throw Exception('Failed to load item list');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSeasonsList() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.56.1:4000/admin/menu/seasonsList'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return List<Map<String, dynamic>>.from(data['data']['seasons'].map(
+          (item) => {'id': item['season_id'], 'name': item['season_name']}));
+    } else {
+      throw Exception('Failed to load seasons list');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSectionsList() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.56.1:4000/admin/menu/sectionsList'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return List<Map<String, dynamic>>.from(data['data']['sections'].map(
+          (item) => {'id': item['section_id'], 'name': item['section_name']}));
+    } else {
+      throw Exception('Failed to load sections list');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchIngredientsList() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.56.1:4000/admin/branch/ingredients'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return List<Map<String, dynamic>>.from(data['data'].map(
+          (item) => {'id': item['ingredient_id'], 'name': item['ingredients_name']}));
+    } else {
+      throw Exception('Failed to load ingredients list');
     }
   }
 
@@ -812,6 +860,199 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                           },
                         );
                       }
+
+                      if (widget.attributeNames[idx] == 'seasonId') {
+                        return FutureBuilder<List<Map<String, dynamic>>>(
+                          future: _seasonsListFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final seasonsList = snapshot.data!;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: DropdownButtonFormField<int>(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    labelText: 'Season',
+                                    labelStyle:
+                                        GoogleFonts.lato(color: Colors.blue),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  items: seasonsList.map((season) {
+                                    return DropdownMenuItem<int>(
+                                      value: season['id'],
+                                      child: Text(season['name']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    _textControllers[idx].text =
+                                        value.toString();
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select a season';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      }
+
+                      if (widget.attributeNames[idx] == 'sectionId') {
+                        return FutureBuilder<List<Map<String, dynamic>>>(
+                          future: _sectionsListFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final sectionsList = snapshot.data!;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: DropdownButtonFormField<int>(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    labelText: 'Section',
+                                    labelStyle:
+                                        GoogleFonts.lato(color: Colors.blue),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  items: sectionsList.map((section) {
+                                    return DropdownMenuItem<int>(
+                                      value: section['id'],
+                                      child: Text(section['name']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    _textControllers[idx].text =
+                                        value.toString();
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select a section';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      }
+
+                      if (widget.attributeNames[idx] == 'ingredientId') {
+                        return FutureBuilder<List<Map<String, dynamic>>>(
+                          future: _ingredientsListFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final ingredientsList = snapshot.data!;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: DropdownButtonFormField<int>(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    labelText: 'Ingredient',
+                                    labelStyle:
+                                        GoogleFonts.lato(color: Colors.blue),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  items: ingredientsList.map((ingredient) {
+                                    return DropdownMenuItem<int>(
+                                      value: ingredient['id'],
+                                      child: Text(ingredient['name']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    _textControllers[idx].text =
+                                        value.toString();
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select an ingredient';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      }
+
                       if (widget.attributeNames[idx] == 'recipeStatus') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -859,6 +1100,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                           ),
                         );
                       }
+
                       if (widget.attributeNames[idx] == 'status') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -906,6 +1148,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                           ),
                         );
                       }
+
                       if (widget.attributeNames[idx] == 'itemDayType') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -960,6 +1203,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                           ),
                         );
                       }
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
