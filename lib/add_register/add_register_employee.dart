@@ -198,62 +198,10 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                 child: Container(
                   height: 200, // Adjusted height to fit the toolbar and text
                   color: baseColor,
+                  // ignore: prefer_const_constructors
                   child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 20.0), // Padding above the toolbar
-                        child: CustomToolBar(titles: const [
-                          "Add Employee",
-                          "Add Position",
-                          "Employee Schedule",
-                          "Employee Vacation",
-                          "Time In|Out Attendance"
-                        ], icons: const [
-                          Icons.add_business_rounded,
-                          Icons.workspaces,
-                          Icons.feed,
-                          Icons.quiz_sharp,
-                          Icons.person,
-                        ], callbacks: [
-                          () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AddRegisterEmp()));
-                          },
-                          () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AddPositionScreen()));
-                          },
-                          () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AddEmployeeSchedule())); //post schedule
-                          },
-                          () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AddEmployeeVacation())); //post vacation
-                          },
-                          () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AttendanceInAndOut())); //post att in and out
-                          }
-                        ]),
-                      ),
-                      const Center(
+                    children: const [
+                      Center(
                         child: Text(
                           'Add Employee Registration',
                           style: TextStyle(

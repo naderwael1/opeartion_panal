@@ -3,6 +3,7 @@ import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/get_managers_list.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
+import 'package:bloc_v2/Features/emp_features/presentation/post_app_layout.dart';
 import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
 import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:flutter/material.dart';
@@ -219,7 +220,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AddRegisterEmp()));
+                            builder: (context) => const PostAppLayout()));
                   },
                   () {
                     Navigator.push(
@@ -238,10 +239,12 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                           child: TextField(
                             controller: _searchTextController,
                             decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.search, color: Colors.teal),
+                              prefixIcon:
+                                  const Icon(Icons.search, color: Colors.teal),
                               suffixIcon: _searchTextController.text.isNotEmpty
                                   ? IconButton(
-                                      icon: const Icon(Icons.clear, color: Colors.teal),
+                                      icon: const Icon(Icons.clear,
+                                          color: Colors.teal),
                                       onPressed: () {
                                         _clearSearch();
                                       },
@@ -249,22 +252,27 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                                   : null,
                               hintText: 'Search employees..',
                               hintStyle: const TextStyle(color: Colors.teal),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 20.0),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(color: Colors.teal, width: 2.0),
+                                borderSide:
+                                    BorderSide(color: Colors.teal, width: 2.0),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(color: Colors.teal, width: 2.0),
+                                borderSide:
+                                    BorderSide(color: Colors.teal, width: 2.0),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(color: Colors.teal, width: 2.0),
+                                borderSide:
+                                    BorderSide(color: Colors.teal, width: 2.0),
                               ),
                             ),
                             onChanged: (searchedCharacter) {
-                              addSearchedFOrItemsToSearchedList(searchedCharacter);
+                              addSearchedFOrItemsToSearchedList(
+                                  searchedCharacter);
                             },
                           ),
                         ),
@@ -272,7 +280,9 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                         ElevatedButton.icon(
                           onPressed: _toggleEmployeeStatus,
                           icon: const Icon(Icons.filter_list),
-                          label: Text(_isShowingActive ? 'Show Inactive' : 'Show Active'),
+                          label: Text(_isShowingActive
+                              ? 'Show Inactive'
+                              : 'Show Active'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.teal,
                             shape: RoundedRectangleBorder(
@@ -288,7 +298,8 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                   child: FutureBuilder<List<ActiveEmployeesModel>>(
                     future: _isShowingActive
                         ? GetActiveEmployee().fetchActiveEmployees()
-                        : GeIntActiveEmployee().geIntActiveEmployee(), // Assuming a similar function for inactive employees
+                        : GeIntActiveEmployee()
+                            .geIntActiveEmployee(), // Assuming a similar function for inactive employees
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
