@@ -16,7 +16,6 @@ class AppLayoutScreenBM extends StatelessWidget {
     final screens = <Widget>[
       BranchMangerOpeartion(),
       const AppLayoutScreenBMGET(),
-      const AllBranchScreen(),
     ];
 
     return BlocProvider(
@@ -38,10 +37,6 @@ class AppLayoutScreenBM extends StatelessWidget {
                 FlashyTabBarItem(
                   icon: const Icon(Icons.calendar_view_day_rounded),
                   title: const Text('Branch State'),
-                ),
-                FlashyTabBarItem(
-                  icon: const Icon(Icons.person),
-                  title: const Text('Profile'),
                 ),
               ],
             ),
