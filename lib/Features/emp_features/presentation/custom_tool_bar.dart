@@ -41,10 +41,18 @@ class _CustomToolBarState extends State<CustomToolBar> {
       height: 80,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blueGrey.shade100, Colors.blueGrey.shade300],
+          colors: [Colors.teal.shade100, Colors.teal.shade300],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+        borderRadius: BorderRadius.circular(20),
       ),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -59,17 +67,23 @@ class _CustomToolBarState extends State<CustomToolBar> {
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              margin: const EdgeInsets.all(5),
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
               width: _calculateWidth(index),
-              height: 55,
               decoration: BoxDecoration(
-                color: current == index ? Colors.white70 : Colors.white54,
-                borderRadius: current == index
-                    ? BorderRadius.circular(12)
-                    : BorderRadius.circular(7),
+                color: current == index ? Colors.white : Colors.white54,
+                borderRadius: BorderRadius.circular(20),
                 border: current == index
-                    ? Border.all(color: Colors.blueGrey.shade700, width: 2.5)
+                    ? Border.all(color: Colors.teal.shade700, width: 2.5)
                     : null,
+                boxShadow: current == index
+                    ? [
+                        BoxShadow(
+                          color: Colors.teal.shade200,
+                          blurRadius: 15,
+                          offset: Offset(0, 5),
+                        ),
+                      ]
+                    : [],
               ),
               child: Center(
                 child: Column(
@@ -77,18 +91,20 @@ class _CustomToolBarState extends State<CustomToolBar> {
                   children: [
                     Icon(
                       widget.icons[index],
-                      size: current == index ? 23 : 20,
+                      size: current == index ? 26 : 22,
                       color: current == index
-                          ? Colors.blueGrey.shade900
+                          ? Colors.teal.shade900
                           : Colors.grey.shade400,
                     ),
+                    SizedBox(height: 5),
                     Text(
                       widget.titles[index],
                       style: GoogleFonts.roboto(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         color: current == index
-                            ? Colors.blueGrey.shade900
+                            ? Colors.teal.shade900
                             : Colors.grey.shade400,
+                        fontSize: current == index ? 16 : 14,
                       ),
                     ),
                   ],
@@ -111,6 +127,6 @@ class _CustomToolBarState extends State<CustomToolBar> {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    return textPainter.width + 20; // Adjust padding as needed
+    return textPainter.width + 30; // Adjust padding as needed
   }
 }

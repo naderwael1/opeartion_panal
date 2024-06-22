@@ -187,6 +187,8 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
             ),
             body: Column(
               children: [
+                // Add space between app bar and CustomToolBar
+                const SizedBox(height: 5.0), // Adjust height as needed
                 CustomToolBar(titles: const [
                   "Explore",
                   "All Positions",
@@ -217,8 +219,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                const AddRegisterEmp()));
+                            builder: (context) => const AddRegisterEmp()));
                   },
                   () {
                     Navigator.push(
@@ -237,15 +238,33 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                           child: TextField(
                             controller: _searchTextController,
                             decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.search),
-                              hintText: 'Search',
+                              prefixIcon: const Icon(Icons.search, color: Colors.teal),
+                              suffixIcon: _searchTextController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.clear, color: Colors.teal),
+                                      onPressed: () {
+                                        _clearSearch();
+                                      },
+                                    )
+                                  : null,
+                              hintText: 'Search employees..',
+                              hintStyle: const TextStyle(color: Colors.teal),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(color: Colors.teal, width: 2.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(color: Colors.teal, width: 2.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(color: Colors.teal, width: 2.0),
                               ),
                             ),
                             onChanged: (searchedCharacter) {
-                              addSearchedFOrItemsToSearchedList(
-                                  searchedCharacter);
+                              addSearchedFOrItemsToSearchedList(searchedCharacter);
                             },
                           ),
                         ),
@@ -257,7 +276,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.teal,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(30),
                             ),
                           ),
                         ),
