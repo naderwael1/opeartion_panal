@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:bloc_v2/Features/edit_data_employee/edit_address_employee_model.dart';
+import 'package:bloc_v2/Features/edit_data_employee/edit_change_postion_model.dart';
+import 'package:bloc_v2/Features/edit_data_employee/edit_data_employee_model.dart';
 import 'package:bloc_v2/Features/edit_data_employee/edit_phone_employee_model.dart';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
@@ -27,7 +30,8 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
   }
 
   Future<List<String>> fetchPhones(int employeeId) async {
-    final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/phones/$employeeId'));
+    final response = await http.get(Uri.parse(
+        'http://192.168.56.1:4000/admin/employees/phones/$employeeId'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -35,6 +39,24 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
       return phones.map((phone) => phone['phone'].toString()).toList();
     } else {
       throw Exception('Failed to load phones');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPositions() async {
+    final response = await http.get(
+        Uri.parse('http://192.168.56.1:4000/admin/employees/positions-list'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final positions = data['data'] as List;
+      return positions
+          .map((position) => {
+                'position_id': position['position_id'],
+                'position': position['position']
+              })
+          .toList();
+    } else {
+      throw Exception('Failed to load positions');
     }
   }
 
@@ -109,30 +131,165 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                     }
                   },
                 ),
-                FunctionInputTile(
-                  functionName: 'Change Salary',
-                  attributeNames: const ['changerId', 'newSalary', 'changeReason'],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add-menu-item
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchPositions(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return FunctionInputTile(
+                        functionName: 'Change Position',
+                        attributeNames: const [
+                          'position_changer_id',
+                          'new_position',
+                          'position_change_type'
+                        ],
+                        newPositionDropdownItems:
+                            snapshot.data!, // Pass fetched positions
+                        onSubmit: (values) async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              final addStorage_Model =
+                                  await editPositionEmployee(
+                                employee_id: widget.employeeId,
+                                position_changer_id:
+                                    values['position_changer_id']!,
+                                new_position: values['new_position']!,
+                                position_change_type:
+                                    values['position_change_type']!,
+                              );
+                            } catch (e) {
+                              print('Error Changed Salary : $e');
+                              CherryToast.error(
+                                toastPosition: Position.bottom,
+                                animationType: AnimationType.fromRight,
+                                description: const Text(
+                                  "Something went wrong!",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ).show(context);
+                            }
+                          } else {
+                            print('Form is not valid');
+                            CherryToast.warning(
+                              toastPosition: Position.bottom,
+                              animationType: AnimationType.fromLeft,
+                              description: const Text(
+                                "Data is not valid or not complete",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ).show(context);
+                          }
+                        },
+                      );
+                    }
                   },
                 ),
                 FunctionInputTile(
-                  functionName: 'Change Position',
-                  attributeNames: const ['position_changer_id', 'new_position', 'position_change_type'],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add-ingredient
+                  functionName: 'Change Salary',
+                  attributeNames: const [
+                    'changerId',
+                    'newSalary',
+                    'changeReason'
+                  ],
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await editSaleryEmployee(
+                          employeeId: widget.employeeId,
+                          changerId: values['changerId']!,
+                          newSalary: values['newSalary']!,
+                          changeReason: values['changeReason']!,
+                        );
+                        print('Adding Storage: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Changed Salary successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error Changed Salary : $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
                   },
                 ),
                 FunctionInputTile(
                   functionName: 'Update Employee Address',
                   attributeNames: const ['newAddress'],
-                  onSubmit: (values) {
-                    // TODO: Call the post function for add_branch_section
-                  },
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addStorage_Model = await editAddressEmployee(
+                          employeeId: widget.employeeId,
+                          newAddress: values['newAddress']!,
+                        );
+                        print('Adding Storage: $addStorage_Model');
+                        CherryToast.success(
+                          animationType: AnimationType.fromRight,
+                          toastPosition: Position.bottom,
+                          description: const Text(
+                            "Add Storage successfully",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                        clearFormFields();
+                      } catch (e) {
+                        print('Error adding storage: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
+                    }
+                  }
                 ),
                 FunctionInputTile(
                   functionName: 'Edit Employee Salary And Position',
-                  attributeNames: const ['changerId', 'newSalary', 'newPosition', 'positionChangeType', 'changeReason'],
+                  attributeNames: const [
+                    'changerId',
+                    'newSalary',
+                    'newPosition',
+                    'positionChangeType',
+                    'changeReason'
+                  ],
                   onSubmit: (values) {
                     // TODO: Call the post function for addIngredientToStock
                   },
@@ -150,13 +307,15 @@ class FunctionInputTile extends StatefulWidget {
   final String functionName;
   final List<String> attributeNames;
   final void Function(Map<String, String> values) onSubmit;
-  final List<String>? oldPhoneDropdownItems; // Added this field to hold dropdown items
+  final List<String>? oldPhoneDropdownItems;
+  final List<Map<String, dynamic>>? newPositionDropdownItems;
 
   FunctionInputTile({
     required this.functionName,
     required this.attributeNames,
     required this.onSubmit,
     this.oldPhoneDropdownItems,
+    this.newPositionDropdownItems,
   });
 
   @override
@@ -167,6 +326,9 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
   late List<TextEditingController> _textControllers;
   bool _isExpanded = false;
   String? selectedOldPhone;
+  String? selectedNewPosition;
+  final List<String> positionChangeTypes = ['Promote', 'Demote'];
+  String? selectedPositionChangeType;
 
   @override
   void initState() {
@@ -222,7 +384,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                     ..._textControllers.asMap().entries.map((entry) {
                       int idx = entry.key;
                       TextEditingController controller = entry.value;
-                      if (widget.attributeNames[idx] == 'oldPhone' && widget.oldPhoneDropdownItems != null) {
+                      if (widget.attributeNames[idx] == 'oldPhone' &&
+                          widget.oldPhoneDropdownItems != null) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<String>(
@@ -271,17 +434,124 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                             },
                           ),
                         );
+                      } else if (widget.attributeNames[idx] == 'new_position' &&
+                          widget.newPositionDropdownItems != null) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<String>(
+                            value: selectedNewPosition,
+                            items: widget.newPositionDropdownItems!
+                                .map((position) {
+                              return DropdownMenuItem(
+                                value: position['position_id']
+                                    .toString(), // Store the position_id
+                                child: Text(position['position']),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedNewPosition = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'New Position',
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a position';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.attributeNames[idx] ==
+                          'position_change_type') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: DropdownButtonFormField<String>(
+                            value: selectedPositionChangeType,
+                            items: positionChangeTypes.map((type) {
+                              return DropdownMenuItem(
+                                value:
+                                    type.toLowerCase(), // Send lowercase value
+                                child: Text(type), // Display capitalized
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedPositionChangeType = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'Position Change Type',
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a position change type';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
                       }
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
                           controller: controller,
-                          keyboardType: widget.attributeNames[idx] == 'newPhone'
-                              ? TextInputType.number
-                              : TextInputType.text,
-                          inputFormatters: widget.attributeNames[idx] == 'newPhone'
-                              ? [FilteringTextInputFormatter.digitsOnly]
-                              : [],
+                          keyboardType:
+                              widget.attributeNames[idx] == 'newPhone' ||
+                                      widget.attributeNames[idx] == 'newSalary'
+                                  ? TextInputType.number
+                                  : TextInputType.text,
+                          inputFormatters:
+                              widget.attributeNames[idx] == 'newPhone' ||
+                                      widget.attributeNames[idx] == 'newSalary'
+                                  ? [FilteringTextInputFormatter.digitsOnly]
+                                  : [],
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -344,7 +614,13 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                               widget.attributeNames[i]:
                                   widget.attributeNames[i] == 'oldPhone'
                                       ? selectedOldPhone!
-                                      : _textControllers[i].text
+                                      : widget.attributeNames[i] ==
+                                              'new_position'
+                                          ? selectedNewPosition!
+                                          : widget.attributeNames[i] ==
+                                                  'position_change_type'
+                                              ? selectedPositionChangeType!
+                                              : _textControllers[i].text
                           };
                           widget.onSubmit(values);
                         }

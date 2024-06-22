@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-Future<Map<String, dynamic>> editPositionEmployee({
+Future<void> editPositionEmployee({
   required int employee_id,
   required String position_changer_id,
   required String new_position,
@@ -23,16 +25,48 @@ Future<Map<String, dynamic>> editPositionEmployee({
       // Success
       final jsonResponse = jsonDecode(response.body);
       String message = jsonResponse['message']; // Extract the message
-      return {'message': message};
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } else {
       // Failure
       final jsonResponse = jsonDecode(response.body);
       String message = jsonResponse['message']; // Extract the message
-      return {'message': message};
-      throw Exception('Failed to edit employee position. Status code: ${response.statusCode}');
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   } catch (e) {
-    throw Exception('Error editing employee position: $e');
+    Fluttertoast.showToast(
+      msg: 'Error editing employee position: $e',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
+}
+
+void main() async {
+  final result = await editPositionEmployee(
+    employee_id: 1,
+    position_changer_id: '1',
+    new_position: '5',
+    position_change_type: 'promote'
+  );
 }
 
