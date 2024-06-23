@@ -1,18 +1,10 @@
 import 'package:bloc_v2/Features/emp_features/Data/get_active_emp.dart';
 import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/add_position_screen.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/get_managers_list.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/hrFlashy_tab_bar.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/post_app_layout.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/postion_secreen.dart';
-import 'package:bloc_v2/add_register/add_register_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'dart:async';
 
-import '../../../core/utils/theme.dart';
 import 'custom_card.dart';
-import 'custom_tool_bar.dart';
 
 class AllEmployeeScreen extends StatefulWidget {
   @override
@@ -32,6 +24,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   @override
   void initState() {
     super.initState();
+    _startPolling();
   }
 
   @override
@@ -52,6 +45,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
   }
 
   void _fetchEmployees() {
+    // Replace with your actual data fetching logic
     setState(() {});
   }
 
@@ -91,18 +85,6 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
     setState(() {
       _searchTextController.clear();
     });
-  }
-
-  void _onTabSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => HrFlashyTabBar.tabItems[index].screen),
-    );
   }
 
   void _toggleEmployeeStatus() {
@@ -181,72 +163,66 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
           return Scaffold(
             body: Column(
               children: [
-                // Add space between app bar and CustomToolBar
-                const SizedBox(height: 5.0), // Adjust height as needed
-
-                Visibility(
-                  visible: _showSearch,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _searchTextController,
-                            decoration: InputDecoration(
-                              prefixIcon:
-                                  const Icon(Icons.search, color: Colors.teal),
-                              suffixIcon: _searchTextController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: const Icon(Icons.clear,
-                                          color: Colors.teal),
-                                      onPressed: () {
-                                        _clearSearch();
-                                      },
-                                    )
-                                  : null,
-                              hintText: 'Search employees..',
-                              hintStyle: const TextStyle(color: Colors.teal),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 20.0),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide:
-                                    BorderSide(color: Colors.teal, width: 2.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide:
-                                    BorderSide(color: Colors.teal, width: 2.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide:
-                                    BorderSide(color: Colors.teal, width: 2.0),
-                              ),
-                            ),
-                            onChanged: (searchedCharacter) {
-                              addSearchedFOrItemsToSearchedList(
-                                  searchedCharacter);
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton.icon(
-                          onPressed: _toggleEmployeeStatus,
-                          icon: const Icon(Icons.filter_list),
-                          label: Text(_isShowingActive
-                              ? 'Show Inactive'
-                              : 'Show Active'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
-                            shape: RoundedRectangleBorder(
+                const SizedBox(height: 5.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _searchTextController,
+                          decoration: InputDecoration(
+                            prefixIcon:
+                                const Icon(Icons.search, color: Colors.teal),
+                            suffixIcon: _searchTextController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear,
+                                        color: Colors.teal),
+                                    onPressed: () {
+                                      _clearSearch();
+                                    },
+                                  )
+                                : null,
+                            hintText: 'Search employees..',
+                            hintStyle: const TextStyle(color: Colors.teal),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 20.0),
+                            border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
+                              borderSide:
+                                  BorderSide(color: Colors.teal, width: 2.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide:
+                                  BorderSide(color: Colors.teal, width: 2.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide:
+                                  BorderSide(color: Colors.teal, width: 2.0),
                             ),
                           ),
+                          onChanged: (searchedCharacter) {
+                            addSearchedFOrItemsToSearchedList(
+                                searchedCharacter);
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        onPressed: _toggleEmployeeStatus,
+                        icon: const Icon(Icons.filter_list),
+                        label: Text(
+                            _isShowingActive ? 'Show Inactive' : 'Show Active'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
