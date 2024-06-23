@@ -1,8 +1,4 @@
-import 'package:bloc_v2/Features/branch_features/presentation/category_screen.dart';
-import 'package:bloc_v2/Features/branch_features/presentation/recipes_screeen.dart';
-import 'package:bloc_v2/Features/emp_features/presentation/custom_tool_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:bloc_v2/Features/branch_features/Data/get_all_branchs.dart';
 import 'package:bloc_v2/Features/branch_features/models/branch_model.dart';
 import 'package:bloc_v2/Features/branch_features/presentation/custom_branch_card.dart';
@@ -17,13 +13,12 @@ class AllBranchScreen extends StatefulWidget {
 class _AllBranchScreenState extends State<AllBranchScreen> {
   List<BranchModel>? branches;
   BranchModel? selectedBranch;
-
+  
   @override
   void initState() {
     super.initState();
     fetchBranches();
   }
-
   Future<void> fetchBranches() async {
     try {
       branches = await GetAllBranches().getAllBranches();
@@ -34,7 +29,6 @@ class _AllBranchScreenState extends State<AllBranchScreen> {
       print('Failed to fetch branches: $e');
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
