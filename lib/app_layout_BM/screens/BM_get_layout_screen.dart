@@ -1,5 +1,5 @@
 import 'package:bloc_v2/app_layout/controllers/app_layout_cubit.dart';
-import 'package:bloc_v2/app_layout_BM/screens/branch_table_screnn.dart';
+import 'package:bloc_v2/app_layout_BM/screens/get_all_employee_by_branch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
