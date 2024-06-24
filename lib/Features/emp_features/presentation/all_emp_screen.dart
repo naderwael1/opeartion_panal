@@ -214,7 +214,9 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                         onPressed: _toggleEmployeeStatus,
                         icon: const Icon(Icons.filter_list),
                         label: Text(
-                            _isShowingActive ? 'Show Inactive' : 'Show Active'),
+                          _isShowingActive ? 'Show Inactive' : 'Show Active',
+                          style: const TextStyle(color: Colors.black), // Change text color to black
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.teal,
                           shape: RoundedRectangleBorder(
