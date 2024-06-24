@@ -43,9 +43,9 @@ class HomeBody extends StatelessWidget {
           _buildCard(
               context, 'Storage', storgeImage, const EmpAttendanceScreen()),
           _buildCard(context, 'Upload', cloud,
-              const AddGeneralSection()), // add menu item (EditOrUploadProductScreen)
+            PieChartSample()), // add menu item (EditOrUploadProductScreen)
           _buildCard(context, 'table', table,
-              const AddGeneralSection()), // (AddGeneralSection)
+              PieChartSample()), // (AddGeneralSection)
         ],
       ),
     );
