@@ -6,7 +6,7 @@ class TableSreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Text('This is my widget!'),
+      body: Text('This is my !'),
     );
   }
 }
