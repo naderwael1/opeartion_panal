@@ -76,7 +76,7 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
     }
   }
 
-  Future<void> _selectDateTime() async {
+  Future<void> _selectDateTime(TextEditingController controller) async {
     // Pick the date
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -106,42 +106,7 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
         String formattedDateTime = pickedDateTime.toString();
 
         setState(() {
-          shiftStartTimeController.text =
-              formattedDateTime; // Update shiftStartTimeController
-        });
-      }
-    }
-  }
-
-  Future<void> _HiredDate() async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null) {
-      TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-
-      if (pickedTime != null) {
-        DateTime finalDateTime = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
-
-        String formattedDateTime =
-            "${finalDateTime.toLocal().toString().split(' ')[0]} ${pickedTime.format(context)}";
-
-        setState(() {
-          shiftEndTimeController.text =
-              formattedDateTime; // Update shiftEndTimeController
+          controller.text = formattedDateTime; // Update the respective controller
         });
       }
     }
@@ -219,17 +184,17 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                         decoration: const InputDecoration(
                           labelText: 'Shift Start Time',
                           filled: true,
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          enabledBorder: const OutlineInputBorder(
+                          prefixIcon: Icon(Icons.calendar_today),
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         readOnly: true,
                         onTap: () {
-                          _selectDateTime();
+                          _selectDateTime(shiftStartTimeController);
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -244,17 +209,17 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                         decoration: const InputDecoration(
                           labelText: 'Shift End Time',
                           filled: true,
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          enabledBorder: const OutlineInputBorder(
+                          prefixIcon: Icon(Icons.calendar_today),
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         readOnly: true,
                         onTap: () {
-                          _HiredDate();
+                          _selectDateTime(shiftEndTimeController);
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -287,12 +252,12 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                                         shiftStartTimeController.text,
                                     shiftEndTime: shiftEndTimeController.text,
                                   );
-                                  print('Adding Sechedule: $addRegisterEmp');
+                                  print('Adding Schedule: $addRegisterEmp');
                                   CherryToast.success(
                                     animationType: AnimationType.fromRight,
                                     toastPosition: Position.bottom,
                                     description: const Text(
-                                      "Employee Sechedule successfully",
+                                      "Employee Schedule successfully added",
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ).show(context);

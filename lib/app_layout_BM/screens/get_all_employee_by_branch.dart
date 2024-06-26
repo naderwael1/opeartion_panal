@@ -108,7 +108,7 @@ class _TableSreenState extends State<TableSreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             title: Text('Success', style: GoogleFonts.openSans(fontWeight: FontWeight.bold)),
-            content: Text('Time in attendance successfully sent.'),
+            content: Text('Time out attendance successfully sent.'),
             actions: <Widget>[
               TextButton(
                 child: Text('OK', style: GoogleFonts.openSans(color: Colors.teal)),
@@ -126,7 +126,7 @@ class _TableSreenState extends State<TableSreen> {
       final String errorMessage = responseData['message'] ?? 'Unknown error occurred';
 
       // Print the status code and response body for debugging
-      print('Failed to send time in attendance. Status code: ${response.statusCode}');
+      print('Failed to send time out attendance. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
 
       // Show error dialog with the error message from the response
@@ -138,7 +138,7 @@ class _TableSreenState extends State<TableSreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             title: Text('Error', style: GoogleFonts.openSans(fontWeight: FontWeight.bold)),
-            content: Text('Failed to send time in attendance: $errorMessage'),
+            content: Text('Failed to send time out attendance: $errorMessage'),
             actions: <Widget>[
               TextButton(
                 child: Text('OK', style: GoogleFonts.openSans(color: Colors.redAccent)),

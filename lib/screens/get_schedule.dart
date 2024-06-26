@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:intl/intl.dart';
+
+class SchedulePage extends StatefulWidget {
+  const SchedulePage({super.key});
+
+  @override
+  _SchedulePageState createState() => _SchedulePageState();
+}
+
+class _SchedulePageState extends State<SchedulePage> {
+  late Future<List<Map<String, String>>> _futureSchedule;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureSchedule = fetchSchedule();
+  }
+
+  Future<List<Map<String, String>>> fetchSchedule() async {
+    final response = await http.get(
+      Uri.parse('http://192.168.56.1:4000/admin/branch/employeesSchedule/1?fromDate=2024-06-25&toDate=2024-06-30'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      List<Map<String, String>> schedule = (data['data']['attendance'] as List)
+          .map((item) {
+            return {
+              "employee": item['employee'] as String,
+              "shift_start_time": item['shift_start_time'] as String,
+              "shift_end_time": item['shift_end_time'] as String,
+            };
+          })
+          .toList();
+      return schedule;
+    } else {
+      throw Exception('Failed to load schedule');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Employee Schedule', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.lightBlue[800],
+        centerTitle: true,
+        automaticallyImplyLeading: false, // This removes the back button
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder<List<Map<String, String>>>(
+          future: _futureSchedule,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No data available'));
+            } else {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: [
+                    DataColumn(label: Text('Employee')),
+                    DataColumn(label: Text('Shift Start Time')),
+                    DataColumn(label: Text('Shift End Time')),
+                  ],
+                  rows: snapshot.data!.map((item) {
+                    return DataRow(cells: [
+                      DataCell(Text(item['employee']!, style: TextStyle(fontSize: 16))),
+                      DataCell(formatDateTime(item['shift_start_time']!)),
+                      DataCell(formatDateTime(item['shift_end_time']!)),
+                    ]);
+                  }).toList(),
+                  headingRowColor:
+                      MaterialStateColor.resolveWith((states) => Colors.lightBlue[800]!),
+                  dataRowColor:
+                      MaterialStateColor.resolveWith((states) => Colors.lightBlue[100]!),
+                  dataTextStyle: TextStyle(color: Colors.black, fontSize: 16),
+                  headingTextStyle:
+                      TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                  columnSpacing: 20,
+                  dividerThickness: 1,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.lightBlue[800]!),
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget formatDateTime(String dateTime) {
+    final DateTime parsedDateTime = DateTime.parse(dateTime);
+    final String formattedDate = DateFormat('yyyy-MM-dd').format(parsedDateTime);
+    final String formattedTime = DateFormat('HH:mm').format(parsedDateTime);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(formattedDate, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        Text(formattedTime, style: TextStyle(fontSize: 14)),
+      ],
+    );
+  }
+}

@@ -1,6 +1,7 @@
 import 'package:bloc_v2/app_layout/controllers/app_layout_cubit.dart';
 import 'package:bloc_v2/app_layout_BM/screens/get_all_employee_by_branch.dart';
 import 'package:bloc_v2/pdf/page/pdf_page.dart';
+import 'package:bloc_v2/screens/get_schedule.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,7 +35,7 @@ class AppLayoutScreenBMGET extends StatelessWidget {
             children: [
               TableSreen(),
               PdfPage(),
-              TableSreen(),
+              SchedulePage(),
             ],
           ),
         ),
