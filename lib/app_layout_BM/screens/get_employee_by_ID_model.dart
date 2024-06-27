@@ -20,7 +20,7 @@ class Employee {
 
 // Function to fetch employees
 Future<List<Employee>> fetchEmployees() async {
-  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/employeeData/1/active'));
+  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/employeeData?branchId=1&status=active'));
 
   if (response.statusCode == 200) {
     final List<dynamic> data = jsonDecode(response.body)['data'];

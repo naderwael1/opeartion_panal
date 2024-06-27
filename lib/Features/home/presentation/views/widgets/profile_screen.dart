@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       employeePosition = _capitalize(prefs.getString('employee_position') ?? 'N/A');
       employeeBranchName = _capitalize(prefs.getString('employee_branch_name') ?? 'N/A');
       sectionName = _capitalize(prefs.getString('section_name') ?? 'N/A');
-      picturePath = prefs.getString('picture_path') ?? 'N/A'; // Assuming this is a path and should not be capitalized
+      picturePath = prefs.getString('picture_path') ?? 'N/A';
 
       employeeBranchId = _handleIntValue(prefs.getInt('employee_branch_id'));
       branchSectionId = _handleIntValue(prefs.getInt('branch_section_id'));
@@ -65,35 +65,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text('Profile', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            Text('Employee ID: ${employeeId ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('First Name: ${employeeFirstName ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Last Name: ${employeeLastName ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Role: ${employeeRole ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Status: ${employeeStatus ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Position: ${employeePosition ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Branch Name: ${employeeBranchName ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Branch ID: ${employeeBranchId ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Branch Section ID: ${branchSectionId ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Section Name: ${sectionName ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            //Text('Picture Path: ${picturePath ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.deepPurple, Colors.purpleAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Card(
+            elevation: 8.0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ListView(
+                children: [
+                  Center(
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: picturePath == null || picturePath == 'N/A' || !Uri.tryParse(picturePath!)!.isAbsolute
+                          ? NetworkImage('https://www.wonderplugin.com/wp-content/uploads/2013/12/Island_1024.jpg')
+                          : NetworkImage(picturePath!),
+                      backgroundColor: Colors.transparent,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  _buildProfileDetail('Employee ID: ', employeeId, Icons.badge),
+                  _buildProfileDetail('First Name: ', employeeFirstName, Icons.person),
+                  _buildProfileDetail('Last Name: ', employeeLastName, Icons.person_outline),
+                  _buildProfileDetail('Role: ', employeeRole, Icons.work),
+                  _buildProfileDetail('Status: ', employeeStatus, Icons.check_circle),
+                  _buildProfileDetail('Position: ', employeePosition, Icons.business_center),
+                  _buildProfileDetail('Branch Name: ', employeeBranchName, Icons.location_city),
+                  _buildProfileDetail('Branch ID: ', employeeBranchId, Icons.map),
+                  _buildProfileDetail('Section ID: ', branchSectionId, Icons.account_tree),
+                  _buildProfileDetail('Section Name: ', sectionName, Icons.account_balance),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileDetail(String title, String? value, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.deepPurple, size: 24),
+          SizedBox(width: 10),
+          Expanded(
+            flex: 2,
+            child: Text(
+              title,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.deepPurple),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value ?? 'N/A',
+              style: TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+          ),
+        ],
       ),
     );
   }
