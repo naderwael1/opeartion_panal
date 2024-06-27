@@ -18,13 +18,13 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     initAnimated();
-    checkTokenAndNavigate();
+    Future.delayed(const Duration(seconds: 5), checkTokenAndNavigate); // Delay navigation by 5 seconds
   }
 
   void initAnimated() {
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3), // Changed duration to 3 seconds for slower animation
+      duration: const Duration(seconds: 5), // Changed duration to 5 seconds for slower animation
     );
     slidingAnimation = Tween<Offset>(
       begin: const Offset(0, 2),
