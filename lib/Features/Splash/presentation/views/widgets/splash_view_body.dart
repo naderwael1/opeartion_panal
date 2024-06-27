@@ -2,6 +2,7 @@ import 'package:bloc_v2/Features/home/presentation/views/widgets/choose_based_to
 import 'package:bloc_v2/Features/home/presentation/views/widgets/new_login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 
 class SplashView extends StatefulWidget {
   const SplashView({Key? key}) : super(key: key);
@@ -18,13 +19,22 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     initAnimated();
-    Future.delayed(const Duration(seconds: 5), checkTokenAndNavigate); // Delay navigation by 5 seconds
+    Future.delayed(const Duration(seconds: 5), checkTokenAndNavigate); // تأخير التنقل لمدة 5 ثوانٍ
+
+    // التحقق الدوري من صلاحية التوكن
+    Timer.periodic(Duration(seconds: 10), (timer) async {
+      final isValid = await _checkToken();
+      if (!isValid) {
+        _navigateTo(const LoginScreenNew());
+        timer.cancel(); // إيقاف المؤقت بعد تسجيل الخروج
+      }
+    });
   }
 
   void initAnimated() {
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5), // Changed duration to 5 seconds for slower animation
+      duration: const Duration(seconds: 5), // مدة التحريك 5 ثوانٍ
     );
     slidingAnimation = Tween<Offset>(
       begin: const Offset(0, 2),
@@ -45,10 +55,26 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
   Future<bool> _checkToken() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-    return token != null;
+    final expirationTime = prefs.getInt('token_expiration');
+
+    if (token == null || expirationTime == null) {
+      return false;
+    }
+
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    if (currentTime >= expirationTime) {
+      // التوكن انتهى
+      await prefs.remove('token');
+      await prefs.remove('token_expiration');
+      return false;
+    }
+
+    return true;
   }
 
   void _navigateTo(Widget screen) {
+    if (!mounted) return;
+
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(

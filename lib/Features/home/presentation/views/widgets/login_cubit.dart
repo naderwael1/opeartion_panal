@@ -1,12 +1,11 @@
 import 'package:bloc/bloc.dart';
+import 'package:bloc_v2/Features/home/presentation/views/widgets/login_resopnse.dart';
 import 'package:meta/meta.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../../../../../core/error/failure.dart';
-import 'login_resopnse.dart';
-
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
@@ -43,12 +42,19 @@ class LoginCubit extends Cubit<LoginState> {
         await prefs.setInt('branch_section_id', decodedToken['branch_section_id'] ?? 0);
         await prefs.setString('section_name', decodedToken['section_name'] ?? 'N/A');
         await prefs.setString('picture_path', decodedToken['picture_path'] ?? 'N/A');
+
+        // Calculate token expiration and store it
+        DateTime expirationDate = JwtDecoder.getExpirationDate(loginResponse.token);
+        await prefs.setInt('token_expiration', expirationDate.millisecondsSinceEpoch);
+
         emit(LoginSuccess(loginResponse));
       } else {
         emit(LoginFailure(ServerFailure.fromResponse(response.statusCode, response.data)));
       }
     } on DioException catch (e) {
       emit(LoginFailure(ServerFailure.fromDioError(e)));
+    } catch (e) {
+      emit(LoginFailure(ServerFailure(e.toString())));
     }
   }
 }
