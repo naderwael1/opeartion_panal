@@ -55,6 +55,7 @@ dependencies:
   open_filex: ^4.4.0
   dartz: ^0.10.1
   jwt_decoder: ^2.0.1
+  flutter_secure_storage: ^9.2.2
 
 
 dev_dependencies:
