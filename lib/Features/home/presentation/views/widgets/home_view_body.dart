@@ -6,6 +6,7 @@ class HomeViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoginScreenNew();
+    return const LoginScreenNew();
   }
 }
+

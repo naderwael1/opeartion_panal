@@ -1,10 +1,11 @@
+import 'package:bloc_v2/Features/Splash/presentation/views/widgets/splash_view_body.dart';
 import 'package:bloc_v2/consts/theme_data.dart';
 import 'package:bloc_v2/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'Features/Splash/presentation/views/splash_view.dart';
+
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,3 +39,8 @@ class EmpApp extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
