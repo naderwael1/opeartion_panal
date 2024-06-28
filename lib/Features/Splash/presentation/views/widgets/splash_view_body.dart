@@ -1,7 +1,7 @@
 import 'package:bloc_v2/Features/home/presentation/views/widgets/choose_based_token.dart';
 import 'package:bloc_v2/Features/home/presentation/views/widgets/new_login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 
 class SplashView extends StatefulWidget {
@@ -14,6 +14,7 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> with SingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<Offset> slidingAnimation;
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
   @override
   void initState() {
@@ -53,19 +54,19 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
   }
 
   Future<bool> _checkToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    final expirationTime = prefs.getInt('token_expiration');
+    final token = await secureStorage.read(key: 'token');
+    final expirationTimeStr = await secureStorage.read(key: 'token_expiration');
 
-    if (token == null || expirationTime == null) {
+    if (token == null || expirationTimeStr == null) {
       return false;
     }
 
+    final expirationTime = int.tryParse(expirationTimeStr);
     final currentTime = DateTime.now().millisecondsSinceEpoch;
-    if (currentTime >= expirationTime) {
+    if (expirationTime == null || currentTime >= expirationTime) {
       // التوكن انتهى
-      await prefs.remove('token');
-      await prefs.remove('token_expiration');
+      await secureStorage.delete(key: 'token');
+      await secureStorage.delete(key: 'token_expiration');
       return false;
     }
 
