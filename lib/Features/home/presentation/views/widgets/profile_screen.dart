@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -10,6 +9,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
   late Future<Map<String, String?>> _userDataFuture;
 
   @override
@@ -19,24 +19,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<Map<String, String?>> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
     return {
-      'employeeFirstName': _capitalize(prefs.getString('employee_first_name') ?? 'N/A'),
-      'employeeLastName': _capitalize(prefs.getString('employee_last_name') ?? 'N/A'),
-      'employeeRole': _capitalize(prefs.getString('employee_role') ?? 'N/A'),
-      'employeeStatus': _capitalize(prefs.getString('employee_status') ?? 'N/A'),
-      'employeePosition': _capitalize(prefs.getString('employee_position') ?? 'N/A'),
-      'employeeBranchName': _capitalize(prefs.getString('employee_branch_name') ?? 'N/A'),
-      'sectionName': _capitalize(prefs.getString('section_name') ?? 'N/A'),
-      'picturePath': prefs.getString('picture_path') ?? 'N/A',
-      'employeeBranchId': _handleIntValue(prefs.getInt('employee_branch_id')),
-      'branchSectionId': _handleIntValue(prefs.getInt('branch_section_id')),
-      'employeeId': _handleIntValue(prefs.getInt('employee_id')),
+      'employeeFirstName': _capitalize(await secureStorage.read(key: 'employee_first_name') ?? 'N/A'),
+      'employeeLastName': _capitalize(await secureStorage.read(key: 'employee_last_name') ?? 'N/A'),
+      'employeeRole': _capitalize(await secureStorage.read(key: 'employee_role') ?? 'N/A'),
+      'employeeStatus': _capitalize(await secureStorage.read(key: 'employee_status') ?? 'N/A'),
+      'employeePosition': _capitalize(await secureStorage.read(key: 'employee_position') ?? 'N/A'),
+      'employeeBranchName': _capitalize(await secureStorage.read(key: 'employee_branch_name') ?? 'N/A'),
+      'sectionName': _capitalize(await secureStorage.read(key: 'section_name') ?? 'N/A'),
+      'picturePath': await secureStorage.read(key: 'picture_path') ?? 'N/A',
+      'employeeBranchId': _handleIntValue(await secureStorage.read(key: 'employee_branch_id')),
+      'branchSectionId': _handleIntValue(await secureStorage.read(key: 'branch_section_id')),
+      'employeeId': _handleIntValue(await secureStorage.read(key: 'employee_id')),
     };
   }
 
-  String _handleIntValue(int? value) {
-    return value == null || value == 0 ? 'N/A' : value.toString();
+  String _handleIntValue(String? value) {
+    return value == null || value == '0' ? 'N/A' : value;
   }
 
   String _capitalize(String input) {

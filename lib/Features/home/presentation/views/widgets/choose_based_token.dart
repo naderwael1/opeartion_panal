@@ -9,7 +9,7 @@ import 'package:bloc_v2/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../../../Drawer/customDrawer.dart';
 import '../../../../../constants.dart';
 import 'custom_category_card.dart';
@@ -22,6 +22,7 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
   String? employeeRole;
 
   @override
@@ -31,15 +32,12 @@ class _HomeBodyState extends State<HomeBody> {
   }
 
   Future<void> _getEmployeeRole() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      employeeRole = prefs.getString('employee_role');
-    });
+    employeeRole = await secureStorage.read(key: 'employee_role');
+    setState(() {});
   }
 
   Future<void> _logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
+    await secureStorage.delete(key: 'token');
     Get.off(() => const LoginScreenNew());
   }
 
@@ -113,8 +111,6 @@ class _HomeBodyState extends State<HomeBody> {
 // cashier          //   //  //  cashier
 // delivery         //   //  //  delivery
 // No ROle msh 3arf asdo eh
-
-
 
   List<Widget> _allCards(BuildContext context) {
     return [
