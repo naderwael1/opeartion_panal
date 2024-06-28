@@ -1,4 +1,4 @@
-import 'package:bloc_v2/Features/branch_features/presentation/employeesAttendance_screen.dart';
+import 'package:bloc_v2/Features/branch_features/presentation/cashier_screen.dart';
 import 'package:bloc_v2/Features/home/presentation/views/widgets/new_login_screen.dart';
 import 'package:bloc_v2/Features/home/presentation/views/widgets/profile_screen.dart';
 import 'package:bloc_v2/Features/operation_manger/app_layout_operation.dart';
@@ -94,7 +94,7 @@ class _HomeBodyState extends State<HomeBody> {
       case 'section manager':
         return [_buildCard(context, 'Branch Manager', mangerImage, const AppLayoutScreenBM())];
       case 'cashier':
-        return [_buildCard(context, 'Cashier', storgeImage, const EmpAttendanceScreen())];
+        return [_buildCard(context, 'Cashier', storgeImage, CashierDeliveryScreen())];
       case 'delivery':
         return [_buildCard(context, 'Delivery', cloud, const PdfPage())];
       case 'No Role':
@@ -117,7 +117,7 @@ class _HomeBodyState extends State<HomeBody> {
       _buildCard(context, 'HR Dept', hrImage, const AppLayoutScreen()),
       _buildCard(context, 'Operation Manager', operationImage, const OpearationMangerLayout()),
       _buildCard(context, 'Branch Manager', mangerImage, const AppLayoutScreenBM()),
-      _buildCard(context, 'Cashier', storgeImage, const EmpAttendanceScreen()),
+      _buildCard(context, 'Cashier', storgeImage, CashierDeliveryScreen()),
       _buildCard(context, 'Delivery', cloud, const PdfPage()),
       _buildCard(context, 'No Role', table, const ProfileScreen()),
     ];
