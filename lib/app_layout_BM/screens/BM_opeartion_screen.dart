@@ -195,7 +195,7 @@ class _BranchMangerOpeartionState extends State<BranchMangerOpeartion> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Branch Manager Operation', style: GoogleFonts.lato()),
+        title: Text('Branch Manager', style: GoogleFonts.lato()),
         backgroundColor: Colors.teal,
       ),
       body: SingleChildScrollView(

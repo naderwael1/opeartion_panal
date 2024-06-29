@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -11,6 +12,8 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
   late Future<List<Map<String, String>>> _futureSchedule;
 
   @override
@@ -20,22 +23,36 @@ class _SchedulePageState extends State<SchedulePage> {
   }
 
   Future<List<Map<String, String>>> fetchSchedule() async {
+    String? branchId = await secureStorage.read(key: 'employee_branch_id');
+    
+    // Calculate the current date and the date 15 days ago
+    final DateTime now = DateTime.now();
+    final DateTime fromDate = now.subtract(Duration(days: 15));
+    
+    // Format the dates to strings
+    final String formattedNow = DateFormat('yyyy-MM-dd').format(now);
+    final String formattedFromDate = DateFormat('yyyy-MM-dd').format(fromDate);
+
     final response = await http.get(
-      Uri.parse('http://192.168.56.1:4000/admin/branch/employeesSchedule/1?fromDate=2024-06-25&toDate=2024-06-30'),
+      Uri.parse('http://192.168.56.1:4000/admin/branch/employeesSchedule/$branchId?fromDate=$formattedFromDate&toDate=$formattedNow'),
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      List<Map<String, String>> schedule = (data['data']['attendance'] as List)
-          .map((item) {
-            return {
-              "employee": item['employee'] as String,
-              "shift_start_time": item['shift_start_time'] as String,
-              "shift_end_time": item['shift_end_time'] as String,
-            };
-          })
-          .toList();
-      return schedule;
+      if (data['data'] != null && data['data']['attendance'] != null) {
+        List<Map<String, String>> schedule = (data['data']['attendance'] as List)
+            .map((item) {
+              return {
+                "employee": item['employee'] as String,
+                "shift_start_time": item['shift_start_time'] as String,
+                "shift_end_time": item['shift_end_time'] as String,
+              };
+            })
+            .toList();
+        return schedule;
+      } else {
+        return [];
+      }
     } else {
       throw Exception('Failed to load schedule');
     }
@@ -60,7 +77,7 @@ class _SchedulePageState extends State<SchedulePage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No data available'));
+              return Center(child: Text('No Schedule'));
             } else {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,

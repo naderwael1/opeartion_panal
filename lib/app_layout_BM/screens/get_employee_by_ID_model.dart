@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -17,10 +18,12 @@ class Employee {
     );
   }
 }
-
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 // Function to fetch employees
 Future<List<Employee>> fetchEmployees() async {
-  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/employeeData?branchId=1&status=active'));
+  String? branchId = await secureStorage.read(key: 'employee_branch_id');
+
+  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/employeeData?branchId=$branchId&status=active'));
 
   if (response.statusCode == 200) {
     final List<dynamic> data = jsonDecode(response.body)['data'];
