@@ -24,39 +24,42 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   }
 
   void _startAutoRefresh() {
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
       fetchDeliveryOrders();
     });
   }
 
-  Future<void> fetchDeliveryOrders() async {
-    String? branchId = await secureStorage.read(key: 'employee_branch_id');
-    if (branchId != null) {
-      final response = await http.get(
-        Uri.parse(
-            'http://192.168.56.1:4000/user/delivery/deliveryOrders?employeeId=59&orderType=delivery&inDeliveredOrders=true&branchId=$branchId'),
-      );
+Future<void> fetchDeliveryOrders() async {
+  String? branchId = await secureStorage.read(key: 'employee_branch_id');
+  String? employeeId = await secureStorage.read(key: 'employee_id');
+  if (branchId != null) {
+    final response = await http.get(
+      Uri.parse(
+          'http://192.168.56.1:4000/user/delivery/deliveryOrders?employeeId=$employeeId&orderType=delivery&branchId=$branchId&inDeliveredOrders=true&deliveryStatus=assigned'),
+    );
 
-      if (response.statusCode == 200) {
-        setState(() {
-          deliveryOrders = (json.decode(response.body)['data'] as List)
-              .where((order) => order['delivering_status'] == 'assigned')
-              .toList();
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-        throw Exception('Failed to load delivery orders');
-      }
+    if (response.statusCode == 200) {
+      setState(() {
+        deliveryOrders = (json.decode(response.body)['data'] as List)
+            .where((order) => order['delivering_status'] == 'assigned')
+            .toList();
+        isLoading = false;
+      });
     } else {
+      print('Failed to load delivery orders. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
       setState(() {
         isLoading = false;
       });
-      throw Exception('Failed to retrieve branch ID');
+      throw Exception('Failed to load delivery orders');
     }
+  } else {
+    setState(() {
+      isLoading = false;
+    });
+    throw Exception('Failed to retrieve branch ID');
   }
+}
 
   Future<void> updateOrderStatus(String orderId, String status) async {
     final response = await http.patch(

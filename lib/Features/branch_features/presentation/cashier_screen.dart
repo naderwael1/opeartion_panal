@@ -26,7 +26,7 @@ class _CashierDeliveryScreenState extends State<CashierDeliveryScreen> {
   }
 
   void _startAutoRefresh() {
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
       fetchDeliveryOrders();
       fetchEmployees();
     });
@@ -41,20 +41,26 @@ class _CashierDeliveryScreenState extends State<CashierDeliveryScreen> {
       );
 
       if (response.statusCode == 200) {
-        setState(() {
-          deliveryOrders = json.decode(response.body)['data'];
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            deliveryOrders = json.decode(response.body)['data'];
+            isLoading = false;
+          });
+        }
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
         throw Exception('Failed to load delivery orders');
       }
     } else {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
       throw Exception('Failed to retrieve branch ID');
     }
   }
@@ -69,29 +75,39 @@ class _CashierDeliveryScreenState extends State<CashierDeliveryScreen> {
         );
 
         if (response.statusCode == 200) {
-          setState(() {
-            employees = json.decode(response.body)['data'];
-          });
+          if (mounted) {
+            setState(() {
+              employees = json.decode(response.body)['data'];
+            });
+          }
         } else {
-          setState(() {
-            isLoading = false;
-          });
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
           throw Exception('Failed to load employees');
         }
       } catch (e) {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+        print('Error fetching employees: $e');
+        // Show an error message to the user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to load employees. Please try again.')),
+          );
+        }
+      }
+    } else {
+      if (mounted) {
         setState(() {
           isLoading = false;
         });
-        print('Error fetching employees: $e');
-        // Show an error message to the user
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load employees. Please try again.')),
-        );
       }
-    } else {
-      setState(() {
-        isLoading = false;
-      });
       throw Exception('Failed to retrieve branch ID');
     }
   }
