@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class CashierDeliveryScreen extends StatefulWidget {
+class DeliveryScreen extends StatefulWidget {
   @override
-  _CashierDeliveryScreenState createState() => _CashierDeliveryScreenState();
+  _DeliveryScreenState createState() => _DeliveryScreenState();
 }
 
-class _CashierDeliveryScreenState extends State<CashierDeliveryScreen> {
+class _DeliveryScreenState extends State<DeliveryScreen> {
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
   List<dynamic> deliveryOrders = [];
   List<dynamic> employees = [];
@@ -135,7 +135,7 @@ class _CashierDeliveryScreenState extends State<CashierDeliveryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Delivery Orders'),
+        title: Text('Delivery'),
         backgroundColor: Colors.teal,
       ),
       body: isLoading
