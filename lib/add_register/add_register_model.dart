@@ -8,31 +8,42 @@ Future<String> addregisteremployee({
   required String salary,
   required String positionId,
   required String status,
-  required String branchId,
-  required String sectionId,
+  String? branchId,
+  String? sectionId,
   required String birthDate,
   required String address,
-  required String dateHired,
+  String? dateHired,
 }) async {
   const url = 'http://192.168.56.1:4000/admin/employees/employee';
   try {
+    // Create a map and add only non-null values
+    final Map<String, String> body = {
+      'ssn': ssnNumber,
+      'firstName': firstName,
+      'lastName': lastName,
+      'gender': gender,
+      'salary': salary,
+      'positionId': positionId,
+      'status': status,
+      'birthDate': birthDate,
+      'address': address,
+    };
+
+    if (branchId != null) {
+      body['branchId'] = branchId;
+    }
+    if (sectionId != null) {
+      body['sectionId'] = sectionId;
+    }
+    if (dateHired != null) {
+      body['dateHired'] = dateHired;
+    }
+
     final response = await http.post(
       Uri.parse(url),
-      body: {
-        'ssn': ssnNumber,
-        'firstName': firstName,
-        'lastName': lastName,
-        'gender': gender,
-        'salary': salary,
-        'positionId': positionId,
-        'status': status,
-        'branchId': branchId,
-        'sectionId': sectionId,
-        'birthDate': birthDate, 
-        'address': address,
-        'dateHired': dateHired,
-      },
-    ); 
+      body: body,
+    );
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
       final addMenuItem = response.body; // Assuming the response body contains the data you need

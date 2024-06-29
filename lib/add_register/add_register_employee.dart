@@ -71,7 +71,6 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
   void initState() {
     super.initState();
     fetchBranch();
-    fetchSections();
     fetchPositions();
   }
 
@@ -91,15 +90,16 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
               .toList();
         });
       } else {
-        throw Exception('Failed to load positions');
+        throw Exception('Failed to load branches');
       }
     } catch (e) {
-      print('Error loading positions: $e');
+      print('Error loading branches: $e');
     }
   }
 
-  Future<void> fetchSections() async {
-    final url = Uri.parse('http://192.168.56.1:4000/admin/branch/sections/1');
+  Future<void> fetchSections(int branchId) async {
+    final url =
+        Uri.parse('http://192.168.56.1:4000/admin/branch/sections/$branchId');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -110,7 +110,6 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                     'id': section['id'],
                     'name': section['name'],
                     'manager': section['manager'],
-                    // You can add more fields if needed
                   })
               .toList();
         });
@@ -226,7 +225,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         keyboardType: TextInputType.number,
                         key: const ValueKey('SSN Number'),
                         decoration: inputDecoration.copyWith(
-                          labelText: 'SSN Number',
+                          labelText: 'SSN Number *',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -241,7 +240,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         controller: firstNameController,
                         key: const ValueKey('First Name'),
                         decoration: inputDecoration.copyWith(
-                          labelText: 'First Name',
+                          labelText: 'First Name *',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -256,7 +255,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         controller: lastNameController,
                         key: const ValueKey('Last Name'),
                         decoration: inputDecoration.copyWith(
-                          labelText: 'Last Name',
+                          labelText: 'Last Name *',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -286,7 +285,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           ),
                         ],
                         decoration: inputDecoration.copyWith(
-                          labelText: 'Gender',
+                          labelText: 'Gender *',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -304,7 +303,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         keyboardType: TextInputType.number,
                         key: const ValueKey('Salary'),
                         decoration: inputDecoration.copyWith(
-                          labelText: 'Salary',
+                          labelText: 'Salary *',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -331,11 +330,11 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           );
                         }).toList(),
                         decoration: inputDecoration.copyWith(
-                          labelText: 'position',
+                          labelText: 'Position *',
                         ),
                         validator: (value) {
                           if (value == null) {
-                            return 'Please select a position changer id';
+                            return 'Please select a position';
                           }
                           return null;
                         },
@@ -365,7 +364,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           ),
                         ],
                         decoration: inputDecoration.copyWith(
-                          labelText: 'Status',
+                          labelText: 'Status *',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -383,6 +382,9 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           setState(() {
                             branchIdController.text =
                                 newValue?.toString() ?? '';
+                            if (newValue != null) {
+                              fetchSections(newValue);
+                            }
                           });
                         },
                         items: branch.map((position) {
@@ -392,14 +394,9 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           );
                         }).toList(),
                         decoration: inputDecoration.copyWith(
-                          labelText: 'Branch Name',
+                          labelText: 'Branch Name (Optional)',
+                          labelStyle: TextStyle(color: Colors.grey),
                         ),
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Please select a Branch Name';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 20),
                       DropdownButtonFormField<int>(
@@ -419,20 +416,15 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           );
                         }).toList(),
                         decoration: inputDecoration.copyWith(
-                          labelText: 'Section Name',
+                          labelText: 'Section Name (Optional)',
+                          labelStyle: TextStyle(color: Colors.grey),
                         ),
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Please select a Section Name';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: birthDateController,
                         decoration: const InputDecoration(
-                          labelText: 'BirthDate',
+                          labelText: 'BirthDate *',
                           filled: true,
                           prefixIcon: Icon(Icons.calendar_today),
                           enabledBorder: OutlineInputBorder(
@@ -459,7 +451,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                         controller: addressController,
                         key: const ValueKey('Address'),
                         decoration: inputDecoration.copyWith(
-                          labelText: 'Address',
+                          labelText: 'Address *',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -472,7 +464,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                       TextFormField(
                         controller: dateHiredController,
                         decoration: const InputDecoration(
-                          labelText: 'Date Hired',
+                          labelText: 'Date Hired (Optional)',
                           filled: true,
                           prefixIcon: Icon(Icons.calendar_today),
                           enabledBorder: OutlineInputBorder(
@@ -481,16 +473,11 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
+                          labelStyle: TextStyle(color: Colors.grey),
                         ),
                         readOnly: true,
                         onTap: () {
                           _HiredDate();
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a hire date';
-                          }
-                          return null;
                         },
                       ),
                       const SizedBox(height: 20),
@@ -519,11 +506,18 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                     salary: salaryController.text,
                                     positionId: positionIdController.text,
                                     status: statusController.text,
-                                    branchId: branchIdController.text,
-                                    sectionId: sectionIdController.text,
+                                    branchId: branchIdController.text.isNotEmpty
+                                        ? branchIdController.text
+                                        : null,
+                                    sectionId:
+                                        sectionIdController.text.isNotEmpty
+                                            ? sectionIdController.text
+                                            : null,
                                     birthDate: birthDateController.text,
                                     address: addressController.text,
-                                    dateHired: dateHiredController.text,
+                                    dateHired: dateHiredController.text.isNotEmpty
+                                        ? dateHiredController.text
+                                        : null,
                                   );
                                   print('Employee registered: $addRegisterEmp');
                                   CherryToast.success(
