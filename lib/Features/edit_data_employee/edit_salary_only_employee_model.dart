@@ -1,21 +1,26 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-Future<void> editSaleryEmployee({
+Future<void> editSalaryEmployee({
   required int employeeId,
-  required String changerId,
   required String newSalary,
   required String changeReason,
 }) async {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  String? storedChangerId = await secureStorage.read(key: 'employee_id');
+
+
+
   const url = 'http://192.168.56.1:4000/admin/employees/change-salary';
   try {
     final response = await http.patch(
       Uri.parse(url),
       body: {
         'employeeId': employeeId.toString(),
-        'changerId': changerId,
+        'changerId': storedChangerId,
         'newSalary': newSalary,
         'changeReason': changeReason,
       },
@@ -27,7 +32,7 @@ Future<void> editSaleryEmployee({
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
       final jsonResponse = jsonDecode(response.body);
-      String message = jsonResponse['message']; // Extract the message
+      String message = jsonResponse['message'] ?? 'Salary change successful'; // Extract the message
       Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -40,7 +45,7 @@ Future<void> editSaleryEmployee({
     } else {
       // Failure
       final jsonResponse = jsonDecode(response.body);
-      String message = jsonResponse['message']; // Extract the message
+      String message = jsonResponse['message'] ?? 'Failed to change salary'; // Extract the message
       Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -53,14 +58,25 @@ Future<void> editSaleryEmployee({
     }
   } catch (e) {
     print('Error: $e');
+    Fluttertoast.showToast(
+      msg: 'An error occurred: $e',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
 }
 
-void main() async {
-  await editSaleryEmployee(
+void main() {
+  // Ensure the app is properly initialized before calling the function
+  WidgetsFlutterBinding.ensureInitialized();
+
+  editSalaryEmployee(
     employeeId: 1,
-    changerId: 'adfasfasdf',
     newSalary: '1000',
-    changeReason: 'asdfasdf',
+    changeReason: 'Performance bonus',
   );
 }

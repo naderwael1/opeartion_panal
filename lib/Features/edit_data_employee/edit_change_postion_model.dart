@@ -1,30 +1,51 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-Future<void> editPositionEmployee({
+Future<String> editPositionEmployee({
   required int employee_id,
-  required String position_changer_id,
   required String new_position,
   required String position_change_type,
 }) async {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  String? employeeId = await secureStorage.read(key: 'employee_id');
+
+  if (employeeId == null) {
+    String errorMessage = 'No employee ID found in secure storage.';
+    Fluttertoast.showToast(
+      msg: errorMessage,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+    return errorMessage;
+  }
+
   const url = 'http://192.168.56.1:4000/admin/employees/change-position';
   try {
     final response = await http.patch(
       Uri.parse(url),
-      body: {
+      body: jsonEncode({
         'employee_id': employee_id.toString(),
-        'position_changer_id': position_changer_id,
+        'position_changer_id': employeeId,
         'new_position': new_position,
         'position_change_type': position_change_type,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
       },
     );
 
+    String message;
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
       final jsonResponse = jsonDecode(response.body);
-      String message = jsonResponse['message']; // Extract the message
+      message = jsonResponse['message'] ?? 'Position changed successfully.';
       Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -37,7 +58,7 @@ Future<void> editPositionEmployee({
     } else {
       // Failure
       final jsonResponse = jsonDecode(response.body);
-      String message = jsonResponse['message']; // Extract the message
+      message = jsonResponse['message'] ?? 'Failed to change position.';
       Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -48,9 +69,11 @@ Future<void> editPositionEmployee({
         fontSize: 16.0,
       );
     }
+    return message;
   } catch (e) {
+    String errorMessage = 'Error editing employee position: $e';
     Fluttertoast.showToast(
-      msg: 'Error editing employee position: $e',
+      msg: errorMessage,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       timeInSecForIosWeb: 1,
@@ -58,15 +81,16 @@ Future<void> editPositionEmployee({
       textColor: Colors.white,
       fontSize: 16.0,
     );
+    return errorMessage;
   }
 }
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final result = await editPositionEmployee(
     employee_id: 1,
-    position_changer_id: '1',
     new_position: '5',
-    position_change_type: 'promote'
+    position_change_type: 'promote',
   );
+  print(result);
 }
-

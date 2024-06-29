@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:bloc_v2/Features/edit_data_employee/edit_address_employee_model.dart';
 import 'package:bloc_v2/Features/edit_data_employee/edit_change_postion_model.dart';
-import 'package:bloc_v2/Features/edit_data_employee/edit_data_employee_model.dart';
+import 'package:bloc_v2/Features/edit_data_employee/edit_salary_only_employee_model.dart';
 import 'package:bloc_v2/Features/edit_data_employee/edit_phone_employee_model.dart';
 import 'package:bloc_v2/Features/edit_data_employee/edit_salary_position.dart';
 import 'package:cherry_toast/cherry_toast.dart';
@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
+
+import 'add_employee_phone.dart';
 
 class EditEmployeeScreen extends StatefulWidget {
   final int employeeId;
@@ -143,7 +145,6 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                       return FunctionInputTile(
                         functionName: 'Change Position',
                         attributeNames: const [
-                          'position_changer_id',
                           'new_position',
                           'position_change_type'
                         ],
@@ -155,8 +156,6 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                               final addStorage_Model =
                                   await editPositionEmployee(
                                 employee_id: widget.employeeId,
-                                position_changer_id:
-                                    values['position_changer_id']!,
                                 new_position: values['new_position']!,
                                 position_change_type:
                                     values['position_change_type']!,
@@ -190,17 +189,12 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                 ),
                 FunctionInputTile(
                   functionName: 'Change Salary',
-                  attributeNames: const [
-                    'changerId',
-                    'newSalary',
-                    'changeReason'
-                  ],
+                  attributeNames: const ['newSalary', 'changeReason'],
                   onSubmit: (values) async {
                     if (_formKey.currentState!.validate()) {
                       try {
-                        final addStorage_Model = await editSaleryEmployee(
+                        final Salary_Model = await editSalaryEmployee(
                           employeeId: widget.employeeId,
-                          changerId: values['changerId']!,
                           newSalary: values['newSalary']!,
                           changeReason: values['changeReason']!,
                         );
@@ -292,7 +286,6 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                       return FunctionInputTile(
                         functionName: 'Edit Employee Salary And Position',
                         attributeNames: const [
-                          'changerId',
                           'newSalary',
                           'newPosition',
                           'positionChangeType',
@@ -302,24 +295,15 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                         onSubmit: (values) async {
                           if (_formKey.currentState!.validate()) {
                             try {
-                              final addStorage_Model =
+                              final SalaryAndPosition_Model =
                                   await editSalaryAndPositionEmployee(
                                 employeeId: widget.employeeId,
-                                changerId: values['changerId']!,
                                 newSalary: values['newSalary']!,
                                 newPosition: values['newPosition']!,
                                 positionChangeType:
                                     values['positionChangeType']!,
                                 changeReason: values['changeReason']!,
                               );
-                              CherryToast.success(
-                                animationType: AnimationType.fromRight,
-                                toastPosition: Position.bottom,
-                                description: const Text(
-                                  "Changed Salary and Position successfully",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ).show(context);
                               clearFormFields();
                             } catch (e) {
                               print('Error Changed Salary and Position : $e');
@@ -345,6 +329,62 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
                           }
                         },
                       );
+                    }
+                  },
+                ),
+                FunctionInputTile(
+                  functionName: 'Add Employee Phone',
+                  attributeNames: const ['Add Phone Number'],
+                  onSubmit: (values) async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        final addPhoneNumber_Model =
+                            await AddPhoneNumberEmployee(
+                          employeeId: widget.employeeId,
+                          employeePhone: values['Add Phone Number']!,
+                        );
+                        print('Adding Phone Number: $addPhoneNumber_Model');
+                        if (addPhoneNumber_Model['status'] == 'success') {
+                          CherryToast.success(
+                            animationType: AnimationType.fromRight,
+                            toastPosition: Position.bottom,
+                            description: const Text(
+                              "Phone number added successfully",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ).show(context);
+                          clearFormFields();
+                        } else {
+                          CherryToast.error(
+                            toastPosition: Position.bottom,
+                            animationType: AnimationType.fromRight,
+                            description: Text(
+                              addPhoneNumber_Model['message'],
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ).show(context);
+                        }
+                      } catch (e) {
+                        print('Error adding phone number: $e');
+                        CherryToast.error(
+                          toastPosition: Position.bottom,
+                          animationType: AnimationType.fromRight,
+                          description: const Text(
+                            "Something went wrong!",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ).show(context);
+                      }
+                    } else {
+                      print('Form is not valid');
+                      CherryToast.warning(
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromLeft,
+                        description: const Text(
+                          "Data is not valid or not complete",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ).show(context);
                     }
                   },
                 ),
@@ -541,8 +581,51 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                           ),
                         );
                       } else if (widget.attributeNames[idx] ==
-                          'position_change_type' || widget.attributeNames[idx] ==
-                          'positionChangeType' ) {
+                          'Add Phone Number') {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 1.5,
+                                ),
+                              ),
+                              labelText: 'Add Phone Number',
+                              labelStyle: GoogleFonts.lato(color: Colors.teal),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.teal,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a phone number';
+                              }
+                              return null;
+                            },
+                          ),
+                        );
+                      } else if (widget.attributeNames[idx] ==
+                              'position_change_type' ||
+                          widget.attributeNames[idx] == 'positionChangeType') {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: DropdownButtonFormField<String>(
@@ -744,12 +827,14 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
                                   widget.attributeNames[i] == 'oldPhone'
                                       ? selectedOldPhone!
                                       : widget.attributeNames[i] ==
-                                              'new_position' || widget.attributeNames[i] ==
-                                              'newPosition'
+                                                  'new_position' ||
+                                              widget.attributeNames[i] ==
+                                                  'newPosition'
                                           ? selectedNewPosition!
                                           : widget.attributeNames[i] ==
-                                                  'position_change_type' || widget.attributeNames[i] ==
-                                              'positionChangeType'
+                                                      'position_change_type' ||
+                                                  widget.attributeNames[i] ==
+                                                      'positionChangeType'
                                               ? selectedPositionChangeType!
                                               : _textControllers[i].text
                           };
@@ -790,4 +875,3 @@ class MyCustomClipper extends CustomClipper<Path> {
     return false;
   }
 }
-
