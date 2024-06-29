@@ -135,7 +135,7 @@ class _CashierDeliveryScreenState extends State<CashierDeliveryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Delivery Orders'),
+        title: Text('Cashier Delivery Orders'),
         backgroundColor: Colors.teal,
       ),
       body: isLoading

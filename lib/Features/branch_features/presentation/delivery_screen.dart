@@ -12,8 +12,7 @@ class DeliveryScreen extends StatefulWidget {
 class _DeliveryScreenState extends State<DeliveryScreen> {
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
   List<dynamic> deliveryOrders = [];
-  List<dynamic> employees = [];
-  Map<String, String> selectedEmployees = {};
+  Map<String, String> selectedStatus = {};
   bool isLoading = true;
   Timer? _timer;
 
@@ -21,14 +20,12 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   void initState() {
     super.initState();
     fetchDeliveryOrders();
-    fetchEmployees();
     _startAutoRefresh();
   }
 
   void _startAutoRefresh() {
     _timer = Timer.periodic(Duration(seconds: 30), (timer) {
       fetchDeliveryOrders();
-      fetchEmployees();
     });
   }
 
@@ -37,12 +34,14 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     if (branchId != null) {
       final response = await http.get(
         Uri.parse(
-            'http://192.168.56.1:4000/user/delivery/deliveryOrders?orderType=delivery&branchId=$branchId&inDeliveredOrders=false'),
+            'http://192.168.56.1:4000/user/delivery/deliveryOrders?employeeId=59&orderType=delivery&inDeliveredOrders=true&branchId=$branchId'),
       );
 
       if (response.statusCode == 200) {
         setState(() {
-          deliveryOrders = json.decode(response.body)['data'];
+          deliveryOrders = (json.decode(response.body)['data'] as List)
+              .where((order) => order['delivering_status'] == 'assigned')
+              .toList();
           isLoading = false;
         });
       } else {
@@ -59,59 +58,22 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     }
   }
 
-  Future<void> fetchEmployees() async {
-    String? branchId = await secureStorage.read(key: 'employee_branch_id');
-    if (branchId != null) {
-      try {
-        final response = await http.get(
-          Uri.parse(
-              'http://192.168.56.1:4000/admin/employees/employeeData?branchId=$branchId&status=active&employeeRole=delivery'),
-        );
-
-        if (response.statusCode == 200) {
-          setState(() {
-            employees = json.decode(response.body)['data'];
-          });
-        } else {
-          setState(() {
-            isLoading = false;
-          });
-          throw Exception('Failed to load employees');
-        }
-      } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        print('Error fetching employees: $e');
-        // Show an error message to the user
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load employees. Please try again.')),
-        );
-      }
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      throw Exception('Failed to retrieve branch ID');
-    }
-  }
-
-  Future<void> assignOrderToEmployee(String orderId, String employeeId) async {
-    final response = await http.post(
-      Uri.parse('http://192.168.56.1:4000/user/delivery/assignOrderToDelivery'),
+  Future<void> updateOrderStatus(String orderId, String status) async {
+    final response = await http.patch(
+      Uri.parse('http://192.168.56.1:4000/user/delivery/changeDeliveryOrderStatus'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'orderId': [int.parse(orderId)],
-        'deliveryEmployeeId': employeeId,
+        'orderId': orderId,
+        'newStatus': status,
       }),
     );
 
     if (response.statusCode == 200) {
-      print('Order assigned successfully');
+      print('Order status updated successfully');
       // Optionally, you can fetch the delivery orders again to refresh the list
       fetchDeliveryOrders();
     } else {
-      throw Exception('Failed to assign order');
+      throw Exception('Failed to update order status');
     }
   }
 
@@ -122,13 +84,16 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   }
 
   List<DropdownMenuItem<String>> _buildDropdownMenuItems() {
-    return employees.map<DropdownMenuItem<String>>((employee) {
-      return DropdownMenuItem<String>(
-        value: employee['fn_employee_id'].toString(),
-        child: Text(
-            '${employee['fn_employee_first_name']} ${employee['fn_employee_last_name']}'),
-      );
-    }).toList();
+    return [
+      DropdownMenuItem<String>(
+        value: 'delivered',
+        child: Text('Delivered'),
+      ),
+      DropdownMenuItem<String>(
+        value: 'returned',
+        child: Text('Returned'),
+      ),
+    ];
   }
 
   @override
@@ -210,12 +175,12 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                 ),
                                 SizedBox(height: 10),
                                 DropdownButton<String>(
-                                  hint: Text('Select Delivery Person'),
-                                  value: selectedEmployees[orderId],
+                                  hint: Text('Select Status'),
+                                  value: selectedStatus[orderId],
                                   items: _buildDropdownMenuItems(),
                                   onChanged: (value) {
                                     setState(() {
-                                      selectedEmployees[orderId] = value!;
+                                      selectedStatus[orderId] = value!;
                                     });
                                   },
                                   style: TextStyle(color: Colors.teal),
@@ -224,15 +189,15 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                 ),
                                 SizedBox(height: 10),
                                 ElevatedButton(
-                                  onPressed: selectedEmployees[orderId] == null
+                                  onPressed: selectedStatus[orderId] == null
                                       ? null
                                       : () {
-                                          assignOrderToEmployee(orderId,
-                                              selectedEmployees[orderId]!);
+                                          updateOrderStatus(orderId,
+                                              selectedStatus[orderId]!);
                                         },
                                   child: Text(
-                                    'Assign Order',
-                                    style: TextStyle(color: Colors.black), // Change text color to black
+                                    'Update Status',
+                                    style: TextStyle(color: Colors.black),
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.teal,
