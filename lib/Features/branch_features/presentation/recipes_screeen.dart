@@ -4,6 +4,7 @@ import 'package:bloc_v2/Features/branch_features/models/OM_function_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert'; // For jsonDecode
 import 'package:http/http.dart' as http; // For making HTTP requests
+import 'package:bloc_v2/constants.dart';
 
 class RecipesList extends StatefulWidget {
   final int branchID;
@@ -29,7 +30,7 @@ class _RecipesListState extends State<RecipesList> {
 
   Future<void> fetchBranches() async {
     final response = await http
-        .get(Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list'));
+        .get(Uri.parse('http://$baseUrl:4000/admin/branch/branches-list'));
     if (response.statusCode == 200) {
       setState(() {
         branches = jsonDecode(response.body)['data'];

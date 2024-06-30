@@ -1,11 +1,12 @@
 import 'package:bloc_v2/Features/branch_features/models/OM_function_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 class GetCategories {
   Future<List<CategoryModel>> getCategories() async {
-    final response = await http.get(Uri.parse(
-        'http://192.168.56.1:4000/admin/branch/categories-list'));
+    final response = await http
+        .get(Uri.parse('http://$baseUrl:4000/admin/branch/categories-list'));
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
@@ -26,8 +27,8 @@ class GetCategories {
 
 class GetSection {
   Future<List<SectionModel>> getSection({required int branchID}) async {
-    final response = await http.get(Uri.parse(
-        'http://192.168.56.1:4000/admin/branch/sections/$branchID'));
+    final response = await http.get(
+        Uri.parse('http://192.168.56.1:4000/admin/branch/sections/$branchID'));
 
     print('Server response: ${response.body}');
 

@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:bloc_v2/Features/emp_features/models/positon_models.dart';
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 Future<List<PositionModel>> fetchPositions() async {
   final response = await http.get(
     Uri.parse(
-        'http://192.168.56.1:4000/admin/employees/positions-list'), // Replace with your actual API endpoint
+        'http://$baseUrl:4000/admin/employees/positions-list'), // Replace with your actual API endpoint
     headers: {'Content-Type': 'application/json'},
   );
 

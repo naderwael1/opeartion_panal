@@ -7,6 +7,7 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 class AddEmployeeSchedule extends StatefulWidget {
   const AddEmployeeSchedule({Key? key}) : super(key: key);
@@ -54,8 +55,8 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
   }
 
   Future<void> fetchActiveEmployees() async {
-    final url = Uri.parse(
-        'http://192.168.56.1:4000/admin/employees/active-employees-list');
+    final url =
+        Uri.parse('http://$baseUrl:4000/admin/employees/active-employees-list');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -106,7 +107,8 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
         String formattedDateTime = pickedDateTime.toString();
 
         setState(() {
-          controller.text = formattedDateTime; // Update the respective controller
+          controller.text =
+              formattedDateTime; // Update the respective controller
         });
       }
     }
@@ -124,13 +126,13 @@ class _AddEmployeeSchedule extends State<AddEmployeeSchedule> {
                 child: Container(
                   height: 200, // Adjusted height to fit the toolbar and text
                   color: baseColor,
-                  child: Column(
+                  child: const Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(
+                        padding: EdgeInsets.only(
                             top: 75.0), // Padding above the toolbar
                       ),
-                      const Center(
+                      Center(
                         child: Text(
                           'Add Employee Schedule',
                           style: TextStyle(

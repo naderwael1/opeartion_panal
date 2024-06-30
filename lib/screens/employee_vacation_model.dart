@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 Future<String> ModelEmployeeVacation({
   required String employeeId,
@@ -6,7 +7,7 @@ Future<String> ModelEmployeeVacation({
   required String vacationEndDate,
   required String vacationReason,
 }) async {
-  const url = 'http://192.168.56.1:4000/admin/employees/employee-vacation';
+  const url = 'http://$baseUrl:4000/admin/employees/employee-vacation';
   try {
     final response = await http.post(
       Uri.parse(url),
@@ -18,7 +19,8 @@ Future<String> ModelEmployeeVacation({
       },
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final addMenuItem = response.body; // Assuming the response body contains the data you need
+      final addMenuItem = response
+          .body; // Assuming the response body contains the data you need
       print('Status: ${response.statusCode}');
       print('Response: $addMenuItem');
       return addMenuItem;

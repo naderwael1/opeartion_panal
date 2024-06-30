@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
+import 'package:bloc_v2/constants.dart';
 
 import 'add_employee_phone.dart';
 
@@ -34,8 +35,8 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
   }
 
   Future<List<String>> fetchPhones(int employeeId) async {
-    final response = await http.get(Uri.parse(
-        'http://192.168.56.1:4000/admin/employees/phones/$employeeId'));
+    final response = await http.get(
+        Uri.parse('http://$baseUrl:4000/admin/employees/phones/$employeeId'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -66,7 +67,7 @@ class _EditEmployeeScreen extends State<EditEmployeeScreen> {
 
   Future<List<Map<String, dynamic>>> fetchBranches() async {
     final response = await http
-        .get(Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list'));
+        .get(Uri.parse('http://$baseUrl:4000/admin/branch/branches-list'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

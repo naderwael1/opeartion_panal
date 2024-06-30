@@ -1,11 +1,12 @@
 import '../models/branch_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 class GetAllBranches {
   Future<List<BranchModel>> getAllBranches() async {
-    final response = await http.get(Uri.parse(
-        'http://192.168.56.1:4000/admin/branch/branches-list'));
+    final response = await http
+        .get(Uri.parse('http://$baseUrl:4000/admin/branch/branches-list'));
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);

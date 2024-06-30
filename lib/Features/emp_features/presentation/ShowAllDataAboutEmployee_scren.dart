@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bloc_v2/Features/emp_features/models/active_emp_model.dart';
+import 'package:bloc_v2/constants.dart';
 
 // PositionChangeModel class
 class PositionChangeModel {
@@ -46,10 +47,12 @@ class PhoneModel {
 
 // Fetch first position change data function
 Future<PositionChangeModel?> fetchFirstPositionChange(int employeeId) async {
-  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/positionsChanges/$employeeId'));
+  final response = await http.get(Uri.parse(
+      'http://$baseUrl:4000/admin/employees/positionsChanges/$employeeId'));
 
   if (response.statusCode == 200) {
-    final List<dynamic> jsonData = json.decode(response.body)['data']['attendance'];
+    final List<dynamic> jsonData =
+        json.decode(response.body)['data']['attendance'];
     if (jsonData.isNotEmpty) {
       return PositionChangeModel.fromJson(jsonData.first);
     }
@@ -61,7 +64,8 @@ Future<PositionChangeModel?> fetchFirstPositionChange(int employeeId) async {
 
 // Fetch phone data function
 Future<List<PhoneModel>> fetchPhones(int employeeId) async {
-  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/employees/phones/$employeeId'));
+  final response = await http.get(
+      Uri.parse('http://$baseUrl:4000/admin/employees/phones/$employeeId'));
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = json.decode(response.body)['data']['phones'];
@@ -89,10 +93,12 @@ String extractDate(String dateTime) {
 class ShowAllDataAboutEmployee extends StatefulWidget {
   final ActiveEmployeesModel employee;
 
-  const ShowAllDataAboutEmployee({required this.employee, Key? key}) : super(key: key);
+  const ShowAllDataAboutEmployee({required this.employee, Key? key})
+      : super(key: key);
 
   @override
-  _ShowAllDataAboutEmployeeState createState() => _ShowAllDataAboutEmployeeState();
+  _ShowAllDataAboutEmployeeState createState() =>
+      _ShowAllDataAboutEmployeeState();
 }
 
 class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
@@ -155,13 +161,16 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                 return FutureBuilder<List<PhoneModel>>(
                   future: futurePhones,
                   builder: (context, phoneSnapshot) {
-                    if (phoneSnapshot.connectionState == ConnectionState.waiting) {
+                    if (phoneSnapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (phoneSnapshot.hasError) {
-                      return Center(child: Text('Error: ${phoneSnapshot.error}'));
+                      return Center(
+                          child: Text('Error: ${phoneSnapshot.error}'));
                     } else {
                       final phones = phoneSnapshot.data ?? [];
-                      return buildDataScreen(screenSize, positionChange, phones);
+                      return buildDataScreen(
+                          screenSize, positionChange, phones);
                     }
                   },
                 );
@@ -173,7 +182,8 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
     );
   }
 
-  Widget buildDataScreen(Size screenSize, PositionChangeModel? positionChange, List<PhoneModel> phones) {
+  Widget buildDataScreen(Size screenSize, PositionChangeModel? positionChange,
+      List<PhoneModel> phones) {
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(screenSize.width * 0.01),
@@ -193,7 +203,8 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                     buildInfoRow(
                       icon: Icons.person,
                       title: 'Employee Name',
-                      subtitle: widget.employee.employeeName + ' (#${widget.employee.employeeId})',
+                      subtitle: widget.employee.employeeName +
+                          ' (#${widget.employee.employeeId})',
                       screenSize: screenSize,
                     ),
                     buildInfoRow(
@@ -227,40 +238,45 @@ class _ShowAllDataAboutEmployeeState extends State<ShowAllDataAboutEmployee> {
                       screenSize: screenSize,
                     ),
                     ...phones.map((phone) => buildInfoRow(
-                      icon: Icons.phone,
-                      title: 'Phone',
-                      subtitle: capitalize(phone.phone),
-                      screenSize: screenSize,
-                    )),
+                          icon: Icons.phone,
+                          title: 'Phone',
+                          subtitle: capitalize(phone.phone),
+                          screenSize: screenSize,
+                        )),
                     if (positionChange != null) ...[
                       buildInfoRow(
                         icon: Icons.swap_horiz,
                         title: 'Position Changer',
-                        subtitle: capitalize(positionChange.positionChanger ?? 'N/A'),
+                        subtitle:
+                            capitalize(positionChange.positionChanger ?? 'N/A'),
                         screenSize: screenSize,
                       ),
                       buildInfoRow(
                         icon: Icons.work,
                         title: 'Previous Position',
-                        subtitle: capitalize(positionChange.previousPosition ?? 'N/A'),
+                        subtitle: capitalize(
+                            positionChange.previousPosition ?? 'N/A'),
                         screenSize: screenSize,
                       ),
                       buildInfoRow(
                         icon: Icons.work_outline,
                         title: 'New Position',
-                        subtitle: capitalize(positionChange.newPosition ?? 'N/A'),
+                        subtitle:
+                            capitalize(positionChange.newPosition ?? 'N/A'),
                         screenSize: screenSize,
                       ),
                       buildInfoRow(
                         icon: Icons.category,
                         title: 'Change Type',
-                        subtitle: capitalize(positionChange.changeType ?? 'N/A'),
+                        subtitle:
+                            capitalize(positionChange.changeType ?? 'N/A'),
                         screenSize: screenSize,
                       ),
                       buildInfoRow(
                         icon: Icons.date_range,
                         title: 'Change Date',
-                        subtitle: extractDate(positionChange.changeDate ?? 'N/A'),
+                        subtitle:
+                            extractDate(positionChange.changeDate ?? 'N/A'),
                         screenSize: screenSize,
                       ),
                     ] else ...[
@@ -324,11 +340,13 @@ class CustomClipPath extends CustomClipper<Path> {
   Path getClip(Size size) {
     var path = Path();
     path.lineTo(0, size.height - 50);
-    path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height - 50);
+    path.quadraticBezierTo(
+        size.width / 2, size.height, size.width, size.height - 50);
     path.lineTo(size.width, 0);
     path.close();
     return path;
   }
+
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return false;

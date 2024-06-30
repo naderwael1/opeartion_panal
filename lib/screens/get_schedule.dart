@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:bloc_v2/constants.dart';
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
@@ -24,31 +25,31 @@ class _SchedulePageState extends State<SchedulePage> {
 
   Future<List<Map<String, String>>> fetchSchedule() async {
     String? branchId = await secureStorage.read(key: 'employee_branch_id');
-    
+
     // Calculate the current date and the date 15 days ago
     final DateTime now = DateTime.now();
     final DateTime fromDate = now.subtract(Duration(days: 15));
-    
+
     // Format the dates to strings
     final String formattedNow = DateFormat('yyyy-MM-dd').format(now);
     final String formattedFromDate = DateFormat('yyyy-MM-dd').format(fromDate);
 
     final response = await http.get(
-      Uri.parse('http://192.168.56.1:4000/admin/branch/employeesSchedule/$branchId?fromDate=$formattedFromDate&toDate=$formattedNow'),
+      Uri.parse(
+          'http://$baseUrl:4000/admin/branch/employeesSchedule/$branchId?fromDate=$formattedFromDate&toDate=$formattedNow'),
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data['data'] != null && data['data']['attendance'] != null) {
-        List<Map<String, String>> schedule = (data['data']['attendance'] as List)
-            .map((item) {
-              return {
-                "employee": item['employee'] as String,
-                "shift_start_time": item['shift_start_time'] as String,
-                "shift_end_time": item['shift_end_time'] as String,
-              };
-            })
-            .toList();
+        List<Map<String, String>> schedule =
+            (data['data']['attendance'] as List).map((item) {
+          return {
+            "employee": item['employee'] as String,
+            "shift_start_time": item['shift_start_time'] as String,
+            "shift_end_time": item['shift_end_time'] as String,
+          };
+        }).toList();
         return schedule;
       } else {
         return [];
@@ -62,7 +63,8 @@ class _SchedulePageState extends State<SchedulePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Employee Schedule', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: Text('Employee Schedule',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.lightBlue[800],
         centerTitle: true,
         automaticallyImplyLeading: false, // This removes the back button
@@ -89,18 +91,21 @@ class _SchedulePageState extends State<SchedulePage> {
                   ],
                   rows: snapshot.data!.map((item) {
                     return DataRow(cells: [
-                      DataCell(Text(item['employee']!, style: TextStyle(fontSize: 16))),
+                      DataCell(Text(item['employee']!,
+                          style: TextStyle(fontSize: 16))),
                       DataCell(formatDateTime(item['shift_start_time']!)),
                       DataCell(formatDateTime(item['shift_end_time']!)),
                     ]);
                   }).toList(),
-                  headingRowColor:
-                      MaterialStateColor.resolveWith((states) => Colors.lightBlue[800]!),
-                  dataRowColor:
-                      MaterialStateColor.resolveWith((states) => Colors.lightBlue[100]!),
+                  headingRowColor: MaterialStateColor.resolveWith(
+                      (states) => Colors.lightBlue[800]!),
+                  dataRowColor: MaterialStateColor.resolveWith(
+                      (states) => Colors.lightBlue[100]!),
                   dataTextStyle: TextStyle(color: Colors.black, fontSize: 16),
-                  headingTextStyle:
-                      TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                  headingTextStyle: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
                   columnSpacing: 20,
                   dividerThickness: 1,
                   decoration: BoxDecoration(
@@ -118,13 +123,15 @@ class _SchedulePageState extends State<SchedulePage> {
 
   Widget formatDateTime(String dateTime) {
     final DateTime parsedDateTime = DateTime.parse(dateTime);
-    final String formattedDate = DateFormat('yyyy-MM-dd').format(parsedDateTime);
+    final String formattedDate =
+        DateFormat('yyyy-MM-dd').format(parsedDateTime);
     final String formattedTime = DateFormat('HH:mm').format(parsedDateTime);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(formattedDate, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        Text(formattedDate,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         Text(formattedTime, style: TextStyle(fontSize: 14)),
       ],
     );

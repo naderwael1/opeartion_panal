@@ -1,10 +1,11 @@
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 Future<String> editChangeStatusModel({
   required String employeeId,
   required String employeeStatus,
 }) async {
-  const url = 'http://192.168.56.1:4000/admin/employees/employeeStatusChange';
+  const url = 'http://$baseUrl:4000/admin/employees/employeeStatusChange';
   try {
     final response = await http.post(
       Uri.parse(url),
@@ -14,7 +15,8 @@ Future<String> editChangeStatusModel({
       },
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final addMenuItem = response.body; // Assuming the response body contains the data you need
+      final addMenuItem = response
+          .body; // Assuming the response body contains the data you need
       print('Status: ${response.statusCode}');
       return addMenuItem;
     } else {
@@ -26,6 +28,3 @@ Future<String> editChangeStatusModel({
     throw Exception('Error edit Status: $e');
   }
 }
-
-
-

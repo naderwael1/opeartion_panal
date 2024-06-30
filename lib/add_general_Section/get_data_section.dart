@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bloc_v2/constants.dart';
 import 'package:http/http.dart' as http;
 
 class SectionPerformance {
@@ -22,7 +23,8 @@ class SectionPerformance {
 }
 
 Future<List<SectionPerformance>> fetchSectionPerformance() async {
-  final response = await http.get(Uri.parse('http://192.168.56.1:4000/admin/branch/branchPerformance/1'));
+  final response = await http
+      .get(Uri.parse('http://$baseUrl:4000/admin/branch/branchPerformance/1'));
 
   if (response.statusCode == 200) {
     final List<dynamic> data = jsonDecode(response.body)['data'];

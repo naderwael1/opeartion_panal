@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 Future<Map<String, dynamic>> editAddressEmployee({
   required int employeeId,
   required String newAddress,
 }) async {
-  const url = 'http://192.168.56.1:4000/admin/employees/update-employee-address';
+  const url = 'http://$baseUrl:4000/admin/employees/update-employee-address';
   try {
     final response = await http.patch(
       Uri.parse(url),
@@ -25,13 +26,17 @@ Future<Map<String, dynamic>> editAddressEmployee({
         print('Data: $data');
         return {'status': 'success', 'data': data};
       } else {
-        return {'status': 'error', 'message': 'Unexpected success response format'};
+        return {
+          'status': 'error',
+          'message': 'Unexpected success response format'
+        };
       }
     } else {
       // Failure
       final jsonResponse = jsonDecode(response.body);
       String message = jsonResponse['message'] ?? 'Unknown error';
-      print('Failed to edit employee phone. Status code: ${response.statusCode}, Message: $message');
+      print(
+          'Failed to edit employee phone. Status code: ${response.statusCode}, Message: $message');
       return {'status': 'error', 'message': message};
     }
   } catch (e) {

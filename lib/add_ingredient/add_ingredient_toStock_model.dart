@@ -1,11 +1,12 @@
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 Future<String> addIngredientToStock_model({
   required String branchId,
   required String ingredientId,
   required String ingredientQuantity,
 }) async {
-  final url = 'http://192.168.56.1:4000/admin/branch/addIngredientToStock';
+  final url = 'http://$baseUrl:4000/admin/branch/addIngredientToStock';
   try {
     final response = await http.post(
       Uri.parse(url),

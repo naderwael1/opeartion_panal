@@ -56,11 +56,10 @@ class AppLayoutScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              backgroundColor:
-                  Colors.blue, // Change this to your preferred color
+              backgroundColor: const Color.fromARGB(255, 57, 133, 127),
+              // Change this to your preferred color
             ),
-            backgroundColor:
-                const Color.fromARGB(255, 75, 72, 72), // Dark background color
+            backgroundColor: Color.fromARGB(255, 53, 188, 177),
             body: Column(
               children: [
                 CustomToolBar(

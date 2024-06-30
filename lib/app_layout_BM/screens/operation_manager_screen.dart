@@ -12,6 +12,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:bloc_v2/constants.dart';
+
 import '../../all_model_operation_manager/add_item_by_time_mode.dart';
 
 class OperationManagerRole extends StatefulWidget {
@@ -497,7 +499,7 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
 
   Future<List<Map<String, dynamic>>> fetchBranchesList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list'));
+        .get(Uri.parse('http://$baseUrl:4000/admin/branch/branches-list'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       return List<Map<String, dynamic>>.from(data['data'].map(
@@ -560,8 +562,8 @@ class _FunctionInputTileState extends State<FunctionInputTile> {
         .get(Uri.parse('http://192.168.56.1:4000/admin/branch/ingredients'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      return List<Map<String, dynamic>>.from(data['data'].map(
-          (item) => {'id': item['ingredient_id'], 'name': item['ingredients_name']}));
+      return List<Map<String, dynamic>>.from(data['data'].map((item) =>
+          {'id': item['ingredient_id'], 'name': item['ingredients_name']}));
     } else {
       throw Exception('Failed to load ingredients list');
     }

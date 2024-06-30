@@ -7,6 +7,8 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
+import 'package:bloc_v2/constants.dart';
 
 class AddRegisterEmp extends StatefulWidget {
   const AddRegisterEmp({Key? key}) : super(key: key);
@@ -75,8 +77,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
   }
 
   Future<void> fetchBranch() async {
-    final url =
-        Uri.parse('http://192.168.56.1:4000/admin/branch/branches-list');
+    final url = Uri.parse('http://$baseUrl:4000/admin/branch/branches-list');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -99,7 +100,7 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
 
   Future<void> fetchSections(int branchId) async {
     final url =
-        Uri.parse('http://192.168.56.1:4000/admin/branch/sections/$branchId');
+        Uri.parse('http://$baseUrl:4000/admin/branch/sections/$branchId');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -515,9 +516,10 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
                                             : null,
                                     birthDate: birthDateController.text,
                                     address: addressController.text,
-                                    dateHired: dateHiredController.text.isNotEmpty
-                                        ? dateHiredController.text
-                                        : null,
+                                    dateHired:
+                                        dateHiredController.text.isNotEmpty
+                                            ? dateHiredController.text
+                                            : null,
                                   );
                                   print('Employee registered: $addRegisterEmp');
                                   CherryToast.success(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:bloc_v2/constants.dart';
 
 // PositionModel class
 class PositionModel {
@@ -28,8 +29,8 @@ class PositionModel {
 
 // Fetch positions function
 Future<List<PositionModel>> fetchPositions() async {
-  final response = await http.get(Uri.parse(
-      'http://192.168.56.1:4000/admin/employees/manager-employees-list'));
+  final response = await http.get(
+      Uri.parse('http://$baseUrl:4000/admin/employees/manager-employees-list'));
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = json.decode(response.body)['data'];

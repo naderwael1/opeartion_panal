@@ -131,7 +131,7 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.teal,
+                  backgroundColor: Color.fromARGB(255, 15, 1, 42),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
@@ -215,10 +215,12 @@ class _AllEmployeeScreenState extends State<AllEmployeeScreen> {
                         icon: const Icon(Icons.filter_list),
                         label: Text(
                           _isShowingActive ? 'Show Inactive' : 'Show Active',
-                          style: const TextStyle(color: Colors.black), // Change text color to black
+                          style: const TextStyle(
+                              color:
+                                  Colors.black), // Change text color to black
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
+                          backgroundColor: Color.fromARGB(255, 194, 41, 41),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),

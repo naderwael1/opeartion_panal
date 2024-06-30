@@ -1,22 +1,25 @@
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
+
 Future<String> AttendanceIn({
   required String scheduleId,
   required String employeeId,
   required String timeIn,
 }) async {
-  const url = 'http://192.168.56.1:4000/admin/employees/timeInAttendance';
+  const url = 'http://$baseUrl:4000/admin/employees/timeInAttendance';
   try {
     final response = await http.post(
       Uri.parse(url),
       body: {
         'scheduleId': scheduleId,
-        'employeeId': employeeId, 
+        'employeeId': employeeId,
         'timeIn': timeIn,
       },
-    ); 
+    );
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
-      final addMenuItem = response.body; // Assuming the response body contains the data you need
+      final addMenuItem = response
+          .body; // Assuming the response body contains the data you need
       print('Status: ${response.statusCode}');
       print('Response: $addMenuItem');
       return addMenuItem;

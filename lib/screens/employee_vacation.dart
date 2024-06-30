@@ -6,6 +6,7 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 class AddEmployeeVacation extends StatefulWidget {
   const AddEmployeeVacation({Key? key}) : super(key: key);
@@ -40,14 +41,14 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
   }
 
   void startPolling() {
-    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       fetchActiveEmployees();
     });
   }
 
   Future<void> fetchActiveEmployees() async {
-    final url = Uri.parse(
-        'http://192.168.56.1:4000/admin/employees/active-employees-list');
+    final url =
+        Uri.parse('http://$baseUrl:4000/admin/employees/active-employees-list');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -105,12 +106,12 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                 child: Container(
                   height: 200,
                   color: baseColor,
-                  child: Column(
+                  child: const Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 75.0),
+                        padding: EdgeInsets.only(top: 75.0),
                       ),
-                      const Center(
+                      Center(
                         child: Text(
                           'Add Employee Vacation',
                           style: TextStyle(

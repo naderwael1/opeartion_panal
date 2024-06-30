@@ -43,3 +43,4 @@ const cloud =
 const test = 'https://via.placeholder.com/200?text=Storage';
 const table =
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6WXtpfu5s4rMwuqEQhUbzNSt3vUWttZPObkulp-idKQ&s';
+const baseUrl = '192.168.10.1';

@@ -1,10 +1,12 @@
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
+
 Future<String> addIngredient_model({
   required String name,
   required String recipeUnit,
   required String shipmentUnit,
 }) async {
-  final url = 'http://192.168.56.1:4000/admin/branch/add-ingredient';
+  final url = 'http://$baseUrl:4000/admin/branch/add-ingredient';
   try {
     final response = await http.post(
       Uri.parse(url),

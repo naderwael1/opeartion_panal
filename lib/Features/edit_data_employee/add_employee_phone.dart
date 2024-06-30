@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:bloc_v2/constants.dart';
 
 Future<Map<String, dynamic>> AddPhoneNumberEmployee({
   required int employeeId,
   required String employeePhone,
 }) async {
-  const url = 'http://192.168.56.1:4000/admin/employees/employee-phone';
+  const url = 'http://$baseUrl:4000/admin/employees/employee-phone';
   try {
     final response = await http.post(
       Uri.parse(url),
