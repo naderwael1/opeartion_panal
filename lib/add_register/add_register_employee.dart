@@ -1,14 +1,6 @@
-import 'package:bloc_v2/Features/emp_features/presentation/all_emp_screen.dart';
-import 'package:bloc_v2/add_register/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bloc_v2/add_register/add_register_model.dart';
-import 'package:cherry_toast/cherry_toast.dart';
-import 'package:cherry_toast/resources/arrays.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:bloc_v2/constants.dart';
-import 'package:bloc_v2/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AddRegisterEmp extends StatefulWidget {
   const AddRegisterEmp({Key? key}) : super(key: key);
@@ -18,33 +10,220 @@ class AddRegisterEmp extends StatefulWidget {
 }
 
 class _AddRegisterEmpState extends State<AddRegisterEmp> {
-  TextEditingController ssnNumberController = TextEditingController();
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
-  TextEditingController genderController = TextEditingController();
-  TextEditingController salaryController = TextEditingController();
-  TextEditingController positionIdController = TextEditingController();
-  TextEditingController statusController = TextEditingController();
-  TextEditingController branchIdController = TextEditingController();
-  TextEditingController sectionIdController = TextEditingController();
-  TextEditingController birthDateController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController dateHiredController = TextEditingController();
+  final TextEditingController ssnNumberController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController genderController = TextEditingController();
+  final TextEditingController salaryController = TextEditingController();
+  final TextEditingController positionIdController = TextEditingController();
+  final TextEditingController statusController = TextEditingController();
+  final TextEditingController branchIdController = TextEditingController();
+  final TextEditingController sectionIdController = TextEditingController();
+  final TextEditingController birthDateController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController dateHiredController = TextEditingController();
 
-  int _selectedIndex = 1;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool isEditing = false;
-  final _formKey = GlobalKey<FormState>();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ClipPath(
+              clipper: HeaderClipper(),
+              child: Container(
+                height: 200,
+                color: Colors.teal,
+                alignment: Alignment.center,
+                child: Text(
+                  'Employee Registration',
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: ssnNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'SSN Number',
+                        prefixIcon: Icon(Icons.security),
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(
+                            14), // Limit to 14 digits
+                      ],
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length != 14) {
+                          return 'SSN must be exactly 14 digits';
+                        }
+                        return null;
+                      },
+                    ),
+                    buildTextFormField(
+                        firstNameController, 'First Name', Icons.person),
+                    buildTextFormField(
+                        lastNameController, 'Last Name', Icons.person_outline),
+                    buildDropdownField(
+                        genderController, 'Gender', ['Male', 'Female']),
+                    buildTextFormField(
+                        salaryController, 'Salary', Icons.monetization_on,
+                        isNumeric: true),
+                    buildTextFormField(
+                        positionIdController, 'Position ID', Icons.work),
+                    buildDropdownField(statusController, 'Status',
+                        ['Active', 'Inactive', 'Pending']),
+                    buildTextFormField(
+                        branchIdController, 'Branch ID', Icons.business),
+                    buildTextFormField(
+                        sectionIdController, 'Section ID', Icons.dashboard),
+                    buildDateField(birthDateController, 'Birth Date'),
+                    buildTextFormField(
+                        addressController, 'Address', Icons.home),
+                    buildDateField(dateHiredController, 'Date Hired'),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                // Process data
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                            ),
+                            child: const Text('Register'),
+                          ),
+                          ElevatedButton(
+                            onPressed: clearForm,
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.red,
+                            ),
+                            child: const Text('Clear'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  void _onTabSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    switch (index) {
-      case 0:
-        // Navigate to a screen, for example
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => AllEmployeeScreen()));
+  Widget buildTextFormField(
+      TextEditingController controller, String label, IconData icon,
+      {bool isNumeric = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon),
+          border: OutlineInputBorder(),
+        ),
+        keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget buildDropdownField(
+      TextEditingController controller, String label, List<String> items) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: DropdownButtonFormField<String>(
+        value: controller.text.isEmpty ? null : controller.text,
+        onChanged: (newValue) {
+          setState(() {
+            controller.text = newValue!;
+          });
+        },
+        items: items.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(Icons.arrow_drop_down_circle),
+          border: OutlineInputBorder(),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please select $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget buildDateField(TextEditingController controller, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(Icons.calendar_today),
+          border: OutlineInputBorder(),
+        ),
+        readOnly: true,
+        onTap: () => selectDate(controller, label),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please select $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  void selectDate(TextEditingController controller, String label) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text = "${picked.toLocal()}".split(' ')[0];
+      });
     }
   }
 
@@ -54,537 +233,28 @@ class _AddRegisterEmpState extends State<AddRegisterEmp> {
     lastNameController.clear();
     genderController.clear();
     salaryController.clear();
+    positionIdController.clear();
     statusController.clear();
+    branchIdController.clear();
+    sectionIdController.clear();
     birthDateController.clear();
-    addressController.clear();
     dateHiredController.clear();
-    setState(() {
-      positionIdController.clear();
-      branchIdController.clear();
-      sectionIdController.clear();
-    });
-  }
-
-  List<Map<String, dynamic>> branch = [];
-  List<Map<String, dynamic>> positions = [];
-  List<dynamic> sections = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchBranch();
-    fetchPositions();
-  }
-
-  Future<void> fetchBranch() async {
-    final url = Uri.parse('http://$baseUrl:4000/admin/branch/branches-list');
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final jsonBody = json.decode(response.body);
-        setState(() {
-          branch = jsonBody['data']
-              .map<Map<String, dynamic>>((position) => {
-                    'branch_id': position['branch_id'],
-                    'branch_name': position['branch_name'],
-                  })
-              .toList();
-        });
-      } else {
-        throw Exception('Failed to load branches');
-      }
-    } catch (e) {
-      print('Error loading branches: $e');
-    }
-  }
-
-  Future<void> fetchSections(int branchId) async {
-    final url =
-        Uri.parse('http://$baseUrl:4000/admin/branch/sections/$branchId');
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body)['data']['sections'];
-        setState(() {
-          sections = jsonData
-              .map((section) => {
-                    'id': section['id'],
-                    'name': section['name'],
-                    'manager': section['manager'],
-                  })
-              .toList();
-        });
-      } else {
-        print('Failed to load sections');
-      }
-    } catch (e) {
-      print('Error fetching sections: $e');
-    }
-  }
-
-  Future<void> fetchPositions() async {
-    final url =
-        Uri.parse('http://192.168.56.1:4000/admin/employees/positions-list');
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final jsonBody = json.decode(response.body);
-        setState(() {
-          positions = (jsonBody['data'] as List).map((position) {
-            return {
-              'position_id': position['position_id'],
-              'position': position['position'],
-            };
-          }).toList();
-        });
-      } else {
-        throw Exception('Failed to load positions');
-      }
-    } catch (e) {
-      print('Error loading positions: $e');
-    }
-  }
-
-  Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked != null) {
-      // Format the picked date to show only the date part (yyyy-MM-dd)
-      String formattedDate = picked.toLocal().toString().split(' ')[0];
-
-      setState(() {
-        birthDateController.text = formattedDate; // Update birthDateController
-      });
-    }
-  }
-
-  Future<void> _HiredDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked != null) {
-      // Format the picked date to show only the date part (yyyy-MM-dd)
-      String formattedDate = picked.toLocal().toString().split(' ')[0];
-
-      setState(() {
-        dateHiredController.text = formattedDate; // Update dateHiredController
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              ClipPath(
-                clipper: HeaderClipper(),
-                child: Container(
-                  height: 200, // Adjusted height to fit the toolbar and text
-                  color: baseColor,
-                  // ignore: prefer_const_constructors
-                  child: Column(
-                    children: const [
-                      Center(
-                        child: Text(
-                          'Add Employee Registration',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        controller: ssnNumberController,
-                        keyboardType: TextInputType.number,
-                        key: const ValueKey('SSN Number'),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'SSN Number *',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter an SSN Number';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        controller: firstNameController,
-                        key: const ValueKey('First Name'),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'First Name *',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a first name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        controller: lastNameController,
-                        key: const ValueKey('Last Name'),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Last Name *',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a last name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
-                        value: genderController.text.isEmpty
-                            ? null
-                            : genderController.text,
-                        onChanged: (newValue) {
-                          setState(() {
-                            genderController.text = newValue!;
-                          });
-                        },
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'm',
-                            child: Text('Male'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'f',
-                            child: Text('Female'),
-                          ),
-                        ],
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Gender *',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a gender';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        controller: salaryController,
-                        keyboardType: TextInputType.number,
-                        key: const ValueKey('Salary'),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Salary *',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a salary';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      DropdownButtonFormField<int>(
-                        value: positionIdController.text.isEmpty
-                            ? null
-                            : int.tryParse(positionIdController.text),
-                        onChanged: (newValue) {
-                          setState(() {
-                            positionIdController.text =
-                                newValue?.toString() ?? '';
-                          });
-                        },
-                        items: positions.map((position) {
-                          return DropdownMenuItem<int>(
-                            value: position['position_id'],
-                            child: Text(position['position']),
-                          );
-                        }).toList(),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Position *',
-                        ),
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Please select a position';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
-                        value: statusController.text.isEmpty
-                            ? null
-                            : statusController.text,
-                        onChanged: (newValue) {
-                          setState(() {
-                            statusController.text = newValue!;
-                          });
-                        },
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'pending',
-                            child: Text('Pending'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'active',
-                            child: Text('Active'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'inactive',
-                            child: Text('Inactive'),
-                          ),
-                        ],
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Status *',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a status';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      DropdownButtonFormField<int>(
-                        value: branchIdController.text.isEmpty
-                            ? null
-                            : int.tryParse(branchIdController.text),
-                        onChanged: (newValue) {
-                          setState(() {
-                            branchIdController.text =
-                                newValue?.toString() ?? '';
-                            if (newValue != null) {
-                              fetchSections(newValue);
-                            }
-                          });
-                        },
-                        items: branch.map((position) {
-                          return DropdownMenuItem<int>(
-                            value: position['branch_id'],
-                            child: Text(position['branch_name']),
-                          );
-                        }).toList(),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Branch Name (Optional)',
-                          labelStyle: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      DropdownButtonFormField<int>(
-                        value: sectionIdController.text.isEmpty
-                            ? null
-                            : int.tryParse(sectionIdController.text),
-                        onChanged: (newValue) {
-                          setState(() {
-                            sectionIdController.text =
-                                newValue?.toString() ?? '';
-                          });
-                        },
-                        items: sections.map((section) {
-                          return DropdownMenuItem<int>(
-                            value: section['id'],
-                            child: Text(section['name']),
-                          );
-                        }).toList(),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Section Name (Optional)',
-                          labelStyle: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: birthDateController,
-                        decoration: const InputDecoration(
-                          labelText: 'BirthDate *',
-                          filled: true,
-                          prefixIcon: Icon(Icons.calendar_today),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                        ),
-                        readOnly: true,
-                        onTap: () {
-                          _selectDate();
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a birth date';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        controller: addressController,
-                        key: const ValueKey('Address'),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Address *',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Address';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      TextFormField(
-                        controller: dateHiredController,
-                        decoration: const InputDecoration(
-                          labelText: 'Date Hired (Optional)',
-                          filled: true,
-                          prefixIcon: Icon(Icons.calendar_today),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                          labelStyle: TextStyle(color: Colors.grey),
-                        ),
-                        readOnly: true,
-                        onTap: () {
-                          _HiredDate();
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton.icon(
-                            style: clearButtonStyle,
-                            icon: const Icon(Icons.clear),
-                            label: const Text("Clear"),
-                            onPressed: clearForm,
-                          ),
-                          ElevatedButton.icon(
-                            style: elevatedButtonStyle,
-                            icon: const Icon(Icons.upload),
-                            label: const Text("Add Register Employee"),
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                try {
-                                  final addRegisterEmp =
-                                      await addregisteremployee(
-                                    ssnNumber: ssnNumberController.text,
-                                    firstName: firstNameController.text,
-                                    lastName: lastNameController.text,
-                                    gender: genderController.text,
-                                    salary: salaryController.text,
-                                    positionId: positionIdController.text,
-                                    status: statusController.text,
-                                    branchId: branchIdController.text.isNotEmpty
-                                        ? branchIdController.text
-                                        : null,
-                                    sectionId:
-                                        sectionIdController.text.isNotEmpty
-                                            ? sectionIdController.text
-                                            : null,
-                                    birthDate: birthDateController.text,
-                                    address: addressController.text,
-                                    dateHired:
-                                        dateHiredController.text.isNotEmpty
-                                            ? dateHiredController.text
-                                            : null,
-                                  );
-                                  print('Employee registered: $addRegisterEmp');
-                                  CherryToast.success(
-                                    animationType: AnimationType.fromRight,
-                                    toastPosition: Position.bottom,
-                                    description: const Text(
-                                      "Employee registered successfully",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ).show(context);
-                                  clearForm();
-                                } catch (e) {
-                                  CherryToast.error(
-                                    toastPosition: Position.bottom,
-                                    animationType: AnimationType.fromRight,
-                                    description: const Text(
-                                      "Something went wrong!",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ).show(context);
-                                }
-                              } else {
-                                CherryToast.warning(
-                                  toastPosition: Position.bottom,
-                                  animationType: AnimationType.fromLeft,
-                                  description: const Text(
-                                    "Data is not valid or not complete",
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                ).show(context);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    addressController.clear();
   }
 }
 
 class HeaderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, size.height - 30); // Adjusted height of the clip path
+    var path = Path();
+    path.lineTo(0, size.height - 50);
     path.quadraticBezierTo(
-      size.width / 2,
-      size.height,
-      size.width,
-      size.height - 30,
-    );
+        size.width / 2, size.height, size.width, size.height - 50);
     path.lineTo(size.width, 0);
     path.close();
     return path;
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

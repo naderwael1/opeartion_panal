@@ -14,8 +14,21 @@ class _PositionListScreenState extends State<PositionListScreen> {
   @override
   void initState() {
     super.initState();
-    // Ensure that the future is initialized
     futurePositions = fetchPositions();
+  }
+
+  IconData _getIconForPosition(String jobName) {
+    switch (jobName.toLowerCase()) {
+      // Custom logic to assign icons based on jobName
+      case 'developer':
+        return Icons.code;
+      case 'manager':
+        return Icons.business_center;
+      case 'designer':
+        return Icons.design_services;
+      default:
+        return Icons.work; // Default icon
+    }
   }
 
   @override
@@ -40,21 +53,36 @@ class _PositionListScreenState extends State<PositionListScreen> {
                 return Center(child: Text('No positions found'));
               } else {
                 final positions = snapshot.data!;
-                return ListView.builder(
+                return ListView.separated(
                   itemCount: positions.length,
+                  separatorBuilder: (_, __) => Divider(height: 1),
                   itemBuilder: (context, index) {
                     final position = positions[index];
                     return Card(
-                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      elevation: 4,
+                      margin: EdgeInsets.all(10),
                       child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.teal.shade100,
+                          child: Icon(
+                            _getIconForPosition(position.jobName),
+                            color: Colors.teal.shade800,
+                          ),
+                        ),
                         title: Text(
                           position.jobName,
                           style: GoogleFonts.lato(
                             textStyle: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.teal.shade600,
+                            ),
                           ),
                         ),
-                        subtitle: Text('ID: ${position.positionId}'),
+                        subtitle: Text(
+                          'ID: ${position.positionId}',
+                          style: TextStyle(color: Colors.teal.shade900),
+                        ),
                       ),
                     );
                   },
