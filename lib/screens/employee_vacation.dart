@@ -1,97 +1,35 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:bloc_v2/add_register/style.dart';
-import 'package:bloc_v2/screens/employee_vacation_model.dart';
-import 'package:cherry_toast/cherry_toast.dart';
-import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:bloc_v2/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AddEmployeeVacation extends StatefulWidget {
   const AddEmployeeVacation({Key? key}) : super(key: key);
 
   @override
-  State<AddEmployeeVacation> createState() => _AddEmployeeVacation();
+  State<AddEmployeeVacation> createState() => _AddEmployeeVacationState();
 }
 
-class _AddEmployeeVacation extends State<AddEmployeeVacation> {
-  TextEditingController employeeIddController = TextEditingController();
+class _AddEmployeeVacationState extends State<AddEmployeeVacation> {
+  TextEditingController employeeIdController = TextEditingController();
   TextEditingController vacationStartDateController = TextEditingController();
   TextEditingController vacationReasonController = TextEditingController();
-  TextEditingController vacationEndController = TextEditingController();
+  TextEditingController vacationEndDateController = TextEditingController();
 
-  int _selectedIndex = 1;
-  bool isEditing = false;
-  final _formKey = GlobalKey<FormState>();
-  List<Map<String, dynamic>> activeEmployees = [];
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchActiveEmployees();
-    startPolling();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void startPolling() {
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      fetchActiveEmployees();
-    });
-  }
-
-  Future<void> fetchActiveEmployees() async {
-    final url =
-        Uri.parse('http://$baseUrl:4000/admin/employees/active-employees-list');
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final jsonBody = json.decode(response.body);
-        setState(() {
-          activeEmployees = (jsonBody['data'] as List)
-              .map<Map<String, dynamic>>((employee) => {
-                    'employee_id': employee['employee_id'],
-                    'employee_name': employee['employee_name'],
-                  })
-              .toList();
-        });
-      } else {
-        throw Exception('Failed to load active employees');
-      }
-    } catch (e) {
-      print('Error loading active employees: $e');
-    }
-  }
-
-  Future<void> _selectDate(TextEditingController controller) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked != null) {
-      String formattedDate = picked.toLocal().toString().split(' ')[0];
-      setState(() {
-        controller.text = formattedDate;
-      });
-    }
-  }
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void clearForm() {
+    employeeIdController.clear();
     vacationStartDateController.clear();
     vacationReasonController.clear();
-    vacationEndController.clear();
-    setState(() {
-      employeeIddController.clear();
-    });
+    vacationEndDateController.clear();
+  }
+
+  void submitVacationRequest() {
+    if (_formKey.currentState!.validate()) {
+      print(
+          "Vacation request submitted for Employee ID ${employeeIdController.text}");
+      // Submit logic here
+      clearForm();
+    }
   }
 
   @override
@@ -104,120 +42,63 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
               ClipPath(
                 clipper: HeaderClipper(),
                 child: Container(
-                  height: 200,
-                  color: baseColor,
-                  child: const Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 75.0),
-                      ),
-                      Center(
-                        child: Text(
-                          'Add Employee Vacation',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  height: 150,
+                  color:
+                      Color(0xFF00897B), // Adjusted to match your desired color
+                  child: Center(
+                    child: Text(
+                      'Employee Registration',
+                      style: GoogleFonts.lato(
+                        textStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding: const EdgeInsets.all(16.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      DropdownButtonFormField<int>(
-                        value: employeeIddController.text.isEmpty
-                            ? null
-                            : int.tryParse(employeeIddController.text),
-                        onChanged: (newValue) {
-                          setState(() {
-                            employeeIddController.text =
-                                newValue?.toString() ?? '';
-                          });
-                        },
-                        items: activeEmployees.map((employee) {
-                          return DropdownMenuItem<int>(
-                            value: employee['employee_id'],
-                            child: Text(employee['employee_name']),
-                          );
-                        }).toList(),
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Employee Name',
+                    children: <Widget>[
+                      TextFormField(
+                        controller: employeeIdController,
+                        decoration: InputDecoration(
+                          labelText: 'Employee ID',
+                          border: OutlineInputBorder(),
                         ),
                         validator: (value) {
-                          if (value == null) {
-                            return 'Please select an Employee Name';
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the employee ID';
                           }
                           return null;
                         },
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       TextFormField(
                         controller: vacationStartDateController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Vacation Start Date',
-                          filled: true,
-                          prefixIcon: Icon(Icons.calendar_today),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
+                          border: OutlineInputBorder(),
                         ),
-                        readOnly: true,
-                        onTap: () {
-                          _selectDate(vacationStartDateController);
-                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a valid date';
+                            return 'Please enter the start date';
                           }
                           return null;
                         },
                       ),
-                      const SizedBox(height: 30),
-                      TextFormField(
-                        controller: vacationEndController,
-                        decoration: const InputDecoration(
-                          labelText: 'Vacation End Date',
-                          filled: true,
-                          prefixIcon: Icon(Icons.calendar_today),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                        ),
-                        readOnly: true,
-                        onTap: () {
-                          _selectDate(vacationEndController);
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a Vacation End Date';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       TextFormField(
                         controller: vacationReasonController,
-                        decoration: inputDecoration.copyWith(
-                          labelText: 'Vacation Reason',
+                        decoration: InputDecoration(
+                          labelText: 'Reason for Vacation',
+                          border: OutlineInputBorder(),
                         ),
-                        maxLength: 150,
-                        maxLines:
-                            null, // Allows the text field to grow with the content
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a reason for the vacation';
@@ -225,62 +106,25 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton.icon(
-                            style: clearButtonStyle,
-                            icon: const Icon(Icons.clear),
-                            label: const Text("Clear"),
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          ElevatedButton(
                             onPressed: clearForm,
+                            child: Text('Clear'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.red, // foreground
+                            ),
                           ),
-                          ElevatedButton.icon(
-                            style: elevatedButtonStyle,
-                            icon: const Icon(Icons.upload),
-                            label: const Text("Add Vacation Employee"),
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                try {
-                                  final addRegisterEmp = ModelEmployeeVacation(
-                                    employeeId: employeeIddController.text,
-                                    vacationStartDate:
-                                        vacationStartDateController.text,
-                                    vacationEndDate: vacationEndController.text,
-                                    vacationReason:
-                                        vacationReasonController.text,
-                                  );
-                                  print('Adding employee: $addRegisterEmp');
-                                  CherryToast.success(
-                                    animationType: AnimationType.fromRight,
-                                    toastPosition: Position.bottom,
-                                    description: const Text(
-                                      "Employee Schedule successfully",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ).show(context);
-                                  clearForm();
-                                } catch (e) {
-                                  CherryToast.error(
-                                    toastPosition: Position.bottom,
-                                    animationType: AnimationType.fromRight,
-                                    description: const Text(
-                                      "Something went wrong!",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ).show(context);
-                                }
-                              } else {
-                                CherryToast.warning(
-                                  toastPosition: Position.bottom,
-                                  animationType: AnimationType.fromLeft,
-                                  description: const Text(
-                                    "Data is not valid or not complete",
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                ).show(context);
-                              }
-                            },
+                          ElevatedButton(
+                            onPressed: submitVacationRequest,
+                            child: Text('Submit'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green, // foreground
+                            ),
                           ),
                         ],
                       ),
@@ -299,21 +143,15 @@ class _AddEmployeeVacation extends State<AddEmployeeVacation> {
 class HeaderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, size.height - 30);
+    var path = Path();
+    path.lineTo(0, size.height - 50);
     path.quadraticBezierTo(
-      size.width / 2,
-      size.height,
-      size.width,
-      size.height - 30,
-    );
+        size.width / 2, size.height, size.width, size.height - 50);
     path.lineTo(size.width, 0);
     path.close();
     return path;
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
