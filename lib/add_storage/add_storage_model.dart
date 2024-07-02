@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+
 Future<String> addStorageModel({
   required String storageName,
   required String storageAddress,
@@ -16,13 +17,19 @@ Future<String> addStorageModel({
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
-      final add_menu_item = response.body; // Assuming the branchId is returned in the response body
-      return add_menu_item;
+      final addMenuItem = response
+          .body; // Assuming the response body contains the data you need
+      print('Status: ${response.statusCode}');
+      print('Response: $addMenuItem');
+      return addMenuItem;
     } else {
       // Failure
-      throw Exception('Failed to Add Storage: ${response.statusCode}');
+      print('Status: ${response.statusCode}');
+      print('Response: ${response.body}');
+      throw Exception('Failed to add storge: ${response.statusCode}');
     }
   } catch (e) {
-    throw Exception('Error AddStorage: $e');
+    print('Error: $e');
+    throw Exception('Error adding storge: $e');
   }
 }

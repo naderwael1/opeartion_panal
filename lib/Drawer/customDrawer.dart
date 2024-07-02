@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../Features/branch_features/presentation/all_braches_screen.dart';
-import '../Features/emp_features/presentation/all_emp_screen.dart';
 import 'drawerItemModel.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -14,7 +13,7 @@ class CustomDrawer extends StatelessWidget {
     DrawerItemModel(
       title: 'E M P L W E E S T A T E',
       icon: Icons.man,
-      destination:AllEmployeeScreen(),
+      destination: AllBranchScreen(),
     ),
     DrawerItemModel(
       title: 'S E T T I N G S',

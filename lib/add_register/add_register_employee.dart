@@ -1,24 +1,231 @@
-import 'package:bloc_v2/add_register/add_register_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AddRegisterEmp extends StatefulWidget {
-  const AddRegisterEmp({Key? key});
+  const AddRegisterEmp({Key? key}) : super(key: key);
 
   @override
-  State<AddRegisterEmp> createState() => _AddRegisterEmp();
+  State<AddRegisterEmp> createState() => _AddRegisterEmpState();
 }
 
-class _AddRegisterEmp extends State<AddRegisterEmp> {
-  TextEditingController ssnNumberController = TextEditingController();
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
-  TextEditingController genderController = TextEditingController();
-  TextEditingController salaryController = TextEditingController();
-  TextEditingController statusController = TextEditingController();
+class _AddRegisterEmpState extends State<AddRegisterEmp> {
+  final TextEditingController ssnNumberController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController genderController = TextEditingController();
+  final TextEditingController salaryController = TextEditingController();
+  final TextEditingController positionIdController = TextEditingController();
+  final TextEditingController statusController = TextEditingController();
+  final TextEditingController branchIdController = TextEditingController();
+  final TextEditingController sectionIdController = TextEditingController();
+  final TextEditingController birthDateController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController dateHiredController = TextEditingController();
 
-  bool isEditing = false;
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ClipPath(
+              clipper: HeaderClipper(),
+              child: Container(
+                height: 200,
+                color: Colors.teal,
+                alignment: Alignment.center,
+                child: Text(
+                  'Employee Registration',
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: ssnNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'SSN Number',
+                        prefixIcon: Icon(Icons.security),
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(
+                            14), // Limit to 14 digits
+                      ],
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length != 14) {
+                          return 'SSN must be exactly 14 digits';
+                        }
+                        return null;
+                      },
+                    ),
+                    buildTextFormField(
+                        firstNameController, 'First Name', Icons.person),
+                    buildTextFormField(
+                        lastNameController, 'Last Name', Icons.person_outline),
+                    buildDropdownField(
+                        genderController, 'Gender', ['Male', 'Female']),
+                    buildTextFormField(
+                        salaryController, 'Salary', Icons.monetization_on,
+                        isNumeric: true),
+                    buildTextFormField(
+                        positionIdController, 'Position ID', Icons.work),
+                    buildDropdownField(statusController, 'Status',
+                        ['Active', 'Inactive', 'Pending']),
+                    buildTextFormField(
+                        branchIdController, 'Branch ID', Icons.business),
+                    buildTextFormField(
+                        sectionIdController, 'Section ID', Icons.dashboard),
+                    buildDateField(birthDateController, 'Birth Date'),
+                    buildTextFormField(
+                        addressController, 'Address', Icons.home),
+                    buildDateField(dateHiredController, 'Date Hired'),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                // Process data
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                            ),
+                            child: const Text('Register'),
+                          ),
+                          ElevatedButton(
+                            onPressed: clearForm,
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.red,
+                            ),
+                            child: const Text('Clear'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextFormField(
+      TextEditingController controller, String label, IconData icon,
+      {bool isNumeric = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon),
+          border: OutlineInputBorder(),
+        ),
+        keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget buildDropdownField(
+      TextEditingController controller, String label, List<String> items) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: DropdownButtonFormField<String>(
+        value: controller.text.isEmpty ? null : controller.text,
+        onChanged: (newValue) {
+          setState(() {
+            controller.text = newValue!;
+          });
+        },
+        items: items.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(Icons.arrow_drop_down_circle),
+          border: OutlineInputBorder(),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please select $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget buildDateField(TextEditingController controller, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(Icons.calendar_today),
+          border: OutlineInputBorder(),
+        ),
+        readOnly: true,
+        onTap: () => selectDate(controller, label),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please select $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  void selectDate(TextEditingController controller, String label) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text = "${picked.toLocal()}".split(' ')[0];
+      });
+    }
+  }
 
   void clearForm() {
     ssnNumberController.clear();
@@ -26,213 +233,28 @@ class _AddRegisterEmp extends State<AddRegisterEmp> {
     lastNameController.clear();
     genderController.clear();
     salaryController.clear();
+    positionIdController.clear();
     statusController.clear();
+    branchIdController.clear();
+    sectionIdController.clear();
+    birthDateController.clear();
+    dateHiredController.clear();
+    addressController.clear();
+  }
+}
+
+class HeaderClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    path.lineTo(0, size.height - 50);
+    path.quadraticBezierTo(
+        size.width / 2, size.height, size.width, size.height - 50);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Add Employee Registration'),
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      controller: ssnNumberController,
-                      keyboardType: TextInputType.number,
-                      key: const ValueKey('SSN Number'),
-                      decoration: const InputDecoration(
-                        hintText: 'SSN Number',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an SSN Number';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      controller: firstNameController,
-                      key: const ValueKey('First Name'),
-                      decoration: const InputDecoration(
-                        hintText: 'First Name',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter first name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      controller: lastNameController,
-                      key: const ValueKey('LAST Name'),
-                      decoration: const InputDecoration(
-                        hintText: 'Last Name',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter last name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    DropdownButtonFormField<String>(
-                      value: genderController.text.isEmpty
-                          ? null
-                          : genderController.text,
-                      onChanged: (newValue) {
-                        setState(() {
-                          genderController.text = newValue!;
-                        });
-                      },
-                      items: [
-                        DropdownMenuItem(
-                          value: 'm',
-                          child: Text('Male'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'f',
-                          child: Text('Female'),
-                        ),
-                      ],
-                      decoration: InputDecoration(
-                        hintText: 'Gender',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select a gender';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      controller: salaryController,
-                      keyboardType: TextInputType.number,
-                      key: const ValueKey('SALARY'),
-                      decoration: const InputDecoration(
-                        hintText: 'Salary',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an Salary';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
-                      value: statusController.text.isEmpty
-                          ? null
-                          : statusController.text,
-                      onChanged: (newValue) {
-                        setState(() {
-                          statusController.text = newValue!;
-                        });
-                      },
-                      items: [
-                        DropdownMenuItem(
-                          value: 'pending',
-                          child: Text('pending'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'active',
-                          child: Text('active'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'inactive',
-                          child: Text('inactive'),
-                        ),
-                      ],
-                      decoration: InputDecoration(
-                        hintText: 'Status',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select a gender';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(12),
-                            backgroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          icon: const Icon(Icons.clear),
-                          label: const Text(
-                            "Clear",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          onPressed: () {
-                            clearForm();
-                          },
-                        ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          icon: const Icon(Icons.upload),
-                          label: const Text(
-                            "ADD Register Employee",
-                          ),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                final add_register_emp =
-                                    await addregisteremployee(
-                                  ssnNumber: ssnNumberController.text,
-                                  firstName: firstNameController.text,
-                                  lastName: lastNameController.text,
-                                  gender: genderController.text,
-                                  salary: salaryController.text,
-                                  status: statusController.text,
-                                );
-                                print('Adding employee: $add_register_emp');
-                                clearForm();
-                              } catch (e) {
-                                print('Error adding employee: $e');
-                              }
-                            } else {
-                              print('Form is not valid');
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

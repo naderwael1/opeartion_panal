@@ -1,17 +1,16 @@
 class PositionModel {
-  final String position_name;
-  final String job_description;
+  final int positionId;
+  final String jobName;
 
   PositionModel({
-    required this.position_name,
-    required this.job_description,
+    required this.positionId,
+    required this.jobName,
   });
 
   factory PositionModel.fromJson(Map<String, dynamic> jsonData) {
     return PositionModel(
-      position_name: jsonData['position_name'] ?? '',
-      job_description: jsonData['job_description'] ?? '',
+      positionId: jsonData['position_id'] ?? '',
+      jobName: jsonData['position'] ?? '',
     );
   }
-
 }

@@ -1,137 +1,166 @@
-import 'package:bloc_v2/add_general_Section/add_general_model.dart';
+import 'package:bloc_v2/add_general_Section/get_data_section.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class AddGeneralSection extends StatefulWidget {
-  const AddGeneralSection({Key? key});
-
+class PieChartSample extends StatefulWidget {
   @override
-  State<AddGeneralSection> createState() => _AddGeneralSection();
+  _PieChartSampleState createState() => _PieChartSampleState();
 }
 
-class _AddGeneralSection extends State<AddGeneralSection> {
-  TextEditingController sectionNameController = TextEditingController();
-  TextEditingController sectionDescriptionController = TextEditingController();
+class _PieChartSampleState extends State<PieChartSample> {
+  late Future<List<SectionPerformance>> futureSectionPerformance;
 
-
-  bool isEditing = false;
-  final _formKey = GlobalKey<FormState>();
-
-  void clearForm() {
-    sectionNameController.clear();
-    sectionDescriptionController.clear();
+  @override
+  void initState() {
+    super.initState();
+    futureSectionPerformance = fetchSectionPerformance();
   }
+
+  List<Color> colorPalette = [
+    Color(0xFF90CAF9), // Light Blue
+    Color(0xFFEF9A9A), // Light Red
+    Color(0xFFA5D6A7), // Light Green
+    Color(0xFFFFCC80), // Light Orange
+    Color(0xFFCE93D8), // Light Purple
+    Color(0xFF80DEEA), // Light Cyan
+    Color(0xFFFFE082), // Light Amber
+    Color(0xFF9FA8DA), // Light Indigo
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Add General Section'),
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-              child: Form(
-                key: _formKey,
+    final screenSize = MediaQuery.of(context).size;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('PieChart Example'),
+      ),
+      backgroundColor: Color(0xFFF5F5F5), // Light grey background color
+      body: FutureBuilder<List<SectionPerformance>>(
+        future: futureSectionPerformance,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No data available'));
+          } else {
+            final data = snapshot.data!;
+            final totalOrders = data.fold(0, (sum, item) => sum + item.totalOrders);
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
-                    TextFormField(
-                          controller: sectionNameController,
-                          maxLength: 80,
-                          minLines: 1,
-                          maxLines: 2,
-                          keyboardType: TextInputType.multiline,
-                          textInputAction: TextInputAction.newline,
-                      key: const ValueKey('Section Name'),
-                      decoration: const InputDecoration(
-                        hintText: 'Section Name',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter section name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      controller: sectionDescriptionController,
-                      key: const ValueKey('Section Description'),
-                          minLines: 5,
-                          maxLines: 8,
-                          maxLength: 1000,
-                          textCapitalization: TextCapitalization.sentences,
-                      decoration: const InputDecoration(
-                        hintText: 'Section Description',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an Enter Section Description';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(12),
-                            backgroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                    SizedBox(
+                      height: screenSize.height * 0.7, // Increased the height
+                      child: PieChart(
+                        PieChartData(
+                          sections: data.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            SectionPerformance section = entry.value;
+                            double percentage = (section.totalOrders / totalOrders) * 100;
+                            return PieChartSectionData(
+                              color: colorPalette[index % colorPalette.length].withOpacity(0.8),
+                              title: '', // Removed title from the chart
+                              value: section.totalOrders.toDouble(),
+                              showTitle: false, // Do not show title
+                              badgeWidget: _Badge(
+                                color: colorPalette[index % colorPalette.length],
+                                sectionName: section.sectionName,
+                                percentage: percentage.toStringAsFixed(1),
+                              ),
+                              badgePositionPercentageOffset: 1.3, // Adjusted position
+                            );
+                          }).toList(),
+                          sectionsSpace: 2,
+                          centerSpaceRadius: 100, // Increased center space radius
+                          borderData: FlBorderData(
+                            show: false,
                           ),
-                          icon: const Icon(Icons.clear),
-                          label: const Text(
-                            "Clear",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          onPressed: () {
-                            clearForm();
-                          },
                         ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Column(
+                      children: data.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        SectionPerformance section = entry.value;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 20, // Increased color box size
+                                height: 20, // Increased color box size
+                                color: colorPalette[index % colorPalette.length],
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                section.sectionName,
+                                style: TextStyle(
+                                  fontSize: 18, // Increased font size
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
-                          icon: const Icon(Icons.upload),
-                          label: const Text(
-                            "ADD General Section",
-                          ),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                final add_general_section = await AddGeneral_Section(
-                                  sectionName: sectionNameController.text,
-                                  sectionDescription: sectionDescriptionController.text,
-                                );
-                                print('Adding employee: $add_general_section');
-                                clearForm();
-                              } catch (e) {
-                                print('Error adding employee: $e');
-                              }
-                            } else {
-                              print('Form is not valid');
-                            }
-                          },
-                        ),
-                      ],
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),
               ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final Color color;
+  final String sectionName;
+  final String percentage;
+
+  const _Badge({
+    Key? key,
+    required this.color,
+    required this.sectionName,
+    required this.percentage,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(20), // Increased padding
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(height: 4),
+          Text(
+            '$percentage%',
+            style: TextStyle(
+              fontSize: 15, // Adjust font size
+              fontWeight: FontWeight.bold,
+              color: Colors.black, // Change text color to black
             ),
           ),
-        ),
+        ],
       ),
     );
   }
